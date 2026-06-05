@@ -20,8 +20,9 @@ class State(TypedDict):
 def fetch_jobs(state:State):
         response= requests.get("https://remoteok.com/api")
         data = response.json()
+         # Limit to 10 jobs for cost control — remove [:10] to search all jobs
         fetched_jobs = [job for job in data if 
-         any(keyword.lower() in job.get("position", "").lower() or 
+        any(keyword.lower() in job.get("position", "").lower() or 
         keyword.lower() in job.get("description", "").lower() 
         for keyword in state["user_input"].split())][:10]
         return  {"fetched_jobs":fetched_jobs}
@@ -33,7 +34,7 @@ def evaluate_jobs(state:State):
         temperature=0.7,
         max_retries=10
             )
-        prompt = f"""You are a personal job evaluator helping me find a remote job , the available jobs is in {state["current_job"]} .. An example of a job is :
+        prompt = f"""You are a personal job evaluator helping the user to find a remote job , the available jobs is in {state["current_job"]} .. An example of a job is :
                     "slug": "remote-executive-assistant-trivium-group-1132766",
         "id": "1132766",
         "epoch": 1780492075,

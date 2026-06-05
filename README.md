@@ -13,6 +13,7 @@ Built with **LangGraph** at its core. The graph uses a **fan-out architecture** 
 ```
 START → fetch_jobs → fan_out → [evaluate_job × N] → END
 ```
+By default, the agent evaluates the top 10 matches to control API costs. Remove [:10] in agent.py to search all results.
 
 > **LangSmith tracing is enabled** — every run is fully observable. You can monitor each node execution, token usage, latency, and cost in real time via LangSmith.
 
