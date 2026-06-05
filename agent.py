@@ -34,27 +34,10 @@ def evaluate_jobs(state:State):
         temperature=0.7,
         max_retries=10
             )
-        prompt = f"""You are a personal job evaluator helping the user to find a remote job , the available jobs is in {state["current_job"]} .. An example of a job is :
-                    "slug": "remote-executive-assistant-trivium-group-1132766",
-        "id": "1132766",
-        "epoch": 1780492075,
-        "date": "2026-06-03T13:07:55+00:00",
-        "company": "Trivium Group",
-        "company_logo": "",
-        "position": "Executive Assistant",
-        "tags": [
-        "virtual assistant",
-        "exec"
-        ],
-        "description": "Posted 10:15:23 AM. Location: Remote (US-based preferred â Eastern Time zone required)Employment Type: 1099 Independentâ¦See this and similar jobs on LinkedIn.\u003Cbr/\u003E\u003Cbr/\u003EPlease mention the word **CURE** and tag ROjox when applying to show you read the job post completely (#ROjox). This is a beta feature to avoid spam applicants. Companies can search these words to find applicants that read this and see they're human.",
-        "location": "Remote, ",
-        "apply_url": ,
-        "salary_min": 0,
-        "salary_max": 0,
-        "logo": "",
-        "url": 
-        These are the defaults : "position"  related to {state["user_input"]}, "location" needs to be "Remote" and in the "description"look for any of the keywords given by {state["user_input"]} , if user doesnt give all the info needed search only with the given info
-        when all these match you send an one and only reply : match if not you reply with : nope"""
+        prompt = f"""Evaluate this job for a remote position.
+                    Job: {state["current_job"]}
+                    Requirements: position related to {state["user_input"]}, location must be Remote, description must mention any of: {state["user_input"]}
+                    Reply with only: match or nope"""
         response =llm.invoke(prompt)
         if response.content == "match":
             return {"matched_jobs": [state["current_job"]]}
