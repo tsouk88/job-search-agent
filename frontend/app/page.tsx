@@ -1,0 +1,54 @@
+'use client';
+
+import { useState, useEffect } from "react"
+
+type Message = {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+export default function Home() {
+  const [messages, setMessages] = useState<Message[]>([]);
+  const [input, setInput] = useState('')
+
+    async function sendMessage(message: string) {
+    setMessages(prev => [...prev, { role: 'user', content: message }])
+    const res = await fetch('http://localhost:8000/ask', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ user_input: message })
+    })
+    const data = await res.json()
+    setMessages(prev => [...prev, { role: 'assistant', content: data.results }])
+    setInput('')
+  }
+  return (
+    <div>
+      <h1 className="text-3xl font-bold mb-2">Find A Remote Job</h1>
+
+      <div className="w-full max-w-3xl flex flex-col gap-4 mb-4 h-[60vh] overflow-y-auto">
+        {messages.map((m, i) => (
+          <div key={i} className={`p-4 rounded-lg ${m.role === 'user' ? 'bg-emerald-900 ml-16' : 'bg-slate-800 mr-16'}`}>
+        <p className="text-xs text-emerald-400 mb-1">{m.role === 'user' ? 'You' : 'Assistant'}</p>
+        <p className="whitespace-pre-wrap text-white">{m.content}</p>
+      </div>
+        ))}
+      </div>
+            <div className="flex gap-2 w-full max-w-3xl">
+          <input
+            className="flex-1 p-2 rounded-lg bg-slate-800 border border-emerald-700 text-white"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
+            placeholder="Let's search jobs give me keywords"
+          />
+          <button className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-white" onClick={() => sendMessage(input)}>
+            Send
+          </button>
+        </div>
+    </div>
+)}   
+
+
+
+
