@@ -6,6 +6,7 @@ from langgraph.types import Send
 from dotenv import load_dotenv
 from operator import add
 import requests
+import re
 
 load_dotenv()
 
@@ -15,7 +16,8 @@ class State(TypedDict):
     current_job: dict
     user_input: str
 
-
+def clean_description(text):
+    return re.sub(r'<[^>]+>', '', text)[:500]
    
 def fetch_jobs(state:State):
         response= requests.get("https://remoteok.com/api")
@@ -34,10 +36,15 @@ def evaluate_jobs(state:State):
         temperature=0.7,
         max_retries=10
             )
+        job_summary = {
+                    "position": state["current_job"].get("position"),
+                    "location": state["current_job"].get("location"),
+                    "description": clean_description(state["current_job"].get("description", ""))
+                }    
         prompt = f"""Evaluate this job for a remote position.
-                    Job: {state["current_job"]}
-                    Requirements: position related to {state["user_input"]}, location must be Remote, description must mention any of: {state["user_input"]}
-                    Reply with only: match or nope"""
+                        Job: {job_summary}
+                        Requirements: position related to {state["user_input"]}, description must mention any of: {state["user_input"]}
+                        Reply with only: match or nope"""
         response =llm.invoke(prompt)
         if response.content == "match":
             return {"matched_jobs": [state["current_job"]]}

@@ -28,9 +28,17 @@ llm = init_chat_model(
 @app.post("/ask")
 async def askAI(input:Input):
     query = run_agent(input.user_input)
+    clean_jobs = [{
+    "company": j.get("company"),
+    "position": j.get("position"),
+    "location": j.get("location"),
+    "salary_min": j.get("salary_min"),
+    "salary_max": j.get("salary_max"),
+    "apply_url": j.get("apply_url")
+} for j in query]
     prompt = f"""Present ONLY these exact jobs to the user, do not invent or add any other jobs. 
-    Here are the jobs: {query}
-    Present each job clearly with: company, position, location, apply_url."""
+    Here are the jobs: {clean_jobs}
+    Present each job clearly with: company, position, location, apply_url, salary if salary = 0 say not listed"""
     response = llm.invoke(prompt)
     return {"results": response.content}
     

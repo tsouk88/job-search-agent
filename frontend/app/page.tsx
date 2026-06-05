@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react"
+import ReactMarkdown from 'react-markdown'
 
 type Message = {
   role: 'user' | 'assistant'
@@ -10,9 +11,11 @@ type Message = {
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('')
+  const [loading, setLoading] = useState(false)
 
     async function sendMessage(message: string) {
     setMessages(prev => [...prev, { role: 'user', content: message }])
+    setLoading(true)
     const res = await fetch('http://localhost:8000/ask', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -20,6 +23,7 @@ export default function Home() {
     })
     const data = await res.json()
     setMessages(prev => [...prev, { role: 'assistant', content: data.results }])
+    setLoading(false)
     setInput('')
   }
   return (
@@ -30,18 +34,23 @@ export default function Home() {
         {messages.map((m, i) => (
           <div key={i} className={`p-4 rounded-lg ${m.role === 'user' ? 'bg-emerald-900 ml-16' : 'bg-slate-800 mr-16'}`}>
         <p className="text-xs text-emerald-400 mb-1">{m.role === 'user' ? 'You' : 'Assistant'}</p>
-        <p className="whitespace-pre-wrap text-white">{m.content}</p>
+        <ReactMarkdown>{m.content}</ReactMarkdown>
+        
       </div>
-        ))}
+        ))}{loading && <p className="text-emerald-400 animate-pulse">Searching for jobs...</p>}
       </div>
             <div className="flex gap-2 w-full max-w-3xl">
+              
           <input
             className="flex-1 p-2 rounded-lg bg-slate-800 border border-emerald-700 text-white"
             value={input}
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
-            placeholder="Let's search jobs give me keywords"
+            
+            placeholder="Let's search jobs , give me keywords"
+            
           />
+          
           <button className="px-4 py-2 bg-emerald-700 hover:bg-emerald-600 rounded-lg text-white" onClick={() => sendMessage(input)}>
             Send
           </button>
