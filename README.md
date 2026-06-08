@@ -4,16 +4,21 @@ An AI-powered remote job search assistant. Type in your desired job keywords and
 
 ## What it does
 
-The agent connects to the [RemoteOK API](https://remoteok.com/api), filters jobs based on your keywords, and uses Google Gemini to evaluate each one — returning only the jobs that are a real match.
+The agent connects to :
+[RemoteOK API](https://remoteok.com/api)
+[HimalayasAPI]( https://himalayas.app/jobs/api)
+[RemotiveAPI](https://remotive.com/api/remote-jobs) 
+ 
+Filters jobs based on your keywords, and uses Google Gemini to evaluate each one — returning only the jobs that are a real match.
 
 ## How it works
 
-Built with **LangGraph** at its core. The graph uses a **fan-out architecture** — once jobs are fetched, the agent spawns parallel evaluation nodes (one per job) using LangGraph's `Send` API. Results are collected and presented via a clean chat interface.
+Built with **LangGraph** at its core. The graph uses a **fan-out architecture** , the agent spawns parallel fetch nodes  using LangGraph's `Send` API. Results are collected then Gemini evaluates them and are presented in a nice bullet list.
 
 ```
-START → fetch_jobs → fan_out → [evaluate_job × N] → END
+START → fan_out → fetch_jobs → END
 ```
-By default, the agent evaluates the top 10 matches to control API costs. Remove [:10] in agent.py to search all results.
+By default, the agent fetch 10 jobs from each API to control API costs. Remove [:10] in agent.py to search all results.
 
 > **LangSmith tracing is enabled** — every run is fully observable. You can monitor each node execution, token usage, latency, and cost in real time via LangSmith.
 
@@ -48,3 +53,4 @@ See `.env.example` for required variables:
 - `LANGSMITH_API_KEY`
 - `LANGSMITH_TRACING`
 - `LANGSMITH_PROJECT`
+- `LANGSMITH_ENDPOINT` if you are outside US
