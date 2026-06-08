@@ -34,7 +34,14 @@ export default function Home() {
         {messages.map((m, i) => (
           <div key={i} className={`p-4 rounded-lg ${m.role === 'user' ? 'bg-emerald-900 ml-16' : 'bg-slate-800 mr-16'}`}>
         <p className="text-xs text-emerald-400 mb-1">{m.role === 'user' ? 'You' : 'Assistant'}</p>
-        <ReactMarkdown>{m.content}</ReactMarkdown>
+        <ReactMarkdown
+          components={{
+            ul: ({node, ...props}) => <ul className="list-disc pl-4 space-y-1" {...props} />,
+            li: ({node, ...props}) => <li className="text-sm" {...props} />,
+          }}
+        >
+          {m.content}
+        </ReactMarkdown>
         
       </div>
         ))}{loading && <p className="text-emerald-400 animate-pulse">Searching for jobs...</p>}
