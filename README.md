@@ -1,6 +1,7 @@
 # Job Search AI Agent
 
 An AI-powered remote job search assistant. Type in your desired job keywords and the agent searches, evaluates, and presents the best matches for you.
+⚡ ~10s response time | 💰 ~$0.007 per request
 
 ## What it does
 
@@ -9,14 +10,16 @@ The agent connects to :
 [HimalayasAPI]( https://himalayas.app/jobs/api)
 [RemotiveAPI](https://remotive.com/api/remote-jobs) 
  
-Filters jobs based on your keywords, and uses Google Gemini to evaluate each one — returning only the jobs that are a real match.
+filters and presents results in a single LLM call — returning only the jobs that are a real match.
 
 ## How it works
 
 Built with **LangGraph** at its core. The graph uses a **fan-out architecture** , the agent spawns parallel fetch nodes  using LangGraph's `Send` API. Results are collected then Gemini evaluates them and are presented in a nice bullet list.
 
 ```
-START → fan_out → fetch_jobs → END
+START → fan_out → fetch_jobs  ↘
+                → fetch_sjobs → END
+                → fetch_tjobs ↗
 ```
 By default, the agent fetch 10 jobs from each API to control API costs. Remove [:10] in agent.py to search all results.
 
@@ -30,6 +33,8 @@ By default, the agent fetch 10 jobs from each API to control API costs. Remove [
 - **FastAPI** — backend API
 - **Next.js 15** — chat frontend
 - **RemoteOK API** — live remote job data
+- **Remotive API** — live remote job data
+- **Himalayas API** — live remote job data
 - **LangSmith** — tracing and monitoring
 
 ## Getting Started
