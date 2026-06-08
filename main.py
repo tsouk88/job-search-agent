@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from agent import run_agent
+from fastapi.responses import StreamingResponse
 import os
 from langchain.chat_models import init_chat_model
 from fastapi.middleware.cors import CORSMiddleware
@@ -52,7 +53,9 @@ async def askAI(input:Input):
     Skip jobs that are not related to {input.user_input}
  
     At the end add: "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app" """
-    response = llm.invoke(prompt)
-    return {"results": response.content}
+    def generate():
+        for chunk in llm.stream(prompt):
+            yield chunk.content
+    return StreamingResponse(generate(), media_type="text/plain")
     
 
