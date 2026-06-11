@@ -85,17 +85,16 @@ LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com  # if outside US
 The included `n8n_workflow.json` adds automated job alerts every 12 hours — no manual searches needed.
 
 ### What the workflow does
-
-```
 ![n8n Workflow](assets/n8n_workflow.png)
+```
 Schedule (every 12h)
   → Fetch from RemoteOK + Remotive + Himalayas (parallel)
   → Filter by keywords
   → Merge results
   → POST to /evaluate (AI scoring)
   → Send digest email via Gmail
-![Email Digest](assets/email_digest.png)
 ```
+![Email Digest](assets/email_digest.png)
 
 ### Setup
 
