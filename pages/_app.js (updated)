@@ -1,0 +1,42 @@
+import '../styles/globals.css';
+import { ThemeProvider } from '@mui/material/styles';
+import { createTheme } from '@mui/material';
+import DarkModeToggle from '../components/DarkModeToggle';
+import { useState, useEffect } from 'react';
+
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: '#337ab7',
+    },
+  },
+});
+
+function MyApp({ Component, pageProps }) {
+  const [darkMode, setDarkMode] = useState(false);
+
+  useEffect(() => {
+    const storedDarkMode = localStorage.getItem('darkMode');
+    if (storedDarkMode) {
+      setDarkMode(storedDarkMode === 'true');
+    }
+  }, []);
+
+  const handleToggle = () => {
+    setDarkMode(!darkMode);
+    localStorage.setItem('darkMode', !darkMode);
+  };
+
+  return (
+    <ThemeProvider theme={theme}>
+      <div className={darkMode ? 'dark-mode' : ''}>
+        <div className="dark-mode-toggle">
+          <DarkModeToggle handleToggle={handleToggle} darkMode={darkMode} />
+        </div>
+        <Component {...pageProps} />
+      </div>
+    </ThemeProvider>
+  );
+}
+
+export default MyApp;
