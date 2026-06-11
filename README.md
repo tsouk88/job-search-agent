@@ -24,10 +24,28 @@ It filters and evaluates results in a single LLM call — returning only the job
 
 Built with **LangGraph** at its core. The graph uses a **fan-out architecture** — the agent spawns parallel fetch nodes using LangGraph's `Send` API. Results are collected, then Gemini evaluates them and presents a clean bullet list.
 
-```
-START → fan_out → fetch_jobs  ↘
-                → fetch_sjobs → collect → evaluate → END
-                → fetch_tjobs ↗
+
+```mermaid
+flowchart TD
+    START([START]) --> fan_out{fan_out}
+    
+    fan_out -->|Send API| fetch_jobs[fetch_jobs]
+    fan_out -->|Send API| fetch_sjobs[fetch_sjobs]
+    fan_out -->|Send API| fetch_tjobs[fetch_tjobs]
+    
+    fetch_jobs --> collect_results[collect_results]
+    fetch_sjobs --> collect_results
+    fetch_tjobs --> collect_results
+    
+    collect_results --> END([END])
+
+    classDef startEnd fill:#a78bfa,stroke:#7c3aed,stroke-width:2px,color:#000;
+    classDef nodeStyle fill:#f3e8ff,stroke:#9333ea,stroke-width:1px,color:#000;
+    classDef condStyle fill:#faf5ff,stroke:#c084fc,stroke-width:2px,color:#000;
+    
+    class START,END startEnd;
+    class fetch_jobs,fetch_sjobs,fetch_tjobs,collect_results nodeStyle;
+    class fan_out condStyle;
 ```
 
 By default, the agent fetches 10 jobs from each API to control costs. Remove `[:10]` in `agent.py` to search all results.

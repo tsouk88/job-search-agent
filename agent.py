@@ -46,8 +46,10 @@ def fetch_tjobs(state:State):
     fetched_jobs = [job for job in jobs if
         any(loc in job.get("candidate_required_location", "").lower()
             for loc in locationmatch)][:10]
-    return  {"fetched_jobs":fetched_jobs}                 
-  
+    return  {"fetched_jobs":fetched_jobs}
+
+def collect_results(state:State):                 
+  return {}
         
 
 def fan_out(state:State):
@@ -62,11 +64,13 @@ graph = StateGraph(State)
 graph.add_node("fetch_jobs" , fetch_jobs)
 graph.add_node("fetch_sjobs" , fetch_sjobs)
 graph.add_node("fetch_tjobs" , fetch_tjobs)
+graph.add_node("collect_results", collect_results)
 
 graph.add_conditional_edges(START, fan_out)
-graph.add_edge("fetch_jobs", END)
-graph.add_edge("fetch_sjobs", END)
-graph.add_edge("fetch_tjobs", END)
+graph.add_edge("fetch_jobs", "collect_results")
+graph.add_edge("fetch_sjobs", "collect_results")
+graph.add_edge("fetch_tjobs", "collect_results")
+graph.add_edge("collect_results", END)
 
 app=graph.compile()
 def run_agent(user_input: str):
