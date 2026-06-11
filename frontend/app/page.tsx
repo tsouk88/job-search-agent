@@ -27,7 +27,7 @@ export default function Home() {
       while(true) {
         const { done, value } = await reader!.read()
         if(done) break
-        const chunk = decoder.decode(value)
+       const chunk = decoder.decode(value, { stream: true })
         setMessages(prev => {
             const updated = [...prev]
             updated[updated.length - 1].content += chunk
@@ -58,7 +58,44 @@ export default function Home() {
         ))}{loading && <p className="text-emerald-400 animate-pulse">Searching for jobs...</p>}
       </div>
             <div className="flex gap-2 w-full max-w-3xl">
-              
+              <button
+          className="px-4 py-2 bg-blue-500 text-white rounded-lg"
+          onClick={() => document.getElementById('fileInput')?.click()}
+        >
+          📄 Upload CV (PDF only)
+        </button>
+       <input
+        type="file"
+        id="fileInput"
+        className="hidden"
+        accept=".pdf"
+        onChange={async (e) => {
+          const file = e.target.files?.[0]
+          if (!file) return
+          setLoading(true)
+          const formData = new FormData()
+          formData.append("file", file)
+          const res = await fetch("http://localhost:8000/upload", {
+            method: "POST",
+            body: formData
+          })
+    const reader = res.body?.getReader()
+    const decoder = new TextDecoder()
+    setMessages(prev => [...prev, { role: 'assistant', content: '' }])
+      while(true) {
+        const { done, value } = await reader!.read()
+        if(done) break
+        const chunk = decoder.decode(value, { stream: true })
+        setMessages(prev => {
+            const updated = [...prev]
+            updated[updated.length - 1].content += chunk
+            return updated
+        })
+    }
+    setLoading(false)
+    setInput('')
+           }}
+      />
           <input
             className="flex-1 p-2 rounded-lg bg-slate-800 border border-emerald-700 text-white"
             value={input}
