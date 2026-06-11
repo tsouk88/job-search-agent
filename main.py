@@ -20,10 +20,13 @@ app.add_middleware(
 class Input(BaseModel):
     user_input: str
 
+class EvaluateInput(BaseModel):
+    jobs: str  
+
 llm = init_chat_model(
     model="google_genai:gemini-2.5-flash",
     api_key=os.getenv("GEMINI_API_KEY"),
-    temperature=0.7,
+    temperature=0.1,
     max_retries=10
 )
 def clean_description(text):
@@ -48,7 +51,7 @@ async def askAI(input:Input):
     
     - **Position** at **Company** | Location | Salary
       Description
-      Apply: url
+      Apply: url (always leave a space after the url)
     
     Skip jobs that are not related to {input.user_input}
  
@@ -57,5 +60,28 @@ async def askAI(input:Input):
         for chunk in llm.stream(prompt):
             yield chunk.content
     return StreamingResponse(generate(), media_type="text/plain")
+
+
+@app.post ("/evaluate")
+async def evaluaten8n(jobs : EvaluateInput):
+    valid_jobs = jobs.jobs
+    prompt =f"""You are a personal job evaluator. 
+                I am looking for a remote AI/backend engineering job.
+
+                My profile:
+                - Self-taught, no formal experience
+                - Skills: RAG pipelines, AI agents, LangChain, LangGraph, FastAPI, Next.js, n8n
+                - Portfolio: job search agent, restaurant RAG, PDF/HTML extraction API
+                - Open to junior/mid roles
+
+                Evaluate these jobs: {valid_jobs}
+
+                For each job, read the description and decide if it fits my profile.
+                Keep only the matches. 
+                Return them as a simple list: Job Title - Company - one sentence why it fits and then add the link on a new row
+                """
+    response=llm.invoke(prompt)
+    return response.content
+
     
 
