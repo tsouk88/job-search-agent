@@ -98,6 +98,13 @@ LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com  # if outside US
 
 ---
 
+## CV Upload (New!)
+
+Upload your PDF resume and the agent automatically extracts your skills and finds matching remote jobs — no keywords needed.
+
+- `POST /upload` — accepts a PDF and returns AI-matched job listings
+
+
 ## n8n Automation (Optional)
 
 The included `n8n_workflow.json` adds automated job alerts every 12 hours — no manual searches needed.
@@ -144,7 +151,7 @@ Customize the evaluation profile in the prompt inside `main.py` to match your ow
 ```
 job-search-agent/
 ├── agent.py          # LangGraph agent + tools
-├── main.py           # FastAPI backend + /evaluate endpoint
+├── main.py  # FastAPI backend + /evaluate + /upload endpoints
 ├── requirements.txt
 ├── .env.example
 ├── n8n_workflow.json # n8n automation workflow
