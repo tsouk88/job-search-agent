@@ -9,6 +9,9 @@ from langchain.chat_models import init_chat_model
 from langchain_core.output_parsers import StrOutputParser
 from langgraph.types import Command
 from fastapi.middleware.cors import CORSMiddleware
+from slowapi import Limiter, _rate_limit_exceeded_handler
+from slowapi.util import get_remote_address
+from slowapi.errors import RateLimitExceeded
 import pdfplumber
 import re
 import io
@@ -16,6 +19,7 @@ import textwrap
 
 checkpointer_cm = None
 agent = None
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global agent
@@ -32,6 +36,9 @@ app.add_middleware(
     allow_credentials=True,
     allow_headers=["*"],
 ) 
+limiter = Limiter(key_func=get_remote_address)
+app.state.limiter = limiter
+app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 def run_agent(user_input: str, thread_id: str):
     config = {"configurable": {"thread_id": thread_id}}
@@ -70,6 +77,7 @@ def clean_description(text):
     return textwrap.shorten(clean, width=150, placeholder="...")
 
 @app.post("/ask")
+@limiter.limit("10/minute")
 async def askAI(input:SearchInput):
     config = {"configurable": {"thread_id": input.thread_id}}
     state = agent.get_state(config)
@@ -106,6 +114,7 @@ async def askAI(input:SearchInput):
 
 
 @app.post ("/evaluate")
+@limiter.limit("10/minute")
 async def evaluaten8n(jobs : EvaluateInput):
     valid_jobs = jobs.jobs
     prompt =f"""You are a personal job evaluator. 
@@ -127,6 +136,7 @@ async def evaluaten8n(jobs : EvaluateInput):
     return response
 
 @app.post ("/upload")
+@limiter.limit("10/minute")
 async def uploadfile(file: UploadFile, thread_id: str = Form(...)):
     file = await file.read()
     uploadedfile = io.BytesIO(file)
@@ -136,7 +146,7 @@ async def uploadfile(file: UploadFile, thread_id: str = Form(...)):
     prompt = f"""You are a job recruiter evaluating candidates , you read their CV through {text} extracting one sentence with all the keywords max 20 words
                     about the candidate"""
     response=chain.invoke(prompt)
-    config = {"configurable": {"thread_id": input.thread_id}}
+    config = {"configurable": {"thread_id": thread_id}}
     state = agent.get_state(config)
     memory = state.values.get("memory", [])
     query, _ = run_agent(response, thread_id)
@@ -169,6 +179,7 @@ async def uploadfile(file: UploadFile, thread_id: str = Form(...)):
     return StreamingResponse(generate(), media_type="text/plain")
 
 @app.post("/feedback")
+@limiter.limit("10/minute")
 async def human_review(feedback: FeedbackInput):
     config = {"configurable": {"thread_id": feedback.thread_id}}
     extraction_prompt = f"""Extract the job keywords to avoid from this user feedback.
