@@ -22,7 +22,11 @@ It filters and evaluates results in a single LLM call — returning only the job
 
 ## How it works
 
-Built with **LangGraph** at its core. The graph uses a **fan-out architecture** — the agent spawns parallel fetch nodes using LangGraph's `Send` API. Results are collected, then Gemini evaluates them and presents a clean bullet list.
+Built with **LangGraph** at its core. The graph uses a **fan-out architecture** — the agent spawns parallel fetch nodes using LangGraph's `Send` API. Results are collected, then a **Human-in-the-Loop (HITL)** interrupt pauses the graph and waits for your feedback.
+
+You can tell the agent what to filter out (e.g. "no MERN", "no senior roles") and it stores your preferences in **PostgreSQL via LangGraphs's PostgresSaver**. Next time you search, it remembers — no need to repeat yourself.
+
+The loop continues until you type `done`.
 
 
 ```mermaid
@@ -37,15 +41,22 @@ flowchart TD
     fetch_sjobs --> collect_results
     fetch_tjobs --> collect_results
     
-    collect_results --> END([END])
+    collect_results --> human_review[human_review\nHITL interrupt]
+    
+    human_review -->|done| END([END])
+    human_review -->|search again| search[search]
+    
+    search --> fan_out
 
     classDef startEnd fill:#a78bfa,stroke:#7c3aed,stroke-width:2px,color:#000;
     classDef nodeStyle fill:#f3e8ff,stroke:#9333ea,stroke-width:1px,color:#000;
     classDef condStyle fill:#faf5ff,stroke:#c084fc,stroke-width:2px,color:#000;
+    classDef hitl fill:#fde68a,stroke:#f59e0b,stroke-width:2px,color:#000;
     
     class START,END startEnd;
-    class fetch_jobs,fetch_sjobs,fetch_tjobs,collect_results nodeStyle;
+    class fetch_jobs,fetch_sjobs,fetch_tjobs,collect_results,search nodeStyle;
     class fan_out condStyle;
+    class human_review hitl;
 ```
 
 By default, the agent fetches 10 jobs from each API to control costs. Remove `[:10]` in `agent.py` to search all results.
@@ -58,7 +69,8 @@ By default, the agent fetches 10 jobs from each API to control costs. Remove `[:
 
 | Layer | Technology |
 |-------|-----------|
-| Agent | LangGraph (fan-out with `Send` API) |
+| Agent | LangGraph (fan-out with `Send` API + HITL) |
+| Memory | PostgreSQL via `PostgresSaver` |
 | LLM | Google Gemini 2.5 Flash |
 | LLM Integration | LangChain `init_chat_model` |
 | Backend | FastAPI + streaming |
@@ -84,6 +96,21 @@ npm run dev
 
 ---
 
+## Database Setup
+
+This project uses PostgreSQL for persistent memory via LangGraph's `PostgresSaver`.
+
+**Option 1 — Supabase (recommended, free)**
+1. Create a free account at [supabase.com](https://supabase.com)
+2. Create a new project
+3. Copy the connection string from Settings → Database
+4. Add it to your `.env` as `DATABASE_URL`
+
+**Option 2 — Local PostgreSQL**
+1. Install PostgreSQL locally
+2. Create a database: `CREATE DATABASE jobsearch_memory;`
+3. Add connection string to `.env`
+
 ## Environment Variables
 
 See `.env.example` for all required variables:
@@ -94,6 +121,7 @@ LANGSMITH_API_KEY=
 LANGSMITH_TRACING=true
 LANGSMITH_PROJECT=
 LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com  # if outside US
+DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/jobsearch_memory
 ```
 
 ---
@@ -132,17 +160,14 @@ Schedule (every 12h)
 
 ---
 
-## `/evaluate` Endpoint
+## API Endpoints
 
-`POST /evaluate` — accepts a list of job descriptions and returns AI-filtered matches based on a profile.
-
-```json
-{
-  "jobs": ["Job Title - Company\nhttps://...", "..."]
-}
-```
-
-Customize the evaluation profile in the prompt inside `main.py` to match your own skills and preferences.
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/ask` | POST | Search jobs with keywords + applies memory filters |
+| `/upload` | POST | Upload PDF resume — agent extracts skills and finds matching jobs |
+| `/feedback` | POST | Send feedback to agent ("no MERN", "no senior") — stored in memory |
+| `/evaluate` | POST | n8n integration — AI scoring of job listings |
 
 ---
 
@@ -150,10 +175,10 @@ Customize the evaluation profile in the prompt inside `main.py` to match your ow
 
 ```
 job-search-agent/
-├── agent.py          # LangGraph agent + tools
-├── main.py  # FastAPI backend + /evaluate + /upload endpoints
+├── agent.py           # LangGraph agent — fan-out, HITL, memory
+├── main.py            # FastAPI backend + all endpoints
 ├── requirements.txt
 ├── .env.example
-├── n8n_workflow.json # n8n automation workflow
-└── frontend/         # Next.js 15 frontend
+├── n8n_workflow.json  # n8n automation workflow
+└── frontend/          # Next.js 15 frontend
 ```
