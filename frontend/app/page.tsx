@@ -12,15 +12,36 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [threadId, setThreadId] = useState('')
+
+        useEffect(() => {
+      let id = localStorage.getItem('thread_id')
+      if (!id) {
+        id = crypto.randomUUID()
+        localStorage.setItem('thread_id', id)
+      }
+      setThreadId(id)
+    }, [])
 
     async function sendMessage(message: string) {
     setMessages(prev => [...prev, { role: 'user', content: message }])
     setLoading(true)
+    if (message.startsWith('no ') || message.startsWith('skip ')) {
+        await fetch('http://localhost:8000/feedback', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ feedback: message, thread_id: threadId })
+        })
+        setMessages(prev => [...prev, { role: 'assistant', content: '✅ Got it! Filtering updated.' }])
+        setLoading(false)
+        setInput('')
+        return
+    }
     const res = await fetch('http://localhost:8000/ask', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ user_input: message })
-    })
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ user_input: message, thread_id: threadId })
+        })
     const reader = res.body?.getReader()
     const decoder = new TextDecoder()
     setMessages(prev => [...prev, { role: 'assistant', content: '' }])
@@ -75,6 +96,7 @@ export default function Home() {
           setLoading(true)
           const formData = new FormData()
           formData.append("file", file)
+          formData.append("thread_id", threadId)
           const res = await fetch("http://localhost:8000/upload", {
             method: "POST",
             body: formData
@@ -102,7 +124,7 @@ export default function Home() {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && sendMessage(input)}
             
-            placeholder="Let's search jobs , give me keywords"
+            placeholder="Search jobs or type eg 'no MERN' to filter results"
             
           />
           
