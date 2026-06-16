@@ -1,4 +1,4 @@
-from fastapi import FastAPI , UploadFile , Form
+from fastapi import FastAPI , UploadFile , Form , Request
 from pydantic import BaseModel
 from agent import graph
 from fastapi.responses import StreamingResponse
@@ -78,7 +78,7 @@ def clean_description(text):
 
 @app.post("/ask")
 @limiter.limit("10/minute")
-async def askAI(input:SearchInput):
+async def askAI(request: Request, input:SearchInput):
     config = {"configurable": {"thread_id": input.thread_id}}
     state = agent.get_state(config)
     memory = state.values.get("memory", [])
@@ -115,7 +115,7 @@ async def askAI(input:SearchInput):
 
 @app.post ("/evaluate")
 @limiter.limit("10/minute")
-async def evaluaten8n(jobs : EvaluateInput):
+async def evaluaten8n(request: Request , jobs : EvaluateInput):
     valid_jobs = jobs.jobs
     prompt =f"""You are a personal job evaluator. 
                 I am looking for a remote AI/backend engineering job.
@@ -137,7 +137,7 @@ async def evaluaten8n(jobs : EvaluateInput):
 
 @app.post ("/upload")
 @limiter.limit("10/minute")
-async def uploadfile(file: UploadFile, thread_id: str = Form(...)):
+async def uploadfile(request: Request , file: UploadFile, thread_id: str = Form(...)):
     file = await file.read()
     uploadedfile = io.BytesIO(file)
     with pdfplumber.open(uploadedfile) as pdf:
@@ -180,7 +180,7 @@ async def uploadfile(file: UploadFile, thread_id: str = Form(...)):
 
 @app.post("/feedback")
 @limiter.limit("10/minute")
-async def human_review(feedback: FeedbackInput):
+async def human_review(request: Request , feedback: FeedbackInput):
     config = {"configurable": {"thread_id": feedback.thread_id}}
     extraction_prompt = f"""Extract the job keywords to avoid from this user feedback.
             Return only a comma-separated list of keywords, nothing else.
