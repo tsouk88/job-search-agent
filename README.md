@@ -2,7 +2,7 @@
 
 An AI-powered remote job search assistant. Type in your desired job keywords and the agent searches, evaluates, and presents the best matches for you.
 
-⚡ ~10s response time | 💰 ~$0.007 per request
+⚡ ~15s response time | 💰 ~$0.01 per request
 
 If you find this useful, give it a ⭐️ — it helps others discover the project!
 
@@ -10,11 +10,13 @@ If you find this useful, give it a ⭐️ — it helps others discover the proje
 
 ## What it does
 
-The agent connects to 3 job APIs simultaneously:
+The agent connects to 5 job APIs simultaneously:
 
 - [RemoteOK API](https://remoteok.com/api)
 - [Himalayas API](https://himalayas.app/jobs/api)
 - [Remotive API](https://remotive.com/api/remote-jobs)
+- [Arbeitnow.com](https://www.arbeitnow.com/api/job-board-api)
+- [Jobicy.com](https://jobicy.com/api/v2/remote-jobs)
 
 It filters and evaluates results in a single LLM call — returning only the jobs that are a real match for your query.
 
@@ -73,9 +75,9 @@ By default, the agent fetches 10 jobs from each API to control costs. Remove `[:
 | Memory | PostgreSQL via `PostgresSaver` |
 | LLM | Google Gemini 2.5 Flash |
 | LLM Integration | LangChain `init_chat_model` |
-| Backend | FastAPI + streaming |
-| Frontend | Next.js 15 + ReactMarkdown |
-| Job APIs | RemoteOK, Himalayas, Remotive |
+| Backend | FastAPI + robust text streaming |
+| Frontend | Next.js 15 + ReactMarkdown + remark-gfm |
+| Job APIs | RemoteOK, Himalayas, Remotive, Jobicy, Arbeitnow |
 | Observability | LangSmith (EU endpoint supported) |
 
 ---
@@ -90,7 +92,7 @@ uvicorn main:app --reload
 
 # Frontend
 cd frontend
-npm install
+npm install react-markdown remark-gfm
 npm run dev
 ```
 
