@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import ReactMarkdown from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 
 type Message = {
   role: 'user' | 'assistant'
@@ -45,16 +46,16 @@ export default function Home() {
     const reader = res.body?.getReader()
     const decoder = new TextDecoder()
     setMessages(prev => [...prev, { role: 'assistant', content: '' }])
-      while(true) {
-        const { done, value } = await reader!.read()
-        if(done) break
-       const chunk = decoder.decode(value, { stream: true })
-        setMessages(prev => {
-            const updated = [...prev]
-            updated[updated.length - 1].content += chunk
-            return updated
-        })
-    }
+      while (true) {
+    const { done, value } = await reader!.read()
+    if (done) break
+    const chunk = decoder.decode(value, { stream: true })
+      setMessages(prev => {
+        const updated = [...prev]
+        updated[updated.length - 1].content += chunk
+        return updated
+    })
+  }
     setLoading(false)
     setInput('')
   }
@@ -67,13 +68,23 @@ export default function Home() {
           <div key={i} className={`p-4 rounded-lg ${m.role === 'user' ? 'bg-emerald-900 ml-16' : 'bg-slate-800 mr-16'}`}>
         <p className="text-xs text-emerald-400 mb-1">{m.role === 'user' ? 'You' : 'Assistant'}</p>
         <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
           components={{
             ul: ({node, ...props}) => <ul className="list-disc pl-4 space-y-1" {...props} />,
             li: ({node, ...props}) => <li className="text-sm" {...props} />,
-          }}
-        >
-          {m.content}
-        </ReactMarkdown>
+            a: ({node, ...props}) => (
+      <a 
+        className="text-blue-400 font-medium underline hover:text-blue-300 transition-colors break-all" 
+        target="_blank" 
+        rel="noopener noreferrer" 
+        {...props} 
+                />
+              ),
+            }}
+          >
+            {m.content}
+          </ReactMarkdown>
+
         
       </div>
         ))}{loading && <p className="text-emerald-400 animate-pulse">Searching for jobs...</p>}

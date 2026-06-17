@@ -16,7 +16,10 @@ import pdfplumber
 import re
 import io
 import textwrap
+from dotenv import load_dotenv
 
+
+load_dotenv()
 checkpointer_cm = None
 agent = None
 
@@ -82,35 +85,54 @@ async def askAI(request: Request, input:SearchInput):
     config = {"configurable": {"thread_id": input.thread_id}}
     state = agent.get_state(config)
     memory = state.values.get("memory", [])
-    
     query, _ = run_agent(input.user_input, input.thread_id)
-    
-    clean_jobs = [{
-    "company": j.get("company") or j.get("companyName") or j.get("company_name"),
-    "position": j.get("title") or j.get("position", ""),
-    "location": j.get("location") or j.get("candidate_required_location") or ", ".join(j.get("locationRestrictions") or []),
-    "description": clean_description(j.get("description") or j.get("excerpt", "")),
-    "salary": j.get("salary") or f"{j.get('salary_min', '')} - {j.get('salary_max', '')}" or f"{j.get('minSalary', '')} - {j.get('maxSalary', '')}",
-    "apply_url": j.get("apply_url") or j.get("url") or j.get("applicationLink")
-} for j in query]
+    seen_hashes = set()
+    clean_jobs = []
+    for j in query:
+        company = j.get("company") or j.get("companyName") or j.get("company_name") or "Unknown"
+        position = j.get("title") or j.get("position", "") or j.get("jobTitle" , "") or "Unknown"
+        job_hash = re.sub(r'[^a-z0-9]', '', f"{company.lower()}{position.lower()}")
+        if job_hash in seen_hashes:
+            continue
+        seen_hashes.add(job_hash)
+        clean_jobs.append({
+            "company": company.strip(),
+            "position": position.strip(),
+            "location": j.get("location") or j.get("jobGeo") or j.get("candidate_required_location") or ", ".join(j.get("locationRestrictions") or []),
+            "description": clean_description(j.get("description") or j.get("excerpt", "") or j.get("jobExcerpt" , "")),
+            "salary": j.get("salary") or f"{j.get('salary_min', '')} - {j.get('salary_max', '')}" or f"{j.get('minSalary', '')} - {j.get('maxSalary', '')}",
+            "apply_url": j.get("apply_url") or j.get("url") or j.get("applicationLink")
+            })
+    memory_content = ", ".join(memory) if memory else "No specific user restrictions yet."
     prompt = f"""Filter and present ONLY jobs relevant to: {input.user_input}
     Here are the jobs: {clean_jobs}
-    STRICT RULE: Do NOT include any job that involves: {', '.join(memory)}
+    STRICT RULE: Do NOT include any job that involves: {memory_content}
     If a job title or description contains these words, SKIP it completely.
     if salary is 0 - 0 or empty say not listed
     For each relevant job use this exact format:
     
     - **Position** at **Company** | Location | Salary
       Description
-      Apply: url (always leave a space after the url)
-    
+      Apply: [Site name](url)
+    CRITICAL FOR LINKS: 
+    You must extract the platform name from the source URL (e.g., if url has 'himalayas.app' use 'Himalayas', if 'jobicy.com' use 'Jobicy', etc.).
+    You must output the link strictly in Markdown format as shown above (e.g., Apply: [Himalayas](https://...)). Never write raw URLs.
     Skip jobs that are not related to {input.user_input}
  
-    At the end add: "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app" """
-    def generate():
-        for chunk in chain.stream(prompt):
-            yield chunk
-    return StreamingResponse(generate(), media_type="text/plain")
+    At the end add: "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app | Arbeitnow.com | Jobicy.com" """
+    async def generate():
+        async for chunk in llm.astream(prompt):
+            content = chunk.content if hasattr(chunk, 'content') else str(chunk)
+            yield content
+    return StreamingResponse(
+    generate(), 
+    media_type="text/plain",
+    headers={
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "X-Accel-Buffering": "no"
+    }
+)
 
 
 @app.post ("/evaluate")
@@ -150,33 +172,53 @@ async def uploadfile(request: Request , file: UploadFile, thread_id: str = Form(
     state = agent.get_state(config)
     memory = state.values.get("memory", [])
     query, _ = run_agent(response, thread_id)
-    clean_jobs = [{
-        "company": j.get("company") or j.get("companyName") or j.get("company_name"),
-        "position": j.get("title") or j.get("position", ""),
-        "location": j.get("location") or j.get("candidate_required_location") or ", ".join(j.get("locationRestrictions") or []),
-        "description": clean_description(j.get("description") or j.get("excerpt", "")),
-        "salary": j.get("salary") or f"{j.get('salary_min', '')} - {j.get('salary_max', '')}" or f"{j.get('minSalary', '')} - {j.get('maxSalary', '')}",
-        "apply_url": j.get("apply_url") or j.get("url") or j.get("applicationLink")
-            } for j in query]
-
+    seen_hashes = set()
+    clean_jobs = []
+    for j in query:
+        company = j.get("company") or j.get("companyName") or j.get("company_name") or "Unknown"
+        position = j.get("title") or j.get("position", "") or j.get("jobTitle" , "") or "Unknown"
+        job_hash = re.sub(r'[^a-z0-9]', '', f"{company.lower()}{position.lower()}")
+        if job_hash in seen_hashes:
+            continue
+        seen_hashes.add(job_hash)
+        clean_jobs.append({
+            "company": company.strip(),
+            "position": position.strip(),
+            "location": j.get("location") or j.get("jobGeo") or j.get("candidate_required_location") or ", ".join(j.get("locationRestrictions") or []),
+            "description": clean_description(j.get("description") or j.get("excerpt", "") or j.get("jobExcerpt" , "")),
+            "salary": j.get("salary") or f"{j.get('salary_min', '')} - {j.get('salary_max', '')}" or f"{j.get('minSalary', '')} - {j.get('maxSalary', '')}",
+            "apply_url": j.get("apply_url") or j.get("url") or j.get("applicationLink")
+            })
+    memory_content = ", ".join(memory) if memory else "No specific user restrictions yet."
     prompt = f"""Filter and present ONLY jobs relevant to: {response}
     Here are the jobs: {clean_jobs}
-    STRICT RULE: Do NOT include any job that involves: {', '.join(memory)}
+    STRICT RULE: Do NOT include any job that involves: {memory_content}
     If a job title or description contains these words, SKIP it completely.
     if salary is 0 - 0 or empty say not listed
     For each relevant job use this exact format:
     
     - **Position** at **Company** | Location | Salary
       Description
-      Apply: url (always leave a space after the url)
-    
+      Apply: [Site name](url)
+    CRITICAL FOR LINKS: 
+    You must extract the platform name from the source URL (e.g., if url has 'himalayas.app' use 'Himalayas', if 'jobicy.com' use 'Jobicy', etc.).
+    You must output the link strictly in Markdown format as shown above (e.g., Apply: [Himalayas](https://...)). Never write raw URLs.
     Skip jobs that are not related to {response}
  
     At the end add: "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app" """
-    def generate():
-        for chunk in chain.stream(prompt):
-            yield chunk
-    return StreamingResponse(generate(), media_type="text/plain")
+    async def generate():
+        async for chunk in llm.astream(prompt):
+            content = chunk.content if hasattr(chunk, 'content') else str(chunk)
+            yield content
+    return StreamingResponse(
+    generate(), 
+    media_type="text/plain",
+    headers={
+        "Cache-Control": "no-cache",
+        "Connection": "keep-alive",
+        "X-Accel-Buffering": "no"
+    }
+    )
 
 @app.post("/feedback")
 @limiter.limit("10/minute")
@@ -192,9 +234,8 @@ async def human_review(request: Request , feedback: FeedbackInput):
     agent.invoke(Command(resume=keywords), config=config)
     return {"status": "sent to agent"}
 
-
            
-        
+
 
 
     
