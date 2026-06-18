@@ -10,12 +10,11 @@ If you find this useful, give it a ⭐️ — it helps others discover the proje
 
 ## What it does
 
-The agent connects to 5 job APIs simultaneously:
+The agent connects to 4 job APIs simultaneously:
 
 - [RemoteOK API](https://remoteok.com/api)
 - [Himalayas API](https://himalayas.app/jobs/api)
 - [Remotive API](https://remotive.com/api/remote-jobs)
-- [Arbeitnow.com](https://www.arbeitnow.com/api/job-board-api)
 - [Jobicy.com](https://jobicy.com/api/v2/remote-jobs)
 
 It filters and evaluates results in a single LLM call — returning only the jobs that are a real match for your query.
@@ -38,10 +37,12 @@ flowchart TD
     fan_out -->|Send API| fetch_jobs[fetch_jobs]
     fan_out -->|Send API| fetch_sjobs[fetch_sjobs]
     fan_out -->|Send API| fetch_tjobs[fetch_tjobs]
-    
+    fan_out -->|Send API| fetch_fjobs[fetch_fjobs]
+
     fetch_jobs --> collect_results[collect_results]
     fetch_sjobs --> collect_results
     fetch_tjobs --> collect_results
+    fetch_fjobs --> collect_results
     
     collect_results --> human_review[human_review\nHITL interrupt]
     
@@ -56,7 +57,7 @@ flowchart TD
     classDef hitl fill:#fde68a,stroke:#f59e0b,stroke-width:2px,color:#000;
     
     class START,END startEnd;
-    class fetch_jobs,fetch_sjobs,fetch_tjobs,collect_results,search nodeStyle;
+    class fetch_jobs,fetch_sjobs,fetch_tjobs,fetch_fjobs,collect_results,search nodeStyle;
     class fan_out condStyle;
     class human_review hitl;
 ```
@@ -77,8 +78,8 @@ By default, the agent fetches 10 jobs from each API to control costs. Remove `[:
 | LLM Integration | LangChain `init_chat_model` |
 | Backend | FastAPI + robust text streaming |
 | Frontend | Next.js 15 + ReactMarkdown + remark-gfm |
-| Job APIs | RemoteOK, Himalayas, Remotive, Jobicy, Arbeitnow |
-| Observability | LangSmith (EU endpoint supported) |
+| Job APIs | RemoteOK, Himalayas, Remotive, Jobicy |
+| Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) |
 
 ---
 
@@ -172,6 +173,22 @@ Schedule (every 12h)
 | `/evaluate` | POST | n8n integration — AI scoring of job listings |
 
 ---
+
+## Evals
+
+The agent includes an evaluation pipeline built with LangSmith.
+
+- Dataset of test cases covering different query types
+- LLM-as-judge evaluator using Gemini 2.5 Flash
+- Float scoring (0.0 / 0.5 / 1.0) for granular feedback
+- Baseline score: 0.90 AVG after removing Arbeitnow (unreliable remote data)
+
+Run evaluations:
+```bash
+python eval_runner.py
+```
+
+Results are visible in your LangSmith dashboard under the configured project.
 
 ## Project Structure
 
