@@ -1,5 +1,6 @@
 from fastapi import FastAPI , UploadFile , Form , Request
 from pydantic import BaseModel
+from dotenv import load_dotenv
 from agent import graph
 from fastapi.responses import StreamingResponse
 from langgraph.checkpoint.postgres import PostgresSaver
@@ -16,7 +17,7 @@ import pdfplumber
 import re
 import io
 import textwrap
-from dotenv import load_dotenv
+
 
 
 load_dotenv()
@@ -118,7 +119,7 @@ async def askAI(request: Request, input:SearchInput):
     You must extract the platform name from the source URL (e.g., if url has 'himalayas.app' use 'Himalayas', if 'jobicy.com' use 'Jobicy', etc.).
     You must output the link strictly in Markdown format as shown above (e.g., Apply: [Himalayas](https://...)). Never write raw URLs.
     Skip jobs that are not related to {input.user_input}
- 
+    
     At the end add: "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app | Arbeitnow.com | Jobicy.com" """
     async def generate():
         async for chunk in llm.astream(prompt):
