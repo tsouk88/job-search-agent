@@ -67,33 +67,33 @@ def fetch_tjobs(state:State):
         job["description"] = job.get("description", "")[:100]
     return {"fetched_jobs": fetched_jobs}
 
-def fetch_fjobs(state:State):
-    if not state.get("user_input"):
-        return {"fetched_jobs": []}
-    response= requests.get("https://arbeitnow.com/api/job-board-api")
-    data = response.json()
-    fetched_jobs = [job for job in data["data"] 
-    if job.get("remote") == True
-    and job.get("location", "").lower() in ["", "remote", "worldwide"]
-    and any(keyword.lower() in job.get("title", "").lower() or 
-            keyword.lower() in job.get("description", "").lower()
-            for keyword in state["user_input"].split())][:10]
-    for job in fetched_jobs:
-        job["description"] = job.get("description", "")[:100]
-    return {"fetched_jobs": fetched_jobs}
-
 #def fetch_fijobs(state:State):
 #    if not state.get("user_input"):
 #        return {"fetched_jobs": []}
-#    query = urllib.parse.quote(state['user_input'])
-#   response= requests.get(f"https://jobicy.com/api/v2/remote-jobs?tag={query}")
-#    if response.status_code == 429:
-#        return {"fetched_jobs": []}
-#   data = response.json() 
-#    fetched_jobs = data["jobs"][:10]
+#    response= requests.get("https://arbeitnow.com/api/job-board-api")
+#    data = response.json()
+#    fetched_jobs = [job for job in data["data"] 
+#    if job.get("remote") == True
+#    and job.get("location", "").lower() in ["", "remote", "worldwide"]
+#    and any(keyword.lower() in job.get("title", "").lower() or 
+#            keyword.lower() in job.get("description", "").lower()
+#            for keyword in state["user_input"].split())][:10]
 #    for job in fetched_jobs:
-#        job["jobDescription"] = job.get("jobDescription", "")[:100]
+#        job["description"] = job.get("description", "")[:100]
 #    return {"fetched_jobs": fetched_jobs}
+
+def fetch_fjobs(state:State):
+    if not state.get("user_input"):
+        return {"fetched_jobs": []}
+    query = urllib.parse.quote(state['user_input'])
+    response= requests.get(f"https://jobicy.com/api/v2/remote-jobs?tag={query}")
+    if response.status_code == 429:
+        return {"fetched_jobs": []}
+    data = response.json() 
+    fetched_jobs = data["jobs"][:10]
+    for job in fetched_jobs:
+        job["jobDescription"] = job.get("jobDescription", "")[:100]
+    return {"fetched_jobs": fetched_jobs}
 
 def collect_results(state: State):
     seen = set()
