@@ -1,0 +1,78 @@
+# Source map
+
+## Entry points
+
+- `main.py` — FastAPI server, endpoints, streaming, PDF upload, rate limiting, persistence setup
+- `agent.py` — LangGraph workflow, source fetchers, deduplication, HITL interrupt, memory loop
+- `frontend/app/page.tsx` — client UI for search, feedback, CV upload, streamed rendering
+- `eval_runner.py` — LangSmith evaluation harness
+
+## Supporting files
+
+- `README.md` — product-facing overview, architecture sketch, setup notes, and workflow examples
+- `.env.example` — required environment variable names and sample values
+- `requirements.txt` — Python dependency surface
+- `n8n_workflow.json` — optional automation workflow definition
+- `assets/n8n_workflow.png` and `assets/email_digest.png` — documentation images for automation
+- `.github/workflows/openwiki-update.yml` — documentation refresh automation
+
+## What each source area is responsible for
+
+### `agent.py`
+
+Holds the real search graph and most business logic:
+
+- source fan-out
+- API calls to remote job feeds
+- truncation for trace-size control
+- deduplication
+- HITL interruption
+- memory capture and resume behavior
+
+### `main.py`
+
+Owns the API surface and runtime composition:
+
+- app startup / lifespan
+- checkpoint wiring
+- prompt formatting for streamed results
+- `/ask`, `/upload`, `/feedback`, `/evaluate`
+- rate limiting and CORS
+
+### `frontend/app/page.tsx`
+
+Implements the user interaction model:
+
+- one conversation thread per browser session
+- direct calls to backend endpoints
+- markdown rendering of streamed job output
+- special handling for exclusion feedback
+
+### `eval_runner.py`
+
+Captures the contract the repo cares about:
+
+- query → search response
+- reference output comparison
+- judge-based scoring
+
+## Suggested edit order
+
+When changing behavior, update in this order:
+
+1. `agent.py` if the search graph or job-source behavior changes
+2. `main.py` if the API contract or formatting changes
+3. `frontend/app/page.tsx` if user interaction changes
+4. `eval_runner.py` if expected quality behavior changes
+5. `README.md` if user-facing docs need to stay aligned
+
+## Source-history note
+
+The commit trail shows the project moving from a small multi-source job fetcher toward a more production-like system with:
+
+- parallel source fan-out
+- persistent memory
+- HITL
+- streaming UX
+- job-source pruning for quality
+- eval-driven regression control
