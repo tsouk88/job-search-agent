@@ -81,7 +81,7 @@ export default function Home() {
     setInput('');
 
     if (message.startsWith('no ') || message.startsWith('skip ')) {
-      await fetch('http://localhost:8000/feedback', {
+      await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ feedback: message, thread_id: threadId }),
@@ -93,7 +93,7 @@ export default function Home() {
     }
 
     try {
-      const res = await fetch('http://localhost:8000/ask', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ user_input: message, thread_id: threadId }),
@@ -131,7 +131,7 @@ export default function Home() {
     setMessages(prev => [...prev, { role: 'user', content: `📄 Uploaded: ${file.name}` }]);
 
     try {
-      const res = await fetch('http://localhost:8000/upload', {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/upload`, {
         method: 'POST',
         body: formData,
       });
