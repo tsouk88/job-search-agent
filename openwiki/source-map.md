@@ -1,3 +1,10 @@
+---
+type: Source Map
+title: Source Map
+description: Map of all entry points, supporting files, and the voice agent subsystem in the repository, with responsibilities and suggested edit order.
+tags: [source-map, architecture, entry-points]
+---
+
 # Source map
 
 ## Entry points
@@ -6,6 +13,14 @@
 - `agent.py` — LangGraph workflow, source fetchers, deduplication, HITL interrupt, memory loop
 - `frontend/app/page.tsx` — client UI for search, feedback, CV upload, streamed rendering
 - `eval_runner.py` — LangSmith evaluation harness
+
+## Voice agent subsystem
+
+- `voice_agent.py` — `VoiceSession` wrapper around the root `agent.py` graph with in-memory `MemorySaver`, result caching, and local keyword filtering
+- `voice/server/bot.py` — Pipecat pipeline: Daily transport, Deepgram STT, ElevenLabs TTS, `LangGraphProcessor`
+- `voice/server/langgraph_processor.py` — bridges Pipecat frames to `VoiceSession.run()` / `resume()`
+- `voice/server/pyproject.toml` — voice subsystem dependencies managed with `uv`
+- `voice/README.md` — setup instructions and known limitations
 
 ## Supporting files
 

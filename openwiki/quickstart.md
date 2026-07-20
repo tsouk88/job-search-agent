@@ -1,3 +1,10 @@
+---
+type: Quickstart
+title: Job Search AI Agent Quickstart
+description: Entry point for understanding the remote job search assistant — a LangGraph agent with FastAPI backend, Next.js frontend, optional n8n automation, LangSmith evals, and a voice interface.
+tags: [quickstart, overview, navigation]
+---
+
 # Job Search AI Agent — Quickstart
 
 This repository is a remote job search assistant built around a LangGraph agent, a FastAPI backend, and a Next.js frontend. It searches multiple remote job APIs in parallel, filters results with Gemini, remembers user feedback in PostgreSQL, and exposes an optional eval/automation layer for LangSmith and n8n.
@@ -10,6 +17,7 @@ Start here, then follow the focused pages:
 - [Operations / runbook](operations.md)
 - [Integrations](integrations.md)
 - [Testing and evals](testing.md)
+- [Voice agent](voice-agent.md)
 - [Source map](source-map.md)
 
 ## What this repo does
@@ -30,6 +38,7 @@ At a high level, the app lets a user:
 - `frontend/app/page.tsx` — single-page chat-like UI that talks directly to the backend.
 - `eval_runner.py` — LangSmith dataset/evaluator harness for regression checks.
 - `n8n_workflow.json` — optional automation workflow for periodic digests.
+- `voice_agent.py` / `voice/server/` — voice interface using Pipecat, Deepgram, and ElevenLabs; shares the same `agent.py` graph.
 
 ## Primary external services
 
@@ -42,6 +51,7 @@ At a high level, the app lets a user:
 ## Repo layout worth knowing
 
 - `frontend/` — Next.js UI
+- `voice/server/` — Pipecat voice bot server (see [Voice agent](voice-agent.md))
 - `assets/` — screenshots used in the README and workflow docs
 - `.env.example` — required environment variables
 - `README.md` — product-facing summary, setup notes, and screenshots
@@ -60,3 +70,7 @@ At a high level, the app lets a user:
 - Rate limiting is enabled on the main endpoints.
 - CV upload expects a PDF and extracts text with `pdfplumber`.
 - Arbeitnow was removed from the active graph because it was unreliable; older docs may still mention it.
+
+## Backlog
+
+- **Architecture overview page** — quickstart links to `architecture/overview.md` but no such page exists yet. Should cover the LangGraph state machine, data flow between agent/main/frontend, and the voice agent pipeline in a single diagram-oriented page. Deferred because the initial init run focused on text-based workflows.

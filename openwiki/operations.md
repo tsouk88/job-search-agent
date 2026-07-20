@@ -1,3 +1,10 @@
+---
+type: Runbook
+title: Operations / Runbook
+description: Operational runbook for the job search agent — local startup, required configuration, runtime dependencies, endpoint behavior, troubleshooting, and git-history failure modes.
+tags: [operations, runbook, deployment, troubleshooting, config]
+---
+
 # Operations / runbook
 
 ## Local startup
