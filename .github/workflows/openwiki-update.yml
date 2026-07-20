@@ -15,7 +15,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
-
+        with:
+          token: ${{ secrets.OPENWIKI_PAT }}
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
@@ -36,6 +37,7 @@ jobs:
       - name: Create OpenWiki update pull request
         uses: peter-evans/create-pull-request@22a9089034f40e5a961c8808d113e2c98fb63676 # v7
         with:
+          token: ${{ secrets.OPENWIKI_PAT }}
           add-paths: |
             openwiki
             AGENTS.md
