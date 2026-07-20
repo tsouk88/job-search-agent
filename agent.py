@@ -6,10 +6,14 @@ import urllib.parse
 import requests
 
 
-
+def add_or_reset(existing: list, new: list | None) -> list:
+    if new is None:
+        return []
+    return existing + new
 
 class State(TypedDict):
-    fetched_jobs: Annotated[list[dict], add]
+    fetched_jobs: Annotated[list[dict], add_or_reset]
+    clean_jobs: list[dict]
     current_job: dict
     user_input: str = ""
     memory: Annotated[list[str], add]
@@ -17,7 +21,8 @@ class State(TypedDict):
   
 
 def search(state: State):
-    return {}
+    
+    return {"fetched_jobs": None, "user_input": state.get("user_input", "")}
    
 def fetch_jobs(state:State):
         if not state.get("user_input"):
@@ -90,7 +95,7 @@ def fetch_fjobs(state:State):
     if response.status_code == 429:
         return {"fetched_jobs": []}
     data = response.json() 
-    fetched_jobs = data["jobs"][:10]
+    fetched_jobs = data.get("jobs", [])[:10] 
     for job in fetched_jobs:
         job["jobDescription"] = job.get("jobDescription", "")[:100]
     return {"fetched_jobs": fetched_jobs}
@@ -103,7 +108,7 @@ def collect_results(state: State):
         if key not in seen:
             seen.add(key)
             unique_jobs.append(job)
-    return {"fetched_jobs": unique_jobs}
+    return {"clean_jobs": unique_jobs, "fetched_jobs": None}
 
 def human_review(state: State):
     feedback = interrupt("Review jobs and tell me what to skip (e.g. 'no MERN, no full stack')")

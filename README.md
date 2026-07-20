@@ -1,6 +1,6 @@
 # Job Search AI Agent
 
-An AI-powered remote job search assistant. Type in your desired job keywords and the agent searches, evaluates, and presents the best matches for you.
+An AI-powered remote job search assistant. Type in your desired job keywords and the agent searches, evaluates, and presents the best matches for you. Talk to it instead, if you'd rather — see [Voice AI](#️-voice-ai).
 
 ⚡ ~15s response time | 💰 ~$0.01 per request
 
@@ -68,12 +68,23 @@ By default, the agent fetches 10 jobs from each API to control costs. Remove `[:
 
 ---
 
+## 🎙️ Voice AI
+
+Talk to the agent instead of typing. Same LangGraph brain (`agent.py`, unmodified) — a new interface built with [Pipecat](https://pipecat.ai): Deepgram (STT), ElevenLabs (TTS), Daily (real-time transport).
+
+The HITL feedback loop works over voice too — say "no MERN, no senior roles" mid-conversation and the agent filters the results it already found, live, with no repeated API calls. Voice sessions are intentionally stateless (in-memory only, no Postgres) since a single call is short-lived, unlike the text agent's persistent memory across days.
+
+See [`voice/README.md`](./voice/README.md) for architecture details and setup instructions.
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
 | Agent | LangGraph (fan-out with `Send` API + HITL) |
 | Memory | PostgreSQL via `PostgresSaver` |
+| Voice | Pipecat (Daily transport, Deepgram STT, ElevenLabs TTS) |
 | LLM | Google Gemini 2.5 Flash |
 | LLM Integration | LangChain `init_chat_model` |
 | Backend | FastAPI + robust text streaming |
@@ -95,6 +106,11 @@ uvicorn main:app --reload
 cd frontend
 npm install react-markdown remark-gfm
 npm run dev
+
+# Voice AI (optional, see voice/README.md for details)
+cd voice/server
+uv sync
+uv run bot.py
 ```
 
 ---
@@ -126,6 +142,8 @@ LANGSMITH_PROJECT=
 LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com  # if outside US
 DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/jobsearch_memory
 ```
+
+For Voice AI environment variables, see [`voice/README.md`](./voice/README.md).
 
 ---
 
@@ -199,5 +217,10 @@ job-search-agent/
 ├── requirements.txt
 ├── .env.example
 ├── n8n_workflow.json  # n8n automation workflow
-└── frontend/          # Next.js 15 frontend
+├── frontend/          # Next.js 15 frontend
+└── voice/             # Voice AI interface (Pipecat) — see voice/README.md
+    └── server/
+        ├── bot.py
+        ├── voice_agent.py
+        └── langgraph_processor.py
 ```
