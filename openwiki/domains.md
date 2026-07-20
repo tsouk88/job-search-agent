@@ -1,3 +1,10 @@
+---
+type: Reference
+title: Domain Concepts
+description: Core domain concepts for the job search agent — job source aggregation, deduplication, HITL memory, query interpretation, resume-derived search, and evaluation semantics.
+tags: [domain, concepts, agent, memory, evaluation]
+---
+
 # Domain concepts
 
 ## Job source aggregation

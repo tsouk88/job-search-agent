@@ -1,3 +1,10 @@
+---
+type: Reference
+title: Integrations
+description: External service integrations for the job search agent — job APIs, LLM/orchestration stack, persistence, observability, UI contract, n8n automation, and the voice agent's separate service stack.
+tags: [integrations, external-services, apis]
+---
+
 # Integrations
 
 ## Job APIs
@@ -47,6 +54,18 @@ The frontend is intentionally thin and depends on these backend behaviors:
 
 The included README screenshots in `assets/` document that automation path.
 
+## Voice agent services
+
+The [voice agent](voice-agent.md) uses a separate service stack from the text/REST backend:
+
+- **Transport:** Daily (WebRTC) for real-time audio in/out
+- **STT:** Deepgram for speech-to-text
+- **TTS:** ElevenLabs for text-to-speech (requires a Premade voice ID)
+- **LLM:** same Gemini model as the text agent via `voice_agent.py`
+- **Checkpointer:** in-memory `MemorySaver` instead of PostgreSQL — sessions are stateless and short-lived
+
+Environment variables for the voice layer (`voice/server/.env`): `DEEPGRAM_API_KEY`, `ELEVENLABS_API_KEY`, `ELEVENLABS_VOICE_ID`, `GOOGLE_API_KEY`, `DAILY_API_KEY`.
+
 ## Source references
 
 - `main.py`
@@ -56,3 +75,6 @@ The included README screenshots in `assets/` document that automation path.
 - `n8n_workflow.json`
 - `assets/n8n_workflow.png`
 - `assets/email_digest.png`
+- `voice/server/bot.py`
+- `voice_agent.py`
+- `voice/README.md`

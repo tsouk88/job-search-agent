@@ -1,3 +1,10 @@
+---
+type: Reference
+title: Testing and Evals
+description: Testing strategy for the job search agent — LangSmith eval runner, what the evals measure, manual checks, and regression targets after changes.
+tags: [testing, evals, langsmith, regression, quality]
+---
+
 # Testing and evals
 
 This repository does not expose a classic unit-test suite in the inspected files; the main quality gate is the LangSmith eval pipeline plus manual end-to-end verification.

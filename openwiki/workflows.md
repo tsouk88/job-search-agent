@@ -1,3 +1,10 @@
+---
+type: Reference
+title: Workflows
+description: User-visible and maintenance workflows for the job search agent — keyword search, feedback loop, CV upload, n8n digest, and eval pipeline — with change guidance for each.
+tags: [workflows, user-flows, agent, feedback, eval]
+---
+
 # Workflows
 
 This repo has four user-visible workflows and one maintenance workflow that matter for future edits.
