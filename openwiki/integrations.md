@@ -20,8 +20,8 @@ The graph encodes user text before sending it to the APIs and truncates descript
 
 ## LLM / orchestration stack
 
-- Gemini 2.5 Flash is the main chat model.
-- LangGraph orchestrates fetch, collect, review, and resume steps.
+- Gemini 2.5 Flash is the main chat model, used for feedback extraction, CV upload, and the n8n evaluator (the search path itself is LLM-free).
+- LangGraph orchestrates the fan-out fetch and `collect_results` ranking; the graph ends there, with no review or resume node.
 - LangChain’s `init_chat_model` and `StrOutputParser` are used in the backend and eval runner.
 
 ## Persistence

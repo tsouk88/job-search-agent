@@ -10,7 +10,7 @@ tags: [source-map, architecture, entry-points]
 ## Entry points
 
 - `main.py` — FastAPI server, endpoints, streaming, PDF upload, rate limiting, persistence setup
-- `agent.py` — LangGraph workflow, source fetchers, deduplication, HITL interrupt, memory loop
+- `agent.py` — LangGraph workflow, source fetchers, deduplication, two-pass ranking, thread memory filter
 - `frontend/app/page.tsx` — client UI for search, feedback, CV upload, streamed rendering
 - `eval_runner.py` — LangSmith evaluation harness
 
@@ -41,8 +41,8 @@ Holds the real search graph and most business logic:
 - API calls to remote job feeds
 - truncation for trace-size control
 - deduplication
-- HITL interruption
-- memory capture and resume behavior
+- two-pass ranking (titles, then descriptions)
+- thread memory applied as a post-graph filter in `main.py`
 
 ### `main.py`
 
@@ -51,7 +51,7 @@ Owns the API surface and runtime composition:
 - app startup / lifespan
 - checkpoint wiring
 - prompt formatting for streamed results
-- `/ask`, `/upload`, `/feedback`, `/evaluate`
+- `/ask`, `/upload`, `/feedback`, `/reset`, `/evaluate`
 - rate limiting and CORS
 
 ### `frontend/app/page.tsx`
@@ -86,8 +86,7 @@ When changing behavior, update in this order:
 The commit trail shows the project moving from a small multi-source job fetcher toward a more production-like system with:
 
 - parallel source fan-out
-- persistent memory
-- HITL
+- persistent thread memory
 - streaming UX
 - job-source pruning for quality
 - eval-driven regression control

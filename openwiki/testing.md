@@ -46,6 +46,10 @@ It intentionally does not grade description quality.
 - memory persistence between requests
 - eval score drops after prompt or source edits
 
+## Eval baseline status
+
+The previous ~0.90 baseline was measured against the old LLM-based filtering and no longer reflects how the agent works (the search path is now LLM-free, with pure keyword scoring). New eval cases — empty results, ambiguous queries, typos — are being generated from fresh traces. Treat any historical eval score as stale until the dataset is rebuilt.
+
 ## Source references
 
 - `eval_runner.py`

@@ -18,21 +18,23 @@ Flow:
 3. `main.py` loads any stored memory for that thread.
 4. The LangGraph agent fans out to multiple job APIs in parallel.
 5. The backend deduplicates and reshapes jobs.
-6. Gemini streams a final filtered list back to the browser.
+6. The backend returns the ranked top-12 jobs as streamed text.
 
-Important detail: the prompt includes user memory as a hard exclusion list, so previous negative feedback changes future searches.
+The search path itself makes no LLM call: ranking is pure keyword scoring in `agent.py` (title hits outweigh description hits, with a two-pass widening from titles to descriptions when the strict pass is too thin). Gemini is only used for feedback extraction, CV upload, and the n8n evaluator.
 
-## 2. Feedback loop / HITL
+Important detail: `filter_jobs` applies the thread's accumulated memory as a hard exclusion list over the fetched jobs, so previous negative feedback changes future searches.
+
+## 2. Feedback / memory update
 
 Flow:
 
 1. User sends feedback such as `no MERN` or `skip senior roles`.
 2. The frontend routes that text to `/feedback` instead of `/ask`.
-3. The backend asks Gemini to extract avoid-keywords only.
-4. The graph resumes from its interrupt with the new memory.
-5. Later searches exclude those keywords.
+3. The backend asks Gemini to extract avoid-keywords only (this is one of the few LLM calls left in the request path).
+4. `main.py` calls `agent.update_state` to append the keywords to the thread's stored `memory`; the graph itself has already ended and is not re-run.
+5. `filter_jobs` re-applies the accumulated memory against the cached `clean_jobs` for that thread and returns the filtered markdown.
 
-The agent loop continues until the user submits `done`.
+There is no HITL interrupt loop and no `done` terminator: the graph ends after [collect_results](domains.md), and feedback is a state update plus a local re-filter of the already-fetched jobs. Send `reset filters` (or POST `/reset`) to clear the memory.
 
 ## 3. CV upload search
 

@@ -1,12 +1,10 @@
 ---
-type: Documentation Index
-title: "OpenWiki"
-description: "Files and subdirectories in OpenWiki."
+okf_version: "0.1"
 ---
 
 # Files
 
-- [Domain Concepts](domains.md) - Core domain concepts for the job search agent — job source aggregation, deduplication, HITL memory, query interpretation, resume-derived search, and evaluation semantics.
+- [Domain Concepts](domains.md) - Core domain concepts for the job search agent — job source aggregation, deduplication, two-pass ranking, thread memory (avoid-keywords), query interpretation, resume-derived search, and evaluation semantics.
 - [Integrations](integrations.md) - External service integrations for the job search agent — job APIs, LLM/orchestration stack, persistence, observability, UI contract, n8n automation, and the voice agent's separate service stack.
 - [Operations / Runbook](operations.md) - Operational runbook for the job search agent — local startup, required configuration, runtime dependencies, endpoint behavior, troubleshooting, and git-history failure modes.
 - [Job Search AI Agent Quickstart](quickstart.md) - Entry point for understanding the remote job search assistant — a LangGraph agent with FastAPI backend, Next.js frontend, optional n8n automation, LangSmith evals, and a voice interface.
