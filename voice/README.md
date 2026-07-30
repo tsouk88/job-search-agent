@@ -13,7 +13,7 @@ Your voice → Deepgram (STT) → LangGraph agent → ElevenLabs (TTS) → spoke
 - **Transport:** Daily (WebRTC) — real-time audio in/out
 - **STT:** Deepgram
 - **TTS:** ElevenLabs
-- **Brain:** the exact same `agent.py` graph used by the REST API — fan-out job search across 4 APIs, HITL feedback loop
+- **Brain:** the exact same `agent.py` graph used by the REST API — fan-out job search across 4 APIs, then deterministic scoring and filtering
 
 ### Session design
 
@@ -22,7 +22,9 @@ Voice sessions are stateless and short-lived, so they don't use the PostgreSQL c
 - Each call gets a fresh `VoiceSession` with an in-memory `MemorySaver` checkpointer and its own `thread_id`
 - When the agent asks for feedback ("no MERN, no senior roles"), the session **caches the last search results** and filters them locally against the given keywords — no repeated API calls, no re-running the search on every round of feedback
 
-This is a deliberate difference from the text agent's `/feedback` → `/ask` flow, which re-runs a fresh search each time (appropriate there, since the text agent persists across days and the next query may be completely different). In a single voice call, the query almost never changes mid-conversation — so caching + local filtering is faster and cheaper.
+The text agent works the same way — feedback re-filters what is already cached rather than searching again. The difference is only in where preferences live: the text agent persists them in Postgres across days, a voice session keeps them in memory and forgets them when the call ends.
+
+Spoken commands are routed by their first word: `no` / `skip` / `without` / `not` filter, `reset` clears filters, `tell me more about…` describes one listing, anything else is a fresh search. The full list with apply links is printed to the terminal — a URL is useless read aloud.
 
 ## Setup
 
@@ -61,10 +63,13 @@ Get a Deepgram key at [deepgram.com](https://deepgram.com) (free tier available)
 voice/
 └── server/
     ├── bot.py                   # Pipecat pipeline: transport, STT, TTS, wiring
-    ├── voice_agent.py           # VoiceSession — stateless wrapper around agent.py's graph
     ├── langgraph_processor.py   # Bridges Pipecat frames <-> VoiceSession
     ├── pyproject.toml
     └── uv.lock
+
+voice_agent.py                   # VoiceSession — lives at the repo root, next to agent.py
 ```
 
-`voice_agent.py` imports `graph` directly from the root `agent.py` — no duplication, same agent, two interfaces.
+`voice_agent.py` sits at the repo root and imports `graph` directly from `agent.py` — no duplication, same agent, two interfaces. `langgraph_processor.py` adds the repo root to `sys.path` to reach it.
+
+> **Run it from the Linux filesystem if you can.** Loading LangChain through `/mnt/c` costs close to two minutes on first import, and parts of the Google client load lazily — so the first LLM call of a session can stall for tens of seconds. From ext4 the same call takes about a second.
