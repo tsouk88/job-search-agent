@@ -15,6 +15,7 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 from urllib.parse import urlparse
+import asyncio
 import pdfplumber
 import io
 import re
@@ -81,7 +82,7 @@ chain = llm|parser
 
 @app.post("/ask")
 @limiter.limit("10/minute")
-async def askAI(request: Request, input:SearchInput):
+def askAI(request: Request, input:SearchInput):
     config = {"configurable": {"thread_id": input.thread_id}}
     state = agent.get_state(config)
     last_known_fetch = state.values.get("last_fetch_time", "")
@@ -98,7 +99,7 @@ async def askAI(request: Request, input:SearchInput):
 
 @app.post ("/evaluate")
 @limiter.limit("10/minute")
-async def evaluaten8n(request: Request , jobs : EvaluateInput):
+def evaluaten8n(request: Request , jobs : EvaluateInput):
     valid_jobs = jobs.jobs
     prompt =f"""You are a personal job evaluator. 
                 I am looking for a remote AI/backend engineering job.
@@ -129,11 +130,13 @@ async def uploadfile(request: Request , file: UploadFile, thread_id: str = Form(
 
     prompt = f"""You are a job recruiter evaluating candidates , you read their CV through {text} extracting one sentence with all the keywords max 20 words
                     about the candidate"""
-    response=chain.invoke(prompt)
+    # this endpoint must stay async — it awaits the upload — so the blocking
+    # calls go to a thread rather than stalling the event loop
+    response = await asyncio.to_thread(chain.invoke, prompt)
     config = {"configurable": {"thread_id": thread_id}}
     state = agent.get_state(config)
     memory = state.values.get("memory", [])
-    query, _ , last_fetch = run_agent(response, thread_id)
+    query, _ , last_fetch = await asyncio.to_thread(run_agent, response, thread_id)
     clean_jobs = normalize_jobs(query)
     memory_content = ", ".join(memory) if memory else "No specific user restrictions yet."
     prompt = f"""Filter and present ONLY jobs relevant to: {response}
@@ -168,7 +171,7 @@ async def uploadfile(request: Request , file: UploadFile, thread_id: str = Form(
 
 @app.post("/feedback")
 @limiter.limit("10/minute")
-async def human_review(request: Request , feedback: FeedbackInput):
+def human_review(request: Request , feedback: FeedbackInput):
     config = {"configurable": {"thread_id": feedback.thread_id}}
     state = agent.get_state(config)
     memory = state.values.get("memory", [])
@@ -188,7 +191,7 @@ async def human_review(request: Request , feedback: FeedbackInput):
 
 @app.post("/reset")
 @limiter.limit("10/minute")
-async def reset_search(request: Request , input:SearchInput):
+def reset_search(request: Request , input:SearchInput):
     config = {"configurable": {"thread_id": input.thread_id}}
     state = agent.get_state(config)
     raw_jobs = state.values.get("clean_jobs" , [])
