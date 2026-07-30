@@ -1,7 +1,7 @@
 ---
 type: Reference
 title: Domain Concepts
-description: Core domain concepts for the job search agent — job source aggregation, deduplication, HITL memory, query interpretation, resume-derived search, and evaluation semantics.
+description: Core domain concepts for the job search agent — job source aggregation, deduplication, two-pass ranking, thread memory (avoid-keywords), query interpretation, resume-derived search, and evaluation semantics.
 tags: [domain, concepts, agent, memory, evaluation]
 ---
 
@@ -34,13 +34,13 @@ The backend deduplicates jobs before prompting the model.
 The current heuristic builds a hash from company + position.
 This is simple, but it avoids repeating the same job when different APIs or fetch paths surface similar records.
 
-## Human-in-the-loop memory
+## Thread memory (avoid-keywords)
 
 Memory is the main behavioral feature of the agent.
-Users can say what to avoid, and those exclusions are stored per `thread_id` in PostgreSQL-backed LangGraph state.
-That memory is then injected into later prompts as a hard filter.
+Users say what to avoid, and those exclusions are stored per `thread_id` in PostgreSQL-backed LangGraph state.
+Memory is not injected into a prompt; instead `filter_jobs` removes matching jobs from the cached `clean_jobs` before they are returned. Seniority keywords (`senior`, `junior`, `lead`, …) are matched against the title only; other keywords are matched against title + description + location. Send `reset filters` (or POST `/reset`) to clear the list.
 
-Important consequence: the assistant is not just ranking jobs; it is learning exclusions over time for each conversation thread.
+Important consequence: the assistant is not just ranking jobs; it is accumulating exclusions over time for each conversation thread, and the search graph itself never re-runs for feedback.
 
 ## Query interpretation
 

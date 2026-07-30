@@ -34,7 +34,7 @@ At a high level, the app lets a user:
 ## Main runtime pieces
 
 - `main.py` — FastAPI app, HTTP endpoints, request throttling, PDF upload parsing, and streaming response handling.
-- `agent.py` — LangGraph state machine that fans out to multiple job APIs, deduplicates results, and supports HITL memory.
+- `agent.py` — LangGraph state machine that fans out to multiple job APIs, deduplicates and ranks results, and ends; memory is applied as a post-graph filter in `main.py`.
 - `frontend/app/page.tsx` — single-page chat-like UI that talks directly to the backend.
 - `eval_runner.py` — LangSmith dataset/evaluator harness for regression checks.
 - `n8n_workflow.json` — optional automation workflow for periodic digests.
@@ -66,7 +66,7 @@ At a high level, the app lets a user:
 ## Notes on current behavior
 
 - The backend streams plain text responses from `/ask` and `/upload`.
-- Feedback is routed through `/feedback` and resumed into the graph as memory.
+- Feedback is routed through `/feedback`, which appends avoid-keywords to thread memory and re-filters the cached jobs; the search graph is not re-run.
 - Rate limiting is enabled on the main endpoints.
 - CV upload expects a PDF and extracts text with `pdfplumber`.
 - Arbeitnow was removed from the active graph because it was unreliable; older docs may still mention it.

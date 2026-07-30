@@ -51,7 +51,8 @@ Do not document or store real secret values in the wiki.
 ## Endpoint behavior to remember
 
 - `/ask` and `/upload` are streamed plain-text responses.
-- `/feedback` resumes the graph with extracted avoidance keywords.
+- `/feedback` appends avoid-keywords to thread memory and re-filters cached jobs (no graph re-run).
+- `/reset` clears the thread's memory and returns the unfiltered cached jobs.
 - `/evaluate` is intended for the n8n automation path.
 - Rate limiting is set to `10/minute` on the public endpoints.
 
