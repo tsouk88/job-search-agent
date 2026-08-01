@@ -159,6 +159,7 @@ LANGSMITH_TRACING=true
 LANGSMITH_PROJECT=
 LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com  # if outside US
 DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/jobsearch_memory
+ALLOWED_ORIGINS=http://localhost:3000  # comma-separated list of browser origins allowed to call the API
 ```
 
 For Voice AI environment variables, see [`voice/README.md`](./voice/README.md).
@@ -219,7 +220,7 @@ The setup is a LangSmith dataset where each query carries a written description 
 The queries include narrow niches (`rust`, `blockchain solidity`), vague ones (`remote job`), one where the right answer is probably nothing at all (`COBOL mainframe developer`), and misspellings. Typos are not corrected on purpose. Search for `pyton developer` and you get nothing back; the reference answer says that is correct.
 
 ```bash
-python eval_runner.py   # posts to localhost:8000/ask, change the port if your backend runs elsewhere
+python eval_runner.py   # posts to localhost:8002/ask, change the port if your backend runs elsewhere
 ```
 
 ### How it got there
