@@ -2,7 +2,11 @@
 
 An AI-powered remote job search assistant. Type in your desired job keywords and the agent searches, filters, and presents the best matches for you. Talk to it instead, if you'd rather — see [Voice AI](#️-voice-ai).
 
+**[▶ Try it live](https://job-search-agent-blond.vercel.app)** — no signup, no API key.
+
 ⚡ Instant results | 💰 $0 per search — searching and filtering are fully deterministic | 📊 [0.812 relevance](#evals) across 22 eval cases
+
+> The backend runs on a free Render instance that sleeps after 15 minutes of inactivity. If the demo has been idle, the first search takes about a minute — roughly 50s to wake the server, then 15s to query four job APIs. Every search after that is instant.
 
 If you find this useful, give it a ⭐️ — it helps others discover the project!
 
@@ -140,8 +144,12 @@ This project uses PostgreSQL for persistent memory via LangGraph's `PostgresSave
 **Option 1 — Supabase (recommended, free)**
 1. Create a free account at [supabase.com](https://supabase.com)
 2. Create a new project
-3. Copy the connection string from Settings → Database
+3. Copy the connection string from Connect → **Session pooler, port 5432**
 4. Add it to your `.env` as `DATABASE_URL`
+
+Use the session pooler, not the transaction pooler on port 6543. `PostgresSaver`
+relies on prepared statements, which the transaction pooler does not keep across
+queries — the failures are intermittent rather than clean.
 
 **Option 2 — Local PostgreSQL**
 1. Install PostgreSQL locally
@@ -163,6 +171,23 @@ ALLOWED_ORIGINS=http://localhost:3000  # comma-separated list of browser origins
 ```
 
 For Voice AI environment variables, see [`voice/README.md`](./voice/README.md).
+
+---
+
+## Deployment
+
+The backend deploys to Render from the checked-in `render.yaml` (New → Blueprint).
+It declares the build and start commands, pins Python, and lists the secrets to
+fill in from the dashboard. The frontend deploys to Vercel with **Root Directory
+set to `frontend`** and `NEXT_PUBLIC_API_BASE` pointing at the Render URL.
+
+Two details cost real time if you get them wrong:
+
+- `NEXT_PUBLIC_API_BASE` takes **no trailing slash** — the client appends `/ask`.
+- `ALLOWED_ORIGINS` takes **no trailing slash** either. The browser's `Origin`
+  header is scheme, host and port only, and the match is exact. A stray `/` makes
+  every request fail CORS while the page itself loads fine, so the only symptom
+  is an error hidden in the browser console.
 
 ---
 
