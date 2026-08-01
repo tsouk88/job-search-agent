@@ -35,10 +35,16 @@ async def lifespan(app: FastAPI):
         agent = graph.compile(checkpointer=checkpointer)
         yield
 
+allowed_origins = [
+    origin.strip()
+    for origin in os.getenv("ALLOWED_ORIGINS", "http://localhost:3000").split(",")
+    if origin.strip()
+]
+
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=allowed_origins,
     allow_methods=["*"],
     allow_credentials=True,
     allow_headers=["*"],
