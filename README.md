@@ -122,7 +122,7 @@ uvicorn main:app --reload
 
 # Frontend
 cd frontend
-npm install react-markdown remark-gfm
+npm install
 npm run dev
 
 # Voice AI (optional, see voice/README.md for details)
