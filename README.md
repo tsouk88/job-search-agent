@@ -195,7 +195,12 @@ Two details cost real time if you get them wrong:
 
 Upload your PDF resume and the agent automatically extracts your skills and finds matching remote jobs — no keywords needed.
 
-- `POST /upload` — accepts a PDF and returns AI-matched job listings
+- `POST /upload` — accepts a PDF up to 5MB and returns matching job listings
+
+Only the first five pages reach the model, and only to compress the CV into a
+single line of keywords. That line becomes the search query; the listings that
+come back are then filtered and formatted by the same deterministic code that
+serves `/ask`.
 
 ## n8n Automation (Optional)
 
