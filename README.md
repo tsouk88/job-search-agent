@@ -220,7 +220,9 @@ Schedule (every 12h)
 3. Update the `positionKeywords` array in the Code nodes to match your job search criteria
 4. Make sure your FastAPI backend is running and update the URL in the HTTP Request node if needed
 
-> The workflow connects to `http://host.docker.internal:8000/evaluate` by default (Docker setup). Change to `http://localhost:8000/evaluate` if running n8n locally without Docker.
+> The workflow connects to `http://host.docker.internal:8002/evaluate` by default (Docker setup). Change to `http://localhost:8002/evaluate` if running n8n locally without Docker.
+
+> `/evaluate` is the one endpoint that sends arbitrary text to Gemini, so it is not public. Set `EVALUATE_TOKEN` in your `.env` and put the same value in the workflow's `x-api-key` header, where the exported JSON carries a `YOUR_EVALUATE_TOKEN` placeholder. Without it the endpoint answers 401.
 
 ---
 
@@ -232,7 +234,7 @@ Schedule (every 12h)
 | `/feedback` | POST | Send feedback to agent ("no MERN", "no senior") — stored in memory |
 | `/reset` | POST | Clear all stored filters and return the unfiltered results |
 | `/upload` | POST | Upload PDF resume — agent extracts skills and finds matching jobs |
-| `/evaluate` | POST | n8n integration — AI scoring of job listings |
+| `/evaluate` | POST | n8n integration — AI scoring of job listings. Requires the `x-api-key` header |
 
 ---
 
