@@ -52,19 +52,22 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [threadId, setThreadId] = useState('');
   const [isDark, setIsDark] = useState(true);
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const threadIdRef = useRef('');
 
-  useEffect(() => {
-    let id = localStorage.getItem('thread_id');
-    if (!id) {
-      id = crypto.randomUUID();
-      localStorage.setItem('thread_id', id);
+  function getThreadId() {
+    if (!threadIdRef.current) {
+      let id = localStorage.getItem('thread_id');
+      if (!id) {
+        id = crypto.randomUUID();
+        localStorage.setItem('thread_id', id);
+      }
+      threadIdRef.current = id;
     }
-    setThreadId(id);
-  }, []);
+    return threadIdRef.current;
+  }
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -88,7 +91,7 @@ export default function Home() {
         const res = await fetch(`${API_BASE}/reset`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_input: message, thread_id: threadId }),
+          body: JSON.stringify({ user_input: message, thread_id: getThreadId() }),
         });
         const text = await res.text();
         setMessages(prev => [...prev, { role: 'assistant', content: text }]);
@@ -105,7 +108,7 @@ export default function Home() {
       const res = await fetch(`${API_BASE}/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ feedback: message, thread_id: threadId }),
+        body: JSON.stringify({ feedback: message, thread_id: getThreadId() }),
       });
       const text = await res.text();
       setMessages(prev => [...prev, { role: 'assistant', content: text }]);
@@ -121,7 +124,7 @@ export default function Home() {
       const res = await fetch(`${API_BASE}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_input: message, thread_id: threadId }),
+        body: JSON.stringify({ user_input: message, thread_id: getThreadId() }),
       });
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
@@ -151,7 +154,7 @@ export default function Home() {
     setLoading(true);
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('thread_id', threadId);
+    formData.append('thread_id', getThreadId());
 
     setMessages(prev => [...prev, { role: 'user', content: `📄 Uploaded: ${file.name}` }]);
 
@@ -247,7 +250,7 @@ export default function Home() {
                   }`}>
                     {m.role === 'user' ? 'You' : 'Agent'}
                   </p>
-                  <div className="prose prose-sm prose-invert max-w-none text-sm leading-relaxed">
+                  <div className={`prose prose-sm ${isDark ? 'prose-invert' : ''} max-w-none text-sm leading-relaxed`}>
                     <ReactMarkdown
                       remarkPlugins={[remarkGfm]}
                       components={{
