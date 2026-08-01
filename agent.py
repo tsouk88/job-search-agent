@@ -11,12 +11,11 @@ import html
 SENIORITY = frozenset({"senior", "sr",  "junior" ,"júnior", "jr", "lead",
                        "principal", "staff", "mid", "entry" ,"pleno" , "sênior" , "estágio" , "head" , "director" , "vp" , "chief"})
 
-GENERIC = frozenset({"engineer", "engineering", "developer", "dev", "software",
+GENERIC = frozenset({"engineering", "software", "developer" , "dev" , "engineer",
                      "remote", "job", "jobs", "work", "role", "position",
                      "specialist", "expert", "manager"})
 
 
-MIN_RESULTS = 8
 TITLE_WEIGHT = 10
 MAX_RESULTS = 12
 
@@ -50,29 +49,37 @@ def filter_jobs(jobs: list, memory: list ,  title_only=SENIORITY) -> list:
     return kept
 
 
+def signal_tokens(query: str) -> list[str]:
+    """The words of the query that carry meaning. Falls back to every word when
+    the query is nothing but generic ones, so "developer job" still matches."""
+    tokens = re.findall(r'\w+', query.lower())
+    return [t for t in tokens if t not in GENERIC] or tokens
+
+
+def job_title(job: dict) -> str:
+    """The title, however the source spells the field. Lowercased for matching."""
+    return (job.get("title") or job.get("position", "") or job.get("jobTitle", "") or "").lower()
+
+
+def title_hit(token: str, title: str) -> bool:
+    """Short tokens must match a whole word — "ai" should not fire on "said".
+    Longer ones may match inside one, so "python" still hits "python3"."""
+    if len(token) < 4:
+        return token in set(re.findall(r'\w+', title))
+    return token in title
+
+
 def score_job(job: dict, query: str) -> int:
     """How well a job matches the query. A title hit outweighs any number of
     description hits, so >= TITLE_WEIGHT means "matched in the title"."""
-    title = (job.get("title") or job.get("position", "") or job.get("jobTitle", "") or "").lower()
+    title = job_title(job)
     description = (job.get("description") or job.get("jobDescription", "")
                    or job.get("excerpt", "") or job.get("jobExcerpt", "") or "").lower()
-    tokens = re.findall(r'\w+', query.lower())
-    signal = [t for t in tokens if t not in GENERIC] or tokens
-    title_words = set(re.findall(r'\w+', title))
+    signal = signal_tokens(query)
     desc_words = set(re.findall(r'\w+', description))
-    title_hits = sum(1 for s in signal if ((s in title_words) if len(s) < 4 else (s in title)))
+    title_hits = sum(1 for s in signal if title_hit(s, title))
     desc_hits = sum(1 for s in signal if s in desc_words)
     return title_hits * TITLE_WEIGHT + desc_hits
-
-
-def is_relevant(job: dict, query: str, strict: bool = True) -> bool:
-    if not query:
-        return True
-    score = score_job(job, query)
-    if strict:
-        return score >= TITLE_WEIGHT
-    return score > 0
-
 
 
 def clean_description(text):
@@ -127,43 +134,53 @@ def fetch_jobs(state:State):
             return {"fetched_jobs": []}
         first_keyword = state['user_input'].split()[0].lower()
         query = urllib.parse.quote(first_keyword)
-        response = requests.get(
-                f"https://remoteok.com/api?tags={query}",
-                allow_redirects=False,
-                headers={"User-Agent": "Mozilla/5.0"}
-            )
-        data = response.json()
-         # Limit to 10 jobs for cost control — remove [:10] to search all jobs
-        fetched_jobs = [job for job in data 
-        if isinstance(job, dict) and
-        any(keyword.lower() in [t.lower() for t in job.get("tags", [])]
-        or keyword.lower() in job.get("position", "").lower()
-        for keyword in state["user_input"].split())][:10]
-        return {"fetched_jobs": fetched_jobs}
+        try:
+            response = requests.get(
+                    f"https://remoteok.com/api?tags={query}",
+                    allow_redirects=False,
+                    headers={"User-Agent": "Mozilla/5.0"} , timeout=30
+                )
+            signal = signal_tokens(state["user_input"])
+            fetched_jobs = [job for job in response.json()
+                            if isinstance(job, dict)
+                            and any(title_hit(token, job_title(job)) for token in signal)]
+            # Limit to 10 jobs for cost control — remove [:10] to search all jobs
+            return {"fetched_jobs": fetched_jobs[:10]}
+        except requests.exceptions.RequestException as e:
+            print(f"Error {e}")
+            return {"fetched_jobs": []}
         
 def fetch_sjobs(state:State):
         if not state.get("user_input"):
             return {"fetched_jobs": []}
         query = urllib.parse.quote(state['user_input'])
-        response= requests.get(f"https://himalayas.app/jobs/api/search?q={query}&worldwide=true&sort=recent")
-        if response.status_code == 429:
-            return {"fetched_jobs": []}
-        data = response.json()
-         # Limit to 10 jobs for cost control — remove [:10] to search all jobs
-        fetched_jobs = data["jobs"][:10]  
-        return {"fetched_jobs": fetched_jobs}
+        try:
+            response= requests.get(f"https://himalayas.app/jobs/api/search?q={query}&worldwide=true&sort=recent" , timeout=30)
+            if response.status_code == 429:
+                return {"fetched_jobs": []}
+            data = response.json()
+            # Limit to 10 jobs for cost control — remove [:10] to search all jobs
+            fetched_jobs = data.get("jobs" , [])[:10]
+            return {"fetched_jobs": fetched_jobs}
+        except requests.exceptions.RequestException as e:
+                print(f"Error {e}")
+                return {"fetched_jobs": []}
 
 def fetch_tjobs(state:State):
     if not state.get("user_input"):
         return {"fetched_jobs": []}
     query = urllib.parse.quote(state['user_input'])
-    response= requests.get(f"https://remotive.com/api/remote-jobs?search={query}")
-    if response.status_code == 429:
-        return {"fetched_jobs": []}
-    data = response.json() 
-    fetched_jobs = data["jobs"][:10]  
-    return {"fetched_jobs": fetched_jobs}
-
+    try:
+        response= requests.get(f"https://remotive.com/api/remote-jobs?search={query}", timeout=30)
+        if response.status_code == 429:
+            return {"fetched_jobs": []}
+        data = response.json() 
+        fetched_jobs = data.get("jobs" , [])[:10] 
+        return {"fetched_jobs": fetched_jobs}
+    except requests.exceptions.RequestException as e:
+            print(f"Error {e}")
+            return {"fetched_jobs": []}
+    
 #def fetch_fijobs(state:State):
 #    if not state.get("user_input"):
 #        return {"fetched_jobs": []}
@@ -183,12 +200,16 @@ def fetch_fjobs(state:State):
     if not state.get("user_input"):
         return {"fetched_jobs": []}
     query = urllib.parse.quote(state['user_input'])
-    response= requests.get(f"https://jobicy.com/api/v2/remote-jobs?tag={query}")
-    if response.status_code == 429:
+    try:
+        response= requests.get(f"https://jobicy.com/api/v2/remote-jobs?tag={query}" , timeout=30)
+        if response.status_code == 429:
+            return {"fetched_jobs": []}
+        data = response.json() 
+        fetched_jobs = data.get("jobs", [])[:10] 
+        return {"fetched_jobs": fetched_jobs}
+    except requests.exceptions.RequestException as e:
+        print(f"Error {e}")
         return {"fetched_jobs": []}
-    data = response.json() 
-    fetched_jobs = data.get("jobs", [])[:10] 
-    return {"fetched_jobs": fetched_jobs}
 
 def collect_results(state: State):
     seen = set()
@@ -201,8 +222,6 @@ def collect_results(state: State):
                 unique_jobs.append(job)
     scored = [(score_job(job, query), job) for job in unique_jobs]
     matched = [pair for pair in scored if pair[0] >= TITLE_WEIGHT]
-    if len(matched) < MIN_RESULTS:
-        matched = [pair for pair in scored if pair[0] > 0]
     matched.sort(key=lambda pair: pair[0], reverse=True)
     matched = matched[:MAX_RESULTS]
     correct_jobs = []
