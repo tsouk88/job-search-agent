@@ -2,7 +2,7 @@
 
 An AI-powered remote job search assistant. Type in your desired job keywords and the agent searches, filters, and presents the best matches for you. Talk to it instead, if you'd rather — see [Voice AI](#️-voice-ai).
 
-⚡ Instant results | 💰 $0 per search — searching and filtering are fully deterministic
+⚡ Instant results | 💰 $0 per search — searching and filtering are fully deterministic | 📊 [0.812 relevance](#evals) across 22 eval cases
 
 If you find this useful, give it a ⭐️ — it helps others discover the project!
 
@@ -23,7 +23,7 @@ Results are scored, ranked and filtered in plain Python — no model in the sear
 
 The agent originally passed every fetched listing through Gemini to decide relevance. That worked, but it hid a bug: irrelevant results (Marketing, Janitor) were never filtered out at fetch time — the model just declined to print them. The moment you asked for them a second way, they came back.
 
-Filtering at the source instead fixed the bug, removed the cost, and made results reproducible. Same quality, measured on the same queries.
+Filtering at the source instead fixed the bug, removed the cost, and made results reproducible. Quality is measured — see [Evals](#evals).
 
 ---
 
@@ -60,10 +60,17 @@ flowchart TD
 
 A job scores on where your query words appear. A hit in the **title** outweighs any number of hits in the description, so `title_hits * 10 + description_hits` sorts real matches to the top.
 
-Two details that matter in practice:
+Four details that matter in practice:
 
-- **Short query words match whole words only.** Searching `ai` should not match `p-ai-d media specialist`. Words of 4+ characters still match as substrings, so `python` finds `python3`.
-- **Two passes.** The strict pass looks at titles only. If that leaves too few results, it widens to descriptions. A query like `ai engineer` is satisfied by titles alone; `python backend developer` usually needs the wider pass, because those words live in the body text.
+Short query words have to match a whole word. Searching `ai` should not hit `p-ai-d media specialist`. Words of four characters or more still match inside a word, so `python` finds `python3`.
+
+A listing needs a title hit to qualify at all. Mentioning your keywords somewhere in the body text is not enough. Description hits still count, but only to break ties between listings that already earned their place.
+
+The agent returns what matched, up to a cap of 12, and it will happily return three listings or none. An earlier version guaranteed a minimum of eight; on narrow queries, seven of those eight turned out to be noise.
+
+Generic words are dropped. `developer`, `engineer`, `remote`, `role` and the rest show up in half of all job titles, so they can't rank anything. If a query is nothing but generic words, they get used anyway rather than matching the entire board.
+
+RemoteOK's tags are not trusted. The API is still queried by tag, but every listing that comes back is re-checked against its own title. Across 101 listings that's an average of 23.6 tags each, a nursing role tagged `python`, `sql`, `postgres` and `golang`, and three unrelated listings sharing an identical 36-tag list. The tags are SEO filler. The title isn't.
 
 ### Feedback and memory
 
@@ -101,7 +108,7 @@ See [`voice/README.md`](./voice/README.md) for architecture details and setup in
 | Backend | FastAPI |
 | Frontend | Next.js 15 + ReactMarkdown + remark-gfm |
 | Job APIs | RemoteOK, Himalayas, Remotive, Jobicy |
-| Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) |
+| Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) — 0.812 / 22 cases |
 
 ---
 
@@ -205,22 +212,50 @@ Schedule (every 12h)
 
 ## Evals
 
-The agent includes an evaluation pipeline built with LangSmith.
+The agent scores **0.812 across 22 test cases**. Roughly four out of every five listings it returns are relevant to the query, and twelve of the cases score a clean 1.0.
 
-- Dataset of test cases covering different query types
-- LLM-as-judge evaluator using Gemini 2.5 Flash
-- Float scoring (0.0 / 0.5 / 1.0) for granular feedback
+The setup is a LangSmith dataset where each query carries a written description of what a good answer looks like, plus a Gemini 2.5 Flash judge that counts how many returned listings meet it. Score is relevant divided by returned, so padding a response with weak matches costs you.
 
-Run evaluations:
+The queries include narrow niches (`rust`, `blockchain solidity`), vague ones (`remote job`), one where the right answer is probably nothing at all (`COBOL mainframe developer`), and misspellings. Typos are not corrected on purpose. Search for `pyton developer` and you get nothing back; the reference answer says that is correct.
+
 ```bash
-python eval_runner.py
+python eval_runner.py   # posts to localhost:8000/ask, change the port if your backend runs elsewhere
 ```
 
-Results are visible in your LangSmith dashboard under the configured project.
+### How it got there
 
-> **Being rebuilt.** The previous 0.90 baseline was measured against the old LLM-based filtering and no longer reflects how the agent works. New eval cases — empty results, ambiguous queries, typos — are being generated from fresh traces with the [LangSmith eval engineering skill](https://github.com/langchain-ai/langsmith-skills), landing shortly.
->
-> `eval_runner.py` posts to `http://localhost:8000/ask`; change the port if you run the backend elsewhere.
+Most of the gain came from taking things out. Every step below was measured against the same 22 cases:
+
+| Change | Score |
+|---|---|
+| Starting point | 0.558 |
+| Stopped trusting RemoteOK's tags, matched on titles | 0.575 |
+| Removed the guaranteed minimum of 8 results | 0.679 |
+| Treated `developer` and `engineer` as meaningful words | 0.584, reverted |
+| Fixed the reference answers for the typo queries | 0.751 |
+| Fixed a missing comma in the generic-word list | 0.812 |
+
+The big jump came from deleting a rule that guaranteed at least 8 results. On a query like `rust` the agent would find one genuine match and then pad the list with seven listings that happened to mention the word somewhere in their body text. Three good results beat twelve mediocre ones.
+
+The missing comma is worth a mention because Python never complained about it. Two adjacent string literals in a set silently became one, which quietly dropped `engineer` and `remote` from the generic-word list. It only surfaced because a nonsense query started returning listings with "Remote" in the title.
+
+### What the number doesn't cover
+
+It measures the first response only. Users narrow results by talking to the agent ("no support roles", "no senior"), and none of the 22 cases exercise that path, so day-to-day use is better than 0.812 suggests.
+
+It also moves. The agent queries live job boards, so two runs an hour apart see different listings and individual cases wobble by a lot. The aggregate is the signal, not any single row.
+
+### Known limitation
+
+One title match is enough to admit a listing. That is fine when the distinctive word in a query is unambiguous, and it falls apart when it isn't: `data` pulls in Data Analysts, `wordpress` pulls in WordPress Support Specialists.
+
+The obvious fix, requiring two matching words, was tried and rejected because it threw away correct results like `Software Engineer (Go, Python, TS)`. Measurement showed why it could never have worked. Specific terms like `sql`, `aws` and `pytorch` appear in **0%** of returned job titles, because titles say "DevOps Engineer", not "DevOps Kubernetes AWS Engineer". There is only ever one word to match on.
+
+### Next
+
+Both problems above have the same root: the eval runs against live data, so a change can't be isolated from the market shifting underneath it. The plan is to rebuild the hard cases as Harbor tasks with LangChain's [eval-engineering skill](https://github.com/langchain-ai/langchain-skills), where the listings are fixed and verification is deterministic instead of judged. That is also where the conversational filtering path gets its first real test.
+
+The old 0.90 baseline is gone. It was measured against LLM-based filtering on a different dataset and was never comparable to this one.
 
 ## Project Structure
 
