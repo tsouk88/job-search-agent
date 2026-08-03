@@ -1,5 +1,5 @@
 from fastapi import FastAPI , UploadFile , Form , Request , Header , HTTPException
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from agent import graph  , normalize_jobs , filter_jobs  
 from fastapi.responses import PlainTextResponse
@@ -67,7 +67,7 @@ class SearchInput(BaseModel):
 
 class FeedbackInput(BaseModel):
     thread_id: str
-    feedback: str
+    feedback: str = Field(min_length=1 , max_length = 100)
 
 class Input(BaseModel):
     user_input: str
