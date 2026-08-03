@@ -246,36 +246,43 @@ The included `n8n_workflow.json` adds automated job alerts every 12 hours — no
 ![n8n Workflow](assets/n8n_workflow.png)
 ```
 Schedule (every 12h)
-  → Fetch from RemoteOK + Remotive + Himalayas (parallel)
-  → Filter by keywords
-  → Merge results
-  → POST to /evaluate (AI scoring)
+  → Search Settings   (query + thread_id — the only node you edit)
+  → Wake node         (GET /docs; expected to fail on a sleeping instance)
+  → Wait 60s
+  → POST /ask         (returns the formatted digest)
   → Send digest email via Gmail
 ```
 ![Email Digest](assets/email_digest.png)
 
+The workflow holds **no filtering logic of its own**. Earlier versions duplicated the keyword matching across five JavaScript Code nodes, which meant every fix to the Python scoring had to be made twice — and never was. Now n8n only schedules, calls the API and mails the result, so the digest gets the same deduplication, mojibake repair and relevance ranking as every other interface.
+
 ### Setup
 
 1. Import `n8n_workflow.json` into your n8n instance
-2. Configure your Gmail credentials in the Gmail node
-3. Update the `positionKeywords` array in the Code nodes to match your job search criteria
-4. Make sure your FastAPI backend is running and update the URL in the HTTP Request node if needed
+2. Configure your Gmail credentials in the Gmail node and set your address in `Send a message`
+3. In **Search Settings**, set `query` to whatever you are looking for
+4. In **Search Settings**, replace `YOUR_UNIQUE_THREAD_ID` with a value only you know — `python -c "import uuid;print(uuid.uuid4())"`. Anyone who learns this value can change that thread's filters, so do not publish it
+5. Point both HTTP nodes at your own backend (`http://host.docker.internal:8002` from Docker, `http://localhost:8002` without it)
 
-> The workflow connects to `http://host.docker.internal:8002/evaluate` by default (Docker setup). Change to `http://localhost:8002/evaluate` if running n8n locally without Docker.
+**Why the wake node and the 60-second wait.** On a sleeping free-tier instance the first request is answered with an immediate `503`, not a slow response — so a longer timeout does not help, and n8n's retry ceiling (5 tries, 5s apart) covers only ~25s of a ~50s cold start. The wake node exists purely to trigger the boot and is set to `On Error: Continue`, since failing is its normal outcome. Drop both nodes if your backend is always on.
 
-> `/evaluate` is the one endpoint that sends arbitrary text to Gemini, so it is not public. Set `EVALUATE_TOKEN` in your `.env` and put the same value in the workflow's `x-api-key` header, where the exported JSON carries a `YOUR_EVALUATE_TOKEN` placeholder. Without it the endpoint answers 401.
+**Optional — persistent filters.** The thread outlives the workflow, so exclusions only need to be set once: call `POST /feedback` with the same `thread_id` and something like `no senior, no staff`. Every later run reuses them. The response footer lists the filters that were actually stored, which is worth reading — the extraction is done by an LLM and may generalise more than you intended.
 
 ---
 
 ## API Endpoints
 
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/ask` | POST | Search jobs with keywords + applies memory filters |
-| `/feedback` | POST | Send feedback to agent ("no MERN", "no senior") — stored in memory |
-| `/reset` | POST | Clear all stored filters and return the unfiltered results |
-| `/upload` | POST | Upload PDF resume — agent extracts skills and finds matching jobs |
-| `/evaluate` | POST | n8n integration — AI scoring of job listings. Requires the `x-api-key` header |
+| Endpoint | Method | Calls an LLM | Description |
+|----------|--------|--------------|-------------|
+| `/ask` | POST | no | Search jobs with keywords + applies memory filters |
+| `/reset` | POST | no | Clear all stored filters and return the unfiltered results |
+| `/feedback` | POST | yes | Turn feedback ("no MERN", "no senior") into filter keywords. Input capped at 100 characters |
+| `/upload` | POST | yes | Upload PDF resume — agent extracts skills and finds matching jobs. Max 5MB, first 5 pages |
+| `/evaluate` | POST | yes | AI scoring of job listings. Requires the `x-api-key` header |
+
+Every endpoint is rate limited to 10 requests per minute per IP.
+
+**On the LLM surface.** Search costs nothing: since the scoring became deterministic, `/ask` and `/reset` make no model calls at all. Three endpoints still do, and they are constrained differently. `/evaluate` accepts arbitrary text and is therefore closed — set `EVALUATE_TOKEN` in `.env` and send the same value as `x-api-key`; the exported workflow carries a `YOUR_EVALUATE_TOKEN` placeholder, and without it the endpoint answers 401. `/feedback` and `/upload` stay open because the public demo needs them, so they are bounded by size instead: 100 characters of feedback, 5MB and 5 pages of PDF. Bounded is not the same as free — if you deploy this somewhere that matters, put a budget alert on the API key.
 
 ---
 
