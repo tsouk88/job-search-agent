@@ -1,36 +1,9 @@
 {
-  "name": "My workflow",
+  "name": "Remote Job Search",
   "nodes": [
     {
       "parameters": {
-        "url": "https://remoteok.com/api?tags=python",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        -416,
-        176
-      ],
-      "id": "66ba53c8-928f-427e-ba19-6cec4f14f037",
-      "name": "HTTP Request"
-    },
-    {
-      "parameters": {
-        "jsCode": "const positionKeywords = [\"python\", \"ai\", \"machine learning\", \"backend\", \"fastapi\", \"engineer\", \"backend developer\", \"automation\", \"llm\", \"rag\", \"langchain\"];\nconst excludeKeywords = [\"senior\", \"staff\", \"lead\", \"principal\", \"head of\", \"director\"];\n\nconst filtered = items.filter(item => {\n  const pos = (item.json.position || \"\").toLowerCase();\n\n  const posMatch = positionKeywords.some(pk => \n    new RegExp(`\\\\b${pk}\\\\b`, 'i').test(pos)\n  );\n  const isExcluded = excludeKeywords.some(ek => pos.includes(ek));\n\n  return posMatch && !isExcluded;\n});\n\nconst remoteokEmailBody = filtered.map(item => \n  `${item.json.position} - ${item.json.company}\\n${item.json.url}\\n${item.json.description}`\n).join(\"\\n\\n\");\n\nreturn [{ json: { emailBody: \"=== REMOTEOK JOBS ===\\n\\n\" + remoteokEmailBody } }];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -224,
-        176
-      ],
-      "id": "c1bd4e2e-e1f1-45cf-89b0-af74212de92d",
-      "name": "Code in JavaScript"
-    },
-    {
-      "parameters": {
-        "sendTo": "tsouk88@gmail.com",
+        "sendTo": "your@gmail.com",
         "subject": "Daily Job Alert",
         "emailType": "text",
         "message": "={{ $json.data }}",
@@ -39,12 +12,12 @@
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        736,
-        144
+        192,
+        160
       ],
-      "id": "13c6100d-091f-4828-9612-f069b8329de8",
+      "id": "60ad6bac-9ace-4854-a191-a55565d04837",
       "name": "Send a message",
-      "webhookId": "f5fcc769-77d4-4992-879c-e49379bf00aa",
+      "webhookId": "9726743a-6d0f-4fcd-8657-4ce26505b536",
       "executeOnce": true,
       "credentials": {
         "gmailOAuth2": {
@@ -70,257 +43,106 @@
         -656,
         160
       ],
-      "id": "39fe1d96-2f6a-4b0f-98a3-80e3d6a4c9c5",
+      "id": "fafb5862-a5e0-4f92-9287-e0bba352122f",
       "name": "Schedule Trigger"
     },
     {
       "parameters": {
-        "url": "https://remotive.com/api/remote-jobs?search=python",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        -416,
-        0
-      ],
-      "id": "b569e882-3358-48b7-9311-8b675dc5b699",
-      "name": "HTTP Request1"
-    },
-    {
-      "parameters": {
-        "jsCode": "const positionKeywords = [\"python\", \"ai\", \"machine learning\", \"backend\", \"fastapi\", \"engineer\", \"backend developer\", \"automation\", \"llm\", \"rag\", \"langchain\"];\nconst excludeKeywords = [\"senior\", \"staff\", \"lead\", \"principal\", \"head of\", \"director\"];\n\nconst remotiveJobs = items[0].json.jobs || [];\nconst filteredjobs = remotiveJobs.filter(item => {\n  const pos = (item.title || \"\").toLowerCase();\n  const location = (item.candidate_required_location || \"\").toLowerCase();\n\n  const posMatch = positionKeywords.some(pk => \n    new RegExp(`\\\\b${pk}\\\\b`, 'i').test(pos)\n  );\n  const locationMatch = location.includes(\"worldwide\") || \n                        location.includes(\"europe\") || \n                        location.includes(\"anywhere\");\n  const isExcluded = excludeKeywords.some(ek => pos.includes(ek));\n\n  return posMatch && locationMatch && !isExcluded;\n});\n\nconst email = filteredjobs.map(item => \n  `${item.title} - ${item.company_name}\\n${item.url}\\n${item.description}`\n).join(\"\\n\\n\");\n\nreturn [{ json: { emailBody: \"=== REMOTIVE JOBS ===\\n\\n\" + email } }];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -208,
-        16
-      ],
-      "id": "60f34a17-c433-48a9-aea0-6a2a8c17ae5c",
-      "name": "Code in JavaScript1"
-    },
-    {
-      "parameters": {
-        "jsCode": "const jobs = items.map(item => {\n    const text = item.json.emailBody || \"\";\n    return text.replace(/<[^>]*>/g, ' ').replace(/\\s+/g, ' ').trim();\n}).join(\"\\n\\n---\\n\\n\");\nreturn [{ json: { jobs } }];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        288,
-        160
-      ],
-      "id": "1a0bc265-2505-40ba-8067-2dc2aee6359b",
-      "name": "Code in JavaScript2"
-    },
-    {
-      "parameters": {
-        "numberInputs": 4
-      },
-      "type": "n8n-nodes-base.merge",
-      "typeVersion": 3.2,
-      "position": [
-        112,
-        144
-      ],
-      "id": "36d959b5-c3e8-4d57-ba29-a1f721b7cf96",
-      "name": "Merge"
-    },
-    {
-      "parameters": {
-        "url": "https://himalayas.app/jobs/api",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "q",
-              "value": "python ai engineer"
-            },
-            {
-              "name": "worldwide",
-              "value": "true"
-            },
-            {
-              "name": "sort",
-              "value": "recent"
-            }
-          ]
-        },
-        "options": {}
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        -400,
-        -192
-      ],
-      "id": "f8c71a29-c2f0-49fb-82fc-f1c2dfd5ae72",
-      "name": "HTTP Request2"
-    },
-    {
-      "parameters": {
-        "jsCode": "const positionKeywords = [\"python\", \"ai\", \"machine learning\", \"backend\", \"fastapi\", \"engineer\", \"backend developer\", \"automation\", \"llm\", \"rag\", \"langchain\"];\nconst acceptableSeniority = [\"Entry-level\", \"Mid-level\"];\n\nconst HimalayasJobs = items[0].json.jobs || [];\nconst filteredjobs = HimalayasJobs.filter(item => {\n  const pos = (item.title || \"\").toLowerCase();\n\n  const posMatch = positionKeywords.some(pk => \n    new RegExp(`\\\\b${pk}\\\\b`, 'i').test(pos)\n  );\n  const seniorityMatch = (item.seniority || []).some(s => acceptableSeniority.includes(s));\n\n  return posMatch && seniorityMatch;\n});\n\nconst email = filteredjobs.map(item => \n  `${item.title} - ${item.companyName}\\n${item.applicationLink}\\n${item.excerpt}`\n).join(\"\\n\\n\");\n\nreturn [{ json: { emailBody: \"=== Himalayas JOBS ===\\n\\n\" + email } }];"
-      },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        -192,
-        -192
-      ],
-      "id": "5ad1e107-4e7b-4383-aaf6-e150991163ac",
-      "name": "Code in JavaScript3"
-    },
-    {
-      "parameters": {
         "method": "POST",
-        "url": "http://host.docker.internal:8002/evaluate",
-        "sendHeaders": true,
-        "headerParameters": {
-          "parameters": [
-            {
-              "name": "x-api-key",
-              "value": "YOUR_EVALUATE_TOKEN"
-            },
-            {}
-          ]
-        },
+        "url": "http://localhost:8002/ask",
         "sendBody": true,
-        "bodyParameters": {
-          "parameters": [
-            {
-              "name": "jobs",
-              "value": "={{ $json.jobs }}"
-            }
-          ]
-        },
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"user_input\": \"{{ $('Search Settings').item.json.query }}\",\n  \"thread_id\": \"{{ $('Search Settings').item.json.thread_id }}\"\n}",
         "options": {
           "response": {
             "response": {
               "responseFormat": "text"
             }
-          }
+          },
+          "timeout": 90000
         }
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        496,
+        32,
         160
       ],
-      "id": "a92303d0-efd6-48ff-b108-641a1b20cc07",
-      "name": "HTTP Request3",
-      "alwaysOutputData": false
+      "id": "66b2f4e5-9d04-400f-9c67-baeb8d3aa7c9",
+      "name": "HTTP Request",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000
     },
     {
       "parameters": {
-        "url": "https://jobicy.com/api/v2/remote-jobs?count=20&tag=python",
+        "assignments": {
+          "assignments": [
+            {
+              "id": "ef49ca41-781e-4ca9-b249-33f6fb6e8cce",
+              "name": "query",
+              "value": "python AI backend engineer remote",
+              "type": "string"
+            },
+            {
+              "id": "0e62b082-e064-43fd-95ac-0d505f405583",
+              "name": "thread_id",
+              "value": "YOUR_UNIQUE_THREAD_ID",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        -448,
+        160
+      ],
+      "id": "b6471745-b461-466c-b57e-473ec88fa766",
+      "name": "Search Settings"
+    },
+    {
+      "parameters": {
+        "url": "http://localhost:8002/docs",
         "options": {}
       },
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -416,
-        384
+        -272,
+        160
       ],
-      "id": "64038f56-51f7-4812-abde-0459183e5362",
-      "name": "HTTP Request4"
+      "id": "e5bd5bef-04ab-4129-9225-a2a6d1a8e38c",
+      "name": "Wake node",
+      "retryOnFail": false,
+      "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "jsCode": "const positionKeywords = [\"python\", \"ai\", \"machine learning\", \"backend\", \"fastapi\", \"engineer\", \"backend developer\", \"automation\", \"llm\", \"rag\", \"langchain\"];\nconst acceptableLevels = [\"Any\", \"Entry\", \"Junior\", \"Midweight\"];\n\nconst filtered = items.filter(item => {\n  const pos = (item.json.jobTitle || \"\").toLowerCase();\n  const posMatch = positionKeywords.some(pk => \n    new RegExp(`\\\\b${pk}\\\\b`, 'i').test(pos)\n  );\n  const levelMatch = acceptableLevels.includes(item.json.jobLevel);\n  return posMatch && levelMatch;\n});\n\nconst jobicyEmailBody = filtered.map(item => \n  `${item.json.jobTitle} - ${item.json.companyName}\\n${item.json.url}\\n${item.json.jobDescription}`\n).join(\"\\n\\n\");\n\nreturn [{ json: { emailBody: \"=== JOBICY JOBS ===\\n\\n\" + jobicyEmailBody } }];"
+        "amount": 60
       },
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
       "position": [
-        -48,
-        368
+        -112,
+        160
       ],
-      "id": "842d3154-88cf-45f8-92be-50e40cb9e6d9",
-      "name": "Code in JavaScript4"
-    },
-    {
-      "parameters": {
-        "fieldToSplitOut": "jobs",
-        "options": {}
-      },
-      "type": "n8n-nodes-base.splitOut",
-      "typeVersion": 1,
-      "position": [
-        -256,
-        400
-      ],
-      "id": "e38e2897-6586-4081-9e3c-beebcaa53aac",
-      "name": "Split Out"
+      "id": "280b619c-91de-4944-8b3a-4a1c066af962",
+      "name": "Wait",
+      "webhookId": "82f3e244-f815-46c5-870b-fd132288bcbc"
     }
   ],
   "pinData": {},
   "connections": {
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 2
-          }
-        ]
-      ]
-    },
     "Schedule Trigger": {
       "main": [
         [
           {
-            "node": "HTTP Request1",
+            "node": "Search Settings",
             "type": "main",
             "index": 0
-          },
-          {
-            "node": "HTTP Request",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "HTTP Request2",
-            "type": "main",
-            "index": 0
-          },
-          {
-            "node": "HTTP Request4",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request1": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript1",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript1": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 1
           }
         ]
       ]
@@ -330,51 +152,7 @@
         []
       ]
     },
-    "Code in JavaScript2": {
-      "main": [
-        [
-          {
-            "node": "HTTP Request3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Merge": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript2",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request2": {
-      "main": [
-        [
-          {
-            "node": "Code in JavaScript3",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Code in JavaScript3": {
-      "main": [
-        [
-          {
-            "node": "Merge",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "HTTP Request3": {
+    "HTTP Request": {
       "main": [
         [
           {
@@ -385,33 +163,33 @@
         ]
       ]
     },
-    "HTTP Request4": {
+    "Search Settings": {
       "main": [
         [
           {
-            "node": "Split Out",
+            "node": "Wake node",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "Code in JavaScript4": {
+    "Wake node": {
       "main": [
         [
           {
-            "node": "Merge",
+            "node": "Wait",
             "type": "main",
-            "index": 3
+            "index": 0
           }
         ]
       ]
     },
-    "Split Out": {
+    "Wait": {
       "main": [
         [
           {
-            "node": "Code in JavaScript4",
+            "node": "HTTP Request",
             "type": "main",
             "index": 0
           }
@@ -422,14 +200,15 @@
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate"
+    "binaryMode": "separate",
+    "availableInMCP": false
   },
-  "versionId": "a8610e00-3f32-45a2-8d0c-1a17191df513",
+  "versionId": "0c987ace-0972-4b34-bb39-8794b7fa6b45",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "06216e3172ef64b78f5327c03e8be718e2118a5c0463ccb5375ea1dfb2b8f336"
   },
   "nodeGroups": [],
-  "id": "BXJdLy8Yys2gITZa",
+  "id": "kBCwFI65I6AVn5Qr",
   "tags": []
 }
