@@ -319,6 +319,8 @@ The missing comma is worth a mention because Python never complained about it. T
 
 It measures the first response only. Users narrow results by talking to the agent ("no support roles", "no senior"), and none of the 22 cases exercise that path, so day-to-day use is better than 0.812 suggests.
 
+That path is no longer untravelled, though it is still unmeasured. The scheduled digest reuses one thread, so its stored exclusions are applied twice a day against whatever the boards are advertising, and the MCP tool takes exclusions as an argument on every call. Breakage would now be noticed within hours. Quality still would not — nothing here produces a number.
+
 It also moves. The agent queries live job boards, so two runs an hour apart see different listings and individual cases wobble by a lot. The aggregate is the signal, not any single row.
 
 ### Known limitation
@@ -329,7 +331,7 @@ The obvious fix, requiring two matching words, was tried and rejected because it
 
 ### Next
 
-Both problems above have the same root: the eval runs against live data, so a change can't be isolated from the market shifting underneath it. The plan is to rebuild the hard cases as Harbor tasks with LangChain's [eval-engineering skill](https://github.com/langchain-ai/langchain-skills), where the listings are fixed and verification is deterministic instead of judged. That is also where the conversational filtering path gets its first real test.
+Both problems above have the same root: the eval runs against live data, so a change can't be isolated from the market shifting underneath it. The plan is to rebuild the hard cases as Harbor tasks with LangChain's [eval-engineering skill](https://github.com/langchain-ai/langchain-skills), where the listings are fixed and verification is deterministic instead of judged. Filtering belongs there too: a fixed set of listings and a known exclusion has exactly one correct output, which is the kind of thing worth asserting rather than judging.
 
 The old 0.90 baseline is gone. It was measured against LLM-based filtering on a different dataset and was never comparable to this one.
 
