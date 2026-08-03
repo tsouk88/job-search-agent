@@ -100,6 +100,41 @@ See [`voice/README.md`](./voice/README.md) for architecture details and setup in
 
 ---
 
+## 🔌 MCP Server
+
+A third interface onto the same brain: [`mcp_server.py`](./mcp_server.py) exposes the agent over the [Model Context Protocol](https://modelcontextprotocol.io), so Claude Desktop, Claude Code and any other MCP client can search jobs directly inside a conversation.
+
+**No API keys required.** Since the search path is fully deterministic, this server needs no `GEMINI_API_KEY`, no database and no network config — clone, install, point your client at it.
+
+One read-only tool:
+
+```python
+search_remote_jobs(query: str, exclude_keywords: list[str] = []) -> list[dict]
+```
+
+It returns the normalized job shape (`position`, `company`, `location`, `salary`, `description`, `apply_url`) rather than formatted text, so the calling model can filter and rank the results itself.
+
+The tool is designed around **intent, not endpoints**: `exclude_keywords` is a parameter rather than a separate feedback call, which means no thread state and no Postgres here. The client's own conversation is the memory — say "no senior roles" and it simply calls the tool again with a fuller exclusion list, extracting the keywords itself instead of spending a Gemini call.
+
+Fan-out results are cached in-process per query for 4 hours, so refinements filter locally and never re-hit the job boards.
+
+**Setup** — add to `claude_desktop_config.json` (Windows: `%APPDATA%\Claude\`, macOS: `~/Library/Application Support/Claude/`):
+
+```json
+{
+  "mcpServers": {
+    "jobsearch": {
+      "command": "/absolute/path/to/.venv/bin/python",
+      "args": ["/absolute/path/to/mcp_server.py"]
+    }
+  }
+}
+```
+
+Use absolute paths to the virtualenv's interpreter — the client starts the process directly, with no shell and no activated environment. Restart the client fully; logs land in `logs/mcp-server-jobsearch.log`.
+
+---
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -107,6 +142,7 @@ See [`voice/README.md`](./voice/README.md) for architecture details and setup in
 | Agent | LangGraph (fan-out with `Send` API) |
 | Memory | PostgreSQL via `PostgresSaver` |
 | Voice | Pipecat (Daily transport, Deepgram STT, ElevenLabs TTS) |
+| MCP | Official Python SDK (`mcp`), stdio transport |
 | LLM | Google Gemini 2.5 Flash — feedback extraction, CV parsing, n8n scoring |
 | LLM Integration | LangChain `init_chat_model` |
 | Backend | FastAPI |
@@ -296,6 +332,7 @@ The old 0.90 baseline is gone. It was measured against LLM-based filtering on a 
 job-search-agent/
 ├── agent.py           # LangGraph agent — fan-out, scoring, filtering
 ├── voice_agent.py     # VoiceSession — stateless wrapper around the same graph
+├── mcp_server.py      # MCP server (stdio) — same graph, one read-only tool
 ├── main.py            # FastAPI backend + all endpoints
 ├── eval_runner.py     # LangSmith evaluation pipeline
 ├── requirements.txt
