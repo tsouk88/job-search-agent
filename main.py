@@ -17,7 +17,6 @@ from urllib.parse import urlparse
 import asyncio
 import pdfplumber
 import io
-import re
 import secrets
 
 
@@ -219,14 +218,10 @@ def format_jobs_markdown(jobs: list, memory: list | None = None) -> str:
     for job in jobs:
         url = urlparse(job.get("apply_url" , ""))
         site_name = url.netloc.split(".")[0].capitalize()
-        salary = job.get("salary", "")
-        clean_salary = re.sub(r'[\s\-0]', '', f"{salary}")
-        if not clean_salary:
-            salary= "Salary not listed"
         loc = job.get("location" , "")
         if not loc:
             loc = "Location not specified"
-        formatted = f'**- {job.get("position", "")}** at **{job.get("company", "")}** | {loc} | {salary}  \n {job.get("description", "")} \n Apply: [{site_name}]({job.get("apply_url", "")})'
+        formatted = f'**- {job.get("position", "")}** at **{job.get("company", "")}** | {loc} | {job.get("salary" , "")}  \n {job.get("description", "")} \n Apply: [{site_name}]({job.get("apply_url", "")})'
         form_jobs.append(formatted)
     format_str = "\n\n".join(form_jobs)
     return f"{format_str}\n\n{SOURCES}{filters}"

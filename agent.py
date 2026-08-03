@@ -5,6 +5,7 @@ from datetime import datetime
 import urllib.parse
 import requests
 import re
+import sys
 import textwrap
 import html
 
@@ -103,16 +104,20 @@ def normalize_jobs(jobs):
     for j in jobs:
         company = j.get("company") or j.get("companyName") or j.get("company_name") or "Unknown"
         position = j.get("title") or j.get("position", "") or j.get("jobTitle" , "") or "Unknown"
+        salary = j.get("salary") or f"{j.get('salary_min', '')} - {j.get('salary_max', '')}" or f"{j.get('minSalary', '')} - {j.get('maxSalary', '')}"
+        clean_salary = re.sub(r'[\s\-0]', '', f"{salary}")
+        if not clean_salary:
+            salary = "Salary not listed"
         job_hash = re.sub(r'[^a-z0-9]', '', f"{company.lower()}{position.lower()}")
         if job_hash in seen_hashes:
             continue
         seen_hashes.add(job_hash)
         clean_jobs.append({
-            "company": fix_mojibake(company.strip()),
-            "position": fix_mojibake(position.strip()),
+            "company": fix_mojibake(" ".join(company.split())),
+            "position": fix_mojibake(" ".join(position.split())),
             "location": fix_mojibake(j.get("location") or j.get("jobGeo") or j.get("candidate_required_location") or ", ".join(j.get("locationRestrictions") or [])).strip(", "),
             "description": fix_mojibake(clean_description(j.get("description") or j.get("excerpt", "") or j.get("jobExcerpt" , ""))),
-            "salary": j.get("salary") or f"{j.get('salary_min', '')} - {j.get('salary_max', '')}" or f"{j.get('minSalary', '')} - {j.get('maxSalary', '')}",
+            "salary": salary,
             "apply_url": j.get("apply_url") or j.get("url") or j.get("applicationLink")
             })
     return clean_jobs
@@ -147,7 +152,7 @@ def fetch_jobs(state:State):
             # Limit to 10 jobs for cost control — remove [:10] to search all jobs
             return {"fetched_jobs": fetched_jobs[:10]}
         except requests.exceptions.RequestException as e:
-            print(f"Error {e}")
+            print(f"Error {e}", file=sys.stderr)
             return {"fetched_jobs": []}
         
 def fetch_sjobs(state:State):
@@ -163,7 +168,7 @@ def fetch_sjobs(state:State):
             fetched_jobs = data.get("jobs" , [])[:10]
             return {"fetched_jobs": fetched_jobs}
         except requests.exceptions.RequestException as e:
-                print(f"Error {e}")
+                print(f"Error {e}", file=sys.stderr)
                 return {"fetched_jobs": []}
 
 def fetch_tjobs(state:State):
@@ -178,7 +183,7 @@ def fetch_tjobs(state:State):
         fetched_jobs = data.get("jobs" , [])[:10] 
         return {"fetched_jobs": fetched_jobs}
     except requests.exceptions.RequestException as e:
-            print(f"Error {e}")
+            print(f"Error {e}", file=sys.stderr)
             return {"fetched_jobs": []}
     
 #def fetch_fijobs(state:State):
@@ -208,7 +213,7 @@ def fetch_fjobs(state:State):
         fetched_jobs = data.get("jobs", [])[:10] 
         return {"fetched_jobs": fetched_jobs}
     except requests.exceptions.RequestException as e:
-        print(f"Error {e}")
+        print(f"Error {e}", file=sys.stderr)
         return {"fetched_jobs": []}
 
 def collect_results(state: State):
