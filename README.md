@@ -288,6 +288,10 @@ Every endpoint is rate limited to 10 requests per minute per IP.
 
 ## Evals
 
+There are two, and they answer different questions. The LangSmith eval asks *how relevant are the results in a live market*, and a model judges the answer. The [Harbor](https://www.harborframework.com) eval asks *does the filter still do exactly what I think it does*, and nothing judges anything — the listings are frozen and the output is asserted.
+
+### Relevance — LangSmith, 0.812
+
 The agent scores **0.812 across 22 test cases**. Roughly four out of every five listings it returns are relevant to the query, and twelve of the cases score a clean 1.0.
 
 The setup is a LangSmith dataset where each query carries a written description of what a good answer looks like, plus a Gemini 2.5 Flash judge that counts how many returned listings meet it. Score is relevant divided by returned, so padding a response with weak matches costs you.
@@ -298,7 +302,7 @@ The queries include narrow niches (`rust`, `blockchain solidity`), vague ones (`
 python eval_runner.py   # posts to localhost:8002/ask, change the port if your backend runs elsewhere
 ```
 
-### How it got there
+#### How it got there
 
 Most of the gain came from taking things out. Every step below was measured against the same 22 cases:
 
@@ -315,25 +319,55 @@ The big jump came from deleting a rule that guaranteed at least 8 results. On a 
 
 The missing comma is worth a mention because Python never complained about it. Two adjacent string literals in a set silently became one, which quietly dropped `engineer` and `remote` from the generic-word list. It only surfaced because a nonsense query started returning listings with "Remote" in the title.
 
-### What the number doesn't cover
+#### What the number doesn't cover
 
 It measures the first response only. Users narrow results by talking to the agent ("no support roles", "no senior"), and none of the 22 cases exercise that path, so day-to-day use is better than 0.812 suggests.
 
-That path is no longer untravelled, though it is still unmeasured. The scheduled digest reuses one thread, so its stored exclusions are applied twice a day against whatever the boards are advertising, and the MCP tool takes exclusions as an argument on every call. Breakage would now be noticed within hours. Quality still would not — nothing here produces a number.
+That path is no longer untravelled. The scheduled digest reuses one thread, so its stored exclusions are applied twice a day against whatever the boards are advertising, and the MCP tool takes exclusions as an argument on every call. It now has a number too, though not from here — see below.
 
 It also moves. The agent queries live job boards, so two runs an hour apart see different listings and individual cases wobble by a lot. The aggregate is the signal, not any single row.
 
-### Known limitation
+#### Known limitation
 
 One title match is enough to admit a listing. That is fine when the distinctive word in a query is unambiguous, and it falls apart when it isn't: `data` pulls in Data Analysts, `wordpress` pulls in WordPress Support Specialists.
 
 The obvious fix, requiring two matching words, was tried and rejected because it threw away correct results like `Software Engineer (Go, Python, TS)`. Measurement showed why it could never have worked. Specific terms like `sql`, `aws` and `pytorch` appear in **0%** of returned job titles, because titles say "DevOps Engineer", not "DevOps Kubernetes AWS Engineer". There is only ever one word to match on.
 
+The old 0.90 baseline is gone. It was measured against LLM-based filtering on a different dataset and was never comparable to this one.
+
+### Filtering — Harbor, asserted
+
+Both problems above share a root: the number moves for reasons that have nothing to do with the code. Live listings shift hourly, and the same input scored 0.333 and then 0.167 because a model was doing the scoring.
+
+So the filter is measured somewhere else. One capture of all four job boards is frozen into the repository, the container runs with its network disabled, and the expected result is five listings written out by hand. Same input, same number, every time.
+
+```bash
+uv tool install harbor
+
+PYTHONPATH=$(pwd) harbor run -p evals -i "*filter-exclusion-senior*" \
+  -a evals.harbor_agents.pipeline_agent:PipelineAgent \
+  -e docker -o evals/jobs \
+  --extra-docker-compose evals/configs/no-network.yaml \
+  --job-name local -y
+
+python evals/check_reward.py evals/jobs/local
+```
+
+Docker is the only requirement. No API key, because nothing in this path calls a model — the harness is the repository's own MCP tool, running unmodified against fixture files instead of the internet. That is also why it can sit on every pull request: it costs a runner minute and no tokens.
+
+The query is `python developer`, excluding `senior`, `game` and `canonical`. Three terms rather than one, so that both halves of the filter are exercised: `senior` through the title-only seniority rule, `canonical` through the full-text rule, where the word appears in descriptions and in no title at all. Five listings survive, five don't. Leaving one in and dropping one too many both score zero.
+
+The expected set is written by hand, which is the whole point. A verifier that recomputed it by calling `filter_jobs` would be comparing the code against itself and would pass forever.
+
+It bites: collapsing the filter so every keyword is matched against titles only takes the score from 1.0 to 0.0, and the failing test names the two listings that leaked through. Notably, deleting `senior` from the seniority list does **not** — the word would still match the same title as an ordinary keyword. Controls that fail to fail are worth knowing about.
+
+What it does not cover: one query, one moment in the market, and no listing in the capture carries "senior" in its description alone — so the rule that seniority is judged on titles only is never tested in the one shape that separates it from ordinary matching. The fixtures are real captured data and were not edited to manufacture that case.
+
+Design notes and the full reasoning live in [`evals/specs/`](./evals/specs).
+
 ### Next
 
-Both problems above have the same root: the eval runs against live data, so a change can't be isolated from the market shifting underneath it. The plan is to rebuild the hard cases as Harbor tasks with LangChain's [eval-engineering skill](https://github.com/langchain-ai/langchain-skills), where the listings are fixed and verification is deterministic instead of judged. Filtering belongs there too: a fixed set of listings and a known exclusion has exactly one correct output, which is the kind of thing worth asserting rather than judging.
-
-The old 0.90 baseline is gone. It was measured against LLM-based filtering on a different dataset and was never comparable to this one.
+Relevance is the remaining defect, and it now has somewhere to be measured. The scaffolding above is reusable as-is: freeze a capture, label which listings genuinely answer the query, assert. Whatever the fix turns out to be, it has to lean on descriptions — the measurement above shows there is rarely a second title word to ask for.
 
 ## Project Structure
 
@@ -347,6 +381,11 @@ job-search-agent/
 ├── requirements.txt
 ├── .env.example
 ├── n8n_workflow.json  # n8n automation workflow
+├── evals/             # Harbor eval — frozen fixtures, deterministic verifier
+│   ├── filter-exclusion-senior/   # the task: instruction, environment, tests
+│   ├── harbor_agents/             # adapter that runs the pipeline as the agent
+│   ├── specs/                     # design notes: harness, environment, task
+│   └── check_reward.py            # turns a Harbor job into a build verdict
 ├── frontend/          # Next.js 15 frontend
 └── voice/             # Voice AI interface (Pipecat) — see voice/README.md
     └── server/
