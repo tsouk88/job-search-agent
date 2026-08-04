@@ -4,11 +4,22 @@ okf_version: "0.1"
 
 # Files
 
-- [Domain Concepts](domains.md) - Core domain concepts for the job search agent — job source aggregation, deduplication, two-pass ranking, thread memory (avoid-keywords), query interpretation, resume-derived search, and evaluation semantics.
-- [Integrations](integrations.md) - External service integrations for the job search agent — job APIs, LLM/orchestration stack, persistence, observability, UI contract, n8n automation, and the voice agent's separate service stack.
-- [Operations / Runbook](operations.md) - Operational runbook for the job search agent — local startup, required configuration, runtime dependencies, endpoint behavior, troubleshooting, and git-history failure modes.
-- [Job Search AI Agent Quickstart](quickstart.md) - Entry point for understanding the remote job search assistant — a LangGraph agent with FastAPI backend, Next.js frontend, optional n8n automation, LangSmith evals, and a voice interface.
-- [Source Map](source-map.md) - Map of all entry points, supporting files, and the voice agent subsystem in the repository, with responsibilities and suggested edit order.
-- [Testing and Evals](testing.md) - Testing strategy for the job search agent — LangSmith eval runner, what the evals measure, manual checks, and regression targets after changes.
-- [Voice Agent](voice-agent.md) - Voice interface for the job search agent using Pipecat, Deepgram STT, ElevenLabs TTS, and Daily WebRTC transport. Shares the same LangGraph brain as the REST API but uses in-memory state and local result caching for faster feedback loops.
-- [Workflows](workflows.md) - User-visible and maintenance workflows for the job search agent — keyword search, feedback loop, CV upload, n8n digest, and eval pipeline — with change guidance for each.
+- [Domain Concepts](domains.md) - Core domain concepts — job source aggregation, normalization and mojibake repair, title-weighted scoring, signal tokens, thread memory and the seniority/full-text filter split, query interpretation, resume-derived search, and evaluation semantics.
+- [Integrations](integrations.md) - External service integrations — four job APIs with their query patterns, the LLM and LangGraph stack, PostgreSQL persistence, LangSmith observability, the frontend HTTP contract, n8n automation, the MCP client contract, and the voice agent service stack.
+- [MCP Server](mcp-server.md) - The Model Context Protocol stdio server in mcp_server.py — one read-only tool (search_remote_jobs), in-process 4h cache, no database, no LLM, no env vars. Designed for intent-based exclusion via explicit args.
+- [Operations / Runbook](operations.md) - Operational runbook — local startup, all environment variables, runtime dependencies, LangSmith observability config, Render/Vercel deployment, endpoint behavior, CORS gotchas, cold-start handling, and troubleshooting.
+- [Job Search AI Agent Quickstart](quickstart.md) - Entry point for the wiki — a LangGraph job search agent with three interfaces (REST, MCP, Voice), deterministic scoring, PostgreSQL memory, Next.js frontend, Harbor and LangSmith evals, and optional n8n automation.
+- [Source Map](source-map.md) - File-level map of all entry points, supporting files, voice and evals subsystems, deployment files, and authoring-convention skills — with responsibilities and suggested edit order.
+- [Testing and Evals](testing.md) - Two eval systems — the deterministic Harbor eval (frozen fixtures, CI, exact-set assertions) and the LangSmith eval (live job boards, LLM judge, 0.812 baseline). No classic unit test suite.
+- [Voice Agent](voice-agent.md) - Voice interface using Pipecat with Deepgram STT, ElevenLabs TTS, and Daily WebRTC transport. Shares the same agent.py graph as REST but uses in-memory MemorySaver, caches last_jobs for local re-filtering, and routes commands by first word.
+- [Workflows](workflows.md) - User-visible and maintenance workflows — keyword search, feedback loop, CV upload, n8n digest, Harbor eval, and LangSmith eval — with change guidance for each.
+
+# Directories
+
+- [architecture](architecture/)
+- [evals](evals/)
+- [frontend](frontend/)
+- [integrations](integrations/)
+- [operations](operations/)
+- [testing](testing/)
+- [workflows](workflows/)

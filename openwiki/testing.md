@@ -1,88 +1,95 @@
 ---
 type: Reference
 title: Testing and Evals
-description: Testing strategy for the job search agent — LangSmith eval runner, what the evals measure, manual checks, and regression targets after changes.
-tags: [testing, evals, langsmith, regression, quality]
+description: Two eval systems — the deterministic Harbor eval (frozen fixtures, CI, exact-set assertions) and the LangSmith eval (live job boards, LLM judge, 0.812 baseline). No classic unit test suite.
+tags: [testing, evals, harbor, langsmith, regression, quality, ci]
 ---
 
 # Testing and evals
 
-This repository does not expose a classic unit-test suite in the inspected files; the main quality gate is the LangSmith eval pipeline plus manual end-to-end verification.
+This repository has no classic unit-test suite. Quality is measured by two complementary eval systems:
 
-## LangSmith eval runner
+| System | What it measures | Data | Verifier | CI | Current |
+|---|---|---|---|---|---|
+| [Harbor eval](evals/harbor-eval.md) | `filter_jobs` exclusion logic | Frozen fixtures (captured 04/08/2026) | Deterministic pytest assertions | Yes (every push to `agent.py`/`mcp_server.py`/`evals/`) | 1 trial passes |
+| [LangSmith eval](evals/langsmith-eval.md) | End-to-end search quality | Live job boards | Gemini 2.5 Flash judge | No (manual) | 0.812 over 22 cases |
 
-`eval_runner.py`:
+## Harbor eval — deterministic
 
-- posts sample queries to `POST /ask`
-- captures streamed output as text
-- compares the output against reference expectations with a Gemini-based judge
-- reports correctness as the ratio `relevant / total` (continuous, e.g. 0.812)
+The Harbor eval is the CI gate. It runs on every push or PR that touches `agent.py`, `mcp_server.py`, `evals/**`, or `.github/workflows/eval.yml`. A red build means the filter changed behavior.
 
-This is the best place to update when the agent prompt, source set, or result format changes.
+- **Task:** `filter-exclusion-senior` — query `python developer`, exclude `["senior", "game", "canonical"]`
+- **Environment:** Docker, no network, frozen API fixtures, no LLM, no database
+- **Entry under test:** `mcp_server.search_remote_jobs(query, exclude_keywords)`
+- **Pass condition:** `output.json` `apply_url` set exactly equals `expected.json` `keep` set
+- **Evidence:** `prefilter.json` (pre-filter) + `output.json` (post-filter) + `result.json` (reward)
+- **CI:** `.github/workflows/eval.yml` → `harbor run` → `check_reward.py` (exit 0/1/2)
 
-## What the evals are measuring
+→ Full details: [Harbor eval](evals/harbor-eval.md)
 
-The current evaluation logic is mostly checking:
+### Running locally
 
-- whether the returned jobs match the expected query intent
-- whether irrelevant jobs are excluded
-- whether the output is empty when jobs should exist
+```bash
+harbor run \
+  -p evals \
+  -i "*filter-exclusion-senior*" \
+  -a evals.harbor_agents.pipeline_agent:PipelineAgent \
+  -e docker \
+  -o evals/jobs \
+  --extra-docker-compose evals/configs/no-network.yaml \
+  --job-name local-test -y
 
-It intentionally does not grade description quality.
+python evals/check_reward.py evals/jobs/local-test
+```
 
-## Manual checks worth running after changes
+Requires Docker and `uv tool install harbor`.
 
-1. `GET` is not used; test the actual endpoints.
-2. Call `POST /ask` with a basic keyword query.
-3. Send an exclusion message such as `no MERN` and confirm `/feedback` updates memory.
-4. Upload a small PDF CV and verify `/upload` streams results.
-5. If n8n is in use, confirm `/evaluate` still accepts the workflow payload.
+## LangSmith eval — live quality measurement
+
+The LangSmith eval measures end-to-end quality against live job boards. It is run manually, not in CI, because the data moves.
+
+- **Dataset:** `job-search-eval` (22 queries with reference answers)
+- **Judge:** Gemini 2.5 Flash with structured output (`relevant` / `total`)
+- **Score:** `relevant / total` per query, averaged
+- **Baseline:** 0.812 (12 cases score 1.0)
+- **Port:** `localhost:8002` (commit `6ef4e7c`)
+
+→ Full details: [LangSmith eval](evals/langsmith-eval.md)
+
+### Running
+
+```bash
+# Start the backend on port 8002
+uvicorn main:app --port 8002
+
+# In another terminal
+python eval_runner.py
+```
+
+Requires `LANGSMITH_API_KEY` and `GEMINI_API_KEY`.
+
+## Manual checks after changes
+
+1. **Search:** `POST /ask` with a basic keyword query (e.g., `python developer`)
+2. **Feedback:** Send `no MERN` and confirm `/feedback` updates memory (check the "Active filters" footer)
+3. **Reset:** Send `reset filters` and confirm `/reset` clears exclusions
+4. **Upload:** Upload a small PDF CV and verify `/upload` returns job listings
+5. **MCP:** Start the MCP server and call `search_remote_jobs` from an MCP client
+6. **n8n:** If in use, confirm `/evaluate` accepts the workflow payload with the correct `x-api-key`
+7. **Harbor:** If `agent.py` or `mcp_server.py` changed, run the Harbor eval
 
 ## Good regression targets
 
-- backend streaming regressions
-- source API changes or rate limiting
-- output format changes that break markdown rendering
-- memory persistence between requests
-- eval score drops after prompt or source edits
-
-## Eval baseline
-
-Current baseline is **0.812 across 22 cases** (LangSmith dataset `job-search-eval`, Gemini 2.5 Flash judge). Roughly four in five returned listings are relevant and twelve cases score a clean 1.0. The score is `relevant / total`, so padding a response with weak matches lowers it.
-
-The dataset covers narrow niches (`rust`, `blockchain solidity`), vague queries (`remote job`), a query whose right answer is empty (`COBOL mainframe developer`), and intentional misspellings — typos are not corrected on purpose, so `pyton developer` correctly returns nothing.
-
-### How the score moved
-
-All steps measured against the same 22 cases; most gains came from removing rules:
-
-| Change | Score |
-|---|---|
-| Starting point | 0.558 |
-| Stop trusting RemoteOK's tags, match on titles | 0.575 |
-| Remove the guaranteed minimum of 8 results | 0.679 |
-| Treat `developer` and `engineer` as meaningful words | 0.584, reverted |
-| Fix reference answers for typo queries | 0.751 |
-| Fix a missing comma in the generic-word list | 0.812 |
-
-The largest jump came from deleting the rule that guaranteed at least 8 results; the missing-comma fix mattered because two adjacent string literals in a Python set silently became one and dropped `engineer` and `remote` from the generic-word list.
-
-### What the number does not cover
-
-- First response only — none of the 22 cases exercise conversational filtering (`no support roles`, `no senior`), so real usage is better than 0.812 suggests.
-- Live data — the agent queries live job boards, so individual cases wobble between runs; the aggregate is the signal.
-- Known limitation: one title match is enough to admit a listing, so `data` pulls in Data Analysts and `wordpress` pulls in WordPress Support Specialists. Requiring two matching words was tried and rejected because specific terms like `sql`, `aws`, and `pytorch` appear in ~0% of returned job titles.
-
-### Next
-
-The hard cases are planned to be rebuilt as Harbor tasks with LangChain's eval-engineering skill, where listings are fixed and verification is deterministic instead of judged. That is also where the conversational filtering path gets its first real test.
-
-The old ~0.90 baseline is gone. It was measured against LLM-based filtering on a different dataset and was never comparable to this one.
+- `filter_jobs` behavior changes (run Harbor eval)
+- Scoring formula changes (run both evals)
+- Source API changes or removal (re-run LangSmith, update Harbor fixtures if needed)
+- Output format changes that break markdown rendering
+- Memory persistence between requests
+- Eval score drops after scoring or source edits
 
 ## Source references
 
-- `eval_runner.py`
-- `main.py`
-- `frontend/app/page.tsx`
-- `README.md`
-- git commits `b3738bc`, `662d71d`
+- `eval_runner.py` — LangSmith harness
+- `evals/` — Harbor task, adapter, verifier, CI
+- `.github/workflows/eval.yml` — Harbor CI
+- Commits `df2b58a` (CI), `60d33bc` (0.812 baseline), `bc47271` (frozen fixtures)

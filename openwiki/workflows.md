@@ -1,86 +1,123 @@
 ---
 type: Reference
 title: Workflows
-description: User-visible and maintenance workflows for the job search agent — keyword search, feedback loop, CV upload, n8n digest, and eval pipeline — with change guidance for each.
-tags: [workflows, user-flows, agent, feedback, eval]
+description: User-visible and maintenance workflows — keyword search, feedback loop, CV upload, n8n digest, Harbor eval, and LangSmith eval — with change guidance for each.
+tags: [workflows, user-flows, agent, feedback, eval, search]
 ---
 
 # Workflows
 
-This repo has four user-visible workflows and one maintenance workflow that matter for future edits.
-
 ## 1. Keyword job search
 
-Flow:
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Heuristic: an unescaped angle bracket inside a label breaks rendering; rephrase the label. -->
+```text
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant B as Backend
+    participant G as Agent Graph
+    participant PG as Postgres
 
-1. User types a keyword query in the frontend.
-2. The frontend POSTs to `/ask` with a stable `thread_id`.
-3. `main.py` loads any stored memory for that thread.
-4. The LangGraph agent fans out to multiple job APIs in parallel.
-5. The backend deduplicates and reshapes jobs.
-6. The backend returns the ranked top-12 jobs as streamed text.
+    U->>F: Types keyword query
+    F->>B: POST /ask {user_input, thread_id}
+    B->>PG: agent.get_state(thread_id)
+    PG-->>B: last_fetch_time, memory, clean_jobs
+    alt Cache miss (no fetch, query changed, or > 4h)
+        B->>G: agent.invoke({user_input})
+        G->>G: fan_out to 4 APIs
+        G->>G: collect_results (dedup, score, rank)
+        G-->>B: clean_jobs, last_fetch_time
+    else Cache hit
+        B->>B: use cached clean_jobs
+    end
+    B->>B: normalize_jobs(clean_jobs)
+    B->>B: filter_jobs(normalized, memory)
+    B-->>F: PlainTextResponse (markdown)
+    F->>U: Render markdown progressively
+```
 
-The search path itself makes no LLM call: ranking is pure keyword scoring in `agent.py` (title hits outweigh description hits, with a two-pass widening from titles to descriptions when the strict pass is too thin). Gemini is only used for feedback extraction, CV upload, and the n8n evaluator.
+*Keyword search: the three-condition cache decides whether the graph re-runs. Memory is applied post-graph.*
 
-Important detail: `filter_jobs` applies the thread's accumulated memory as a hard exclusion list over the fetched jobs, so previous negative feedback changes future searches.
+The search path makes **no LLM call**. Ranking is pure keyword scoring in `agent.py`. The `/ask` cache re-runs the graph only if: (1) no previous fetch, (2) the query changed, or (3) more than 4 hours have passed.
+
+→ See [Backend API](architecture/backend-api.md) for endpoint details, [Agent graph](architecture/agent-graph.md) for scoring.
 
 ## 2. Feedback / memory update
 
-Flow:
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant F as Frontend
+    participant B as Backend
+    participant LLM as Gemini
+    participant PG as Postgres
 
-1. User sends feedback such as `no MERN` or `skip senior roles`.
-2. The frontend routes that text to `/feedback` instead of `/ask`.
-3. The backend asks Gemini to extract avoid-keywords only (this is one of the few LLM calls left in the request path).
-4. `main.py` calls `agent.update_state` to append the keywords to the thread's stored `memory`; the graph itself has already ended and is not re-run.
-5. `filter_jobs` re-applies the accumulated memory against the cached `clean_jobs` for that thread and returns the filtered markdown.
+    U->>F: Types "no MERN" or "skip senior"
+    F->>B: POST /feedback {feedback, thread_id}
+    B->>PG: agent.get_state(thread_id)
+    PG-->>B: memory, clean_jobs
+    B->>LLM: "Extract keywords to avoid..."
+    LLM-->>B: "MERN, MEAN, frontend"
+    B->>PG: agent.update_state(memory: ["MERN, MEAN, frontend"])
+    B->>B: filter_jobs(normalize_jobs(clean_jobs), updated_memory)
+    B-->>F: PlainTextResponse (filtered markdown + "Active filters" footer)
+```
 
-There is no HITL interrupt loop and no `done` terminator: the graph ends after [collect_results](domains.md), and feedback is a state update plus a local re-filter of the already-fetched jobs. Send `reset filters` (or POST `/reset`) to clear the memory.
+*Feedback: Gemini extracts avoidance keywords, they are appended to thread memory, and the cached jobs are re-filtered. The graph is not re-run.*
+
+Input is capped at 100 characters. The graph is never re-invoked — feedback is a state update plus a local re-filter.
+
+Voice works similarly but caches `last_jobs` in-memory and never touches Postgres. MCP takes exclusions as an explicit argument per call.
+
+→ See [Backend API](architecture/backend-api.md) for details on the /feedback endpoint.
 
 ## 3. CV upload search
 
-Flow:
+1. User uploads a PDF from the frontend
+2. `/upload` validates: PDF only, max 5MB
+3. `pdfplumber` extracts text from the first 5 pages
+4. Gemini compresses the CV into a one-sentence keyword summary (max 20 words)
+5. That summary becomes the search query — the agent searches normally
+6. Results are filtered by existing thread memory and returned as markdown
 
-1. User uploads a PDF from the frontend.
-2. `/upload` reads the file into memory.
-3. `pdfplumber` extracts the text from all pages.
-4. Gemini compresses the CV into a short keyword summary.
-5. The agent searches for jobs using that summary.
-6. Results are streamed back like a normal search.
+Both the LLM call and the graph invocation run via `asyncio.to_thread` to avoid blocking the event loop.
 
-This workflow is useful when the user does not want to type search keywords manually.
+→ See [Backend API](architecture/backend-api.md) for details on the /upload endpoint.
 
-## 4. n8n digest / evaluation workflow
+## 4. n8n digest
 
-The repository includes `n8n_workflow.json`, which schedules a periodic digest job.
-The README and workflow assets indicate the flow is:
+The n8n workflow runs every 12 hours: schedule → search settings → wake node (GET /docs on sleeping Render instance) → wait 60s → POST /ask → Gmail. It holds no filtering logic — the digest gets the same deduplication, mojibake repair, and relevance ranking as every other interface.
 
-- every 12 hours
-- fetch jobs from multiple APIs
-- filter by keywords
-- call `/evaluate`
-- send an email digest through Gmail
+→ See [n8n automation](operations/n8n-automation.md) for full details.
 
-The automation depends on the backend staying available and the `/evaluate` contract remaining stable.
+## 5. Harbor eval (CI)
 
-## 5. Eval workflow
+Runs automatically on push/PR to `agent.py`, `mcp_server.py`, or `evals/`. The Harbor task freezes four job APIs, runs the MCP `search_remote_jobs` tool against frozen fixtures, and verifies the filtered output matches a hand-written expected set. No LLM, no network, no database.
 
-`eval_runner.py` is a LangSmith-backed regression harness.
-It posts sample queries to `/ask`, captures the streaming response text, and scores the result with a Gemini-based evaluator.
-This was added after the job source set and prompt behavior stabilised enough to measure quality.
+→ See [Harbor eval](evals/harbor-eval.md) for full details.
+
+## 6. LangSmith eval (manual)
+
+Posts 22 queries to `/ask`, captures the response, and scores each with a Gemini judge. Score is `relevant / total`. Current baseline: 0.812. Runs against live data, so individual cases wobble — the aggregate is the signal.
+
+→ See [LangSmith eval](evals/langsmith-eval.md) for full details.
 
 ## Change guidance
 
-- If you change the UI message flow, keep the special `no ...` / `skip ...` handling in sync with `/feedback`.
-- If you change streaming behavior, test both `/ask` and `/upload` because both rely on the same incremental rendering path.
-- If you change the output format, update the n8n digest consumer and the frontend markdown rendering assumptions.
-- If you add or remove a source API, revisit both the graph fan-out and the eval dataset.
+| If you change... | What to update | What to test |
+|---|---|---|
+| Scoring formula | `agent.py` | Harbor eval (CI) + LangSmith eval |
+| `filter_jobs` logic | `agent.py` | Harbor eval (CI) |
+| Source APIs | `agent.py` fetchers | LangSmith eval, update Harbor fixtures if needed |
+| API contract | `main.py` → `frontend/app/page.tsx` → `n8n_workflow.json` | Manual `/ask` + `/feedback` |
+| Output format | `main.py` `format_jobs_markdown` | Frontend rendering, n8n digest |
+| UI routing | `frontend/app/page.tsx` | Browser test all prefix routes |
+| Voice routing | `voice/server/langgraph_processor.py` | Manual voice test |
+| Eval coverage | `evals/` or `eval_runner.py` | Run the eval |
 
 ## Source references
 
+- `main.py`, `agent.py`, `mcp_server.py`, `voice_agent.py`
 - `frontend/app/page.tsx`
-- `main.py`
-- `agent.py`
-- `eval_runner.py`
+- `eval_runner.py`, `evals/`
 - `n8n_workflow.json`
-- `assets/n8n_workflow.png`
-- `assets/email_digest.png`
