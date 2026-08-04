@@ -1,0 +1,58 @@
+name: Filtering eval
+
+# Runs the Harbor task in evals/filter-exclusion-senior against frozen job
+# listings. No model, no API keys, no network inside the container — the
+# reward is an assertion, so a red build means the filter changed behaviour.
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - "agent.py"
+      - "mcp_server.py"
+      - "evals/**"
+      - ".github/workflows/eval.yml"
+  push:
+    branches: [main]
+    paths:
+      - "agent.py"
+      - "mcp_server.py"
+      - "evals/**"
+      - ".github/workflows/eval.yml"
+
+jobs:
+  filter-exclusion:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: astral-sh/setup-uv@v5
+
+      - name: Install Harbor
+        run: uv tool install harbor
+
+      - name: Run the eval
+        env:
+          PYTHONPATH: ${{ github.workspace }}
+        run: |
+          harbor run \
+            -p evals \
+            -i "*filter-exclusion-senior*" \
+            -a evals.harbor_agents.pipeline_agent:PipelineAgent \
+            -e docker \
+            -o evals/jobs \
+            --extra-docker-compose evals/configs/no-network.yaml \
+            --job-name ci-${{ github.run_id }} \
+            -y
+
+      - name: Check the reward
+        run: python evals/check_reward.py evals/jobs/ci-${{ github.run_id }}
+
+      - name: Upload run evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: harbor-job-${{ github.run_id }}
+          path: evals/jobs/
+          retention-days: 14
