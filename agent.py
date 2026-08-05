@@ -6,7 +6,6 @@ import urllib.parse
 import requests
 import re
 import sys
-import textwrap
 import html
 
 SENIORITY = frozenset({"senior", "sr",  "junior" ,"júnior", "jr", "lead",
@@ -89,10 +88,6 @@ def score_job(job: dict, query: str) -> int:
     return title_hits * TITLE_WEIGHT + desc_hits + gen_hits
 
 
-def clean_description(text):
-    clean = re.sub(r'<[^>]+>', '', text)
-    return textwrap.shorten(clean, width=150, placeholder="...")
-
 def strip_html(text):
     clean = re.sub(r'<[^>]+>', '', text)
     full_clean = html.unescape(clean)
@@ -122,7 +117,7 @@ def normalize_jobs(jobs):
             "company": fix_mojibake(" ".join(company.split())),
             "position": fix_mojibake(" ".join(position.split())),
             "location": fix_mojibake(j.get("location") or j.get("jobGeo") or j.get("candidate_required_location") or ", ".join(j.get("locationRestrictions") or [])).strip(", "),
-            "description": fix_mojibake(clean_description(j.get("description") or j.get("excerpt", "") or j.get("jobExcerpt" , ""))),
+            "description": fix_mojibake(strip_html(j.get("description") or j.get("excerpt", "") or j.get("jobExcerpt" , ""))),
             "salary": salary,
             "apply_url": j.get("apply_url") or j.get("url") or j.get("applicationLink")
             })

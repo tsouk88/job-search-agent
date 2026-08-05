@@ -18,6 +18,7 @@ import asyncio
 import pdfplumber
 import io
 import secrets
+import textwrap
 
 
 
@@ -219,9 +220,10 @@ def format_jobs_markdown(jobs: list, memory: list | None = None) -> str:
         url = urlparse(job.get("apply_url" , ""))
         site_name = url.netloc.split(".")[0].capitalize()
         loc = job.get("location" , "")
+        description = job.get("description" , "")
         if not loc:
             loc = "Location not specified"
-        formatted = f'**- {job.get("position", "")}** at **{job.get("company", "")}** | {loc} | {job.get("salary" , "")}  \n {job.get("description", "")} \n Apply: [{site_name}]({job.get("apply_url", "")})'
+        formatted = f'**- {job.get("position", "")}** at **{job.get("company", "")}** | {loc} | {job.get("salary" , "")}  \n {textwrap.shorten(description, width=150, placeholder="...")} \n Apply: [{site_name}]({job.get("apply_url", "")})'
         form_jobs.append(formatted)
     format_str = "\n\n".join(form_jobs)
     return f"{format_str}\n\n{SOURCES}{filters}"
