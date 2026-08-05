@@ -4,7 +4,7 @@ An AI-powered remote job search assistant. Type in your desired job keywords and
 
 **[▶ Try it live](https://job-search-agent-blond.vercel.app)** — no signup, no API key.
 
-⚡ Instant results | 💰 $0 per search — searching and filtering are fully deterministic | 📊 [0.812 relevance](#evals) across 22 eval cases
+⚡ Instant results | 💰 $0 per search — searching and filtering are fully deterministic | 📊 [~0.8 relevance](#evals) across 22 eval cases
 
 > The backend runs on a free Render instance that sleeps after 15 minutes of inactivity. If the demo has been idle, the first search takes about a minute — roughly 50s to wake the server, then 15s to query four job APIs. Every search after that is instant.
 
@@ -290,9 +290,13 @@ Every endpoint is rate limited to 10 requests per minute per IP.
 
 There are two, and they answer different questions. The LangSmith eval asks *how relevant are the results in a live market*, and a model judges the answer. The [Harbor](https://www.harborframework.com) eval asks *does the filter still do exactly what I think it does*, and nothing judges anything — the listings are frozen and the output is asserted.
 
-### Relevance — LangSmith, 0.812
+### Relevance — LangSmith, ~0.8
 
-The agent scores **0.812 across 22 test cases**. Roughly four out of every five listings it returns are relevant to the query, and twelve of the cases score a clean 1.0.
+The agent scores **0.812 across 22 test cases**, measured 31 July. Roughly four out of every five listings it returns are relevant to the query, and twelve of the cases score a clean 1.0.
+
+Treat that as a range, not a reading. The same code scored **0.765** five days later without a line changing — the job boards had moved. A single case can swing half a point on its own: `rust` went from 1.0 to 0.5 across those five days, and the query has no moving parts in the code at all.
+
+So changes here are judged against a **control run of the unchanged code on the same day**, never against a number from last week. Comparing a new run to a stored baseline measures the market as much as the change, and the market is louder.
 
 The setup is a LangSmith dataset where each query carries a written description of what a good answer looks like, plus a Gemini 2.5 Flash judge that counts how many returned listings meet it. Score is relevant divided by returned, so padding a response with weak matches costs you.
 
@@ -332,6 +336,10 @@ It also moves. The agent queries live job boards, so two runs an hour apart see 
 One title match is enough to admit a listing. That is fine when the distinctive word in a query is unambiguous, and it falls apart when it isn't: `data` pulls in Data Analysts, `wordpress` pulls in WordPress Support Specialists.
 
 The obvious fix, requiring two matching words, was tried and rejected because it threw away correct results like `Software Engineer (Go, Python, TS)`. Measurement showed why it could never have worked. Specific terms like `sql`, `aws` and `pytorch` appear in **0%** of returned job titles, because titles say "DevOps Engineer", not "DevOps Kubernetes AWS Engineer". There is only ever one word to match on.
+
+Half of it has since been chased down, from the other end. Dropping the generic word does not only fail to admit the right listings — it makes the ones already admitted indistinguishable. Search `AI engineer` and the query becomes `ai`, so an AI Engineer and an AI Sales Executive score identically; measured on 47 listings, 18 of 19 that passed the gate scored the same, and the cap then cut them by the order the four APIs happen to sit in `fan_out`. A generic word now adds a point when it appears in the title, which cannot admit anything on its own but does separate the role from the industry. Same-day control: 0.765 to 0.780, three cases up and none down.
+
+The admission rule itself is untouched, so `wordpress` still lets a Support Specialist in. It just no longer outranks a WordPress Developer by accident.
 
 The old 0.90 baseline is gone. It was measured against LLM-based filtering on a different dataset and was never comparable to this one.
 
