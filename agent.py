@@ -77,10 +77,16 @@ def score_job(job: dict, query: str) -> int:
     description = (job.get("description") or job.get("jobDescription", "")
                    or job.get("excerpt", "") or job.get("jobExcerpt", "") or "").lower()
     signal = signal_tokens(query)
+    words = re.findall(r'\w+', query.lower())
+    gen= [w for w in words if w in GENERIC]
+    if len(words) == len(gen):
+        gen_hits = 0
+    else:
+        gen_hits = sum(1 for g in gen if title_hit(g ,title) )
     desc_words = set(re.findall(r'\w+', description))
     title_hits = sum(1 for s in signal if title_hit(s, title))
     desc_hits = sum(1 for s in signal if s in desc_words)
-    return title_hits * TITLE_WEIGHT + desc_hits
+    return title_hits * TITLE_WEIGHT + desc_hits + gen_hits
 
 
 def clean_description(text):
@@ -148,9 +154,8 @@ def fetch_jobs(state:State):
             signal = signal_tokens(state["user_input"])
             fetched_jobs = [job for job in response.json()
                             if isinstance(job, dict)
-                            and any(title_hit(token, job_title(job)) for token in signal)]
-            # Limit to 10 jobs for cost control — remove [:10] to search all jobs
-            return {"fetched_jobs": fetched_jobs[:10]}
+                            and any(title_hit(token, job_title(job)) for token in signal)][:10]
+            return {"fetched_jobs": fetched_jobs}
         except requests.exceptions.RequestException as e:
             print(f"Error {e}", file=sys.stderr)
             return {"fetched_jobs": []}
@@ -164,7 +169,6 @@ def fetch_sjobs(state:State):
             if response.status_code == 429:
                 return {"fetched_jobs": []}
             data = response.json()
-            # Limit to 10 jobs for cost control — remove [:10] to search all jobs
             fetched_jobs = data.get("jobs" , [])[:10]
             return {"fetched_jobs": fetched_jobs}
         except requests.exceptions.RequestException as e:
@@ -180,7 +184,7 @@ def fetch_tjobs(state:State):
         if response.status_code == 429:
             return {"fetched_jobs": []}
         data = response.json() 
-        fetched_jobs = data.get("jobs" , [])[:10] 
+        fetched_jobs = data.get("jobs" , []) [:10]
         return {"fetched_jobs": fetched_jobs}
     except requests.exceptions.RequestException as e:
             print(f"Error {e}", file=sys.stderr)
@@ -210,7 +214,7 @@ def fetch_fjobs(state:State):
         if response.status_code == 429:
             return {"fetched_jobs": []}
         data = response.json() 
-        fetched_jobs = data.get("jobs", [])[:10] 
+        fetched_jobs = data.get("jobs", [])[:10]
         return {"fetched_jobs": fetched_jobs}
     except requests.exceptions.RequestException as e:
         print(f"Error {e}", file=sys.stderr)
