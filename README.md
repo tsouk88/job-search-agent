@@ -298,6 +298,8 @@ Treat that as a range, not a reading. The same code scored **0.765** five days l
 
 So changes here are judged against a **control run of the unchanged code on the same day**, never against a number from last week. Comparing a new run to a stored baseline measures the market as much as the change, and the market is louder.
 
+The market was not the only thing moving. Two runs an hour apart returned the **same nine listings** for `Python developer` and scored them 0.889 and 0.222; `react developer` returned the same eight and scored 1.0 and 0.625. The aggregate barely moved — 0.82 both times — because the disagreements cancelled out, which is worse than an obviously unstable number. Chasing it down is written up under [Making the judge repeatable](#making-the-judge-repeatable).
+
 The setup is a LangSmith dataset where each query carries a written description of what a good answer looks like, plus a Gemini 2.5 Flash judge that counts how many returned listings meet it. Score is relevant divided by returned, so padding a response with weak matches costs you.
 
 The queries include narrow niches (`rust`, `blockchain solidity`), vague ones (`remote job`), one where the right answer is probably nothing at all (`COBOL mainframe developer`), and misspellings. Typos are not corrected on purpose. Search for `pyton developer` and you get nothing back; the reference answer says that is correct.
@@ -337,6 +339,20 @@ It measures the first response only. Users narrow results by talking to the agen
 That path is no longer untravelled. The scheduled digest reuses one thread, so its stored exclusions are applied twice a day against whatever the boards are advertising, and the MCP tool takes exclusions as an argument on every call. It now has a number too, though not from here — see below.
 
 It also moves. The agent queries live job boards, so two runs an hour apart see different listings and individual cases wobble by a lot. The aggregate is the signal, not any single row.
+
+#### Making the judge repeatable
+
+Scoring the same listings twice and getting 0.889 and 0.222 makes every comparison meaningless, so the run was treated as the thing under test rather than the agent. Three changes, in order of how much they bought:
+
+**Stop asking the model questions that have one answer.** Five queries are ones where returning nothing is acceptable — the two deliberate misspellings, and niches like `COBOL mainframe developer` that the boards may simply not be advertising. Those examples now carry an `empty_ok` flag, and an empty response short-circuits to 1.0 before the judge is called. Four of the five already said so in their reference text; the model had the instruction and applied it unevenly. A rule you can state in one sentence does not need a model.
+
+**Say what the grader is grading.** The instructions asked it to "count how many of the given jobs match the reference criteria" without ever saying whether a bad listing costs one point or voids the response. Both readings were live, which is exactly the 0.889/0.222 split. The prompt now states that grading covers only what was returned, that a rejected listing subtracts one and nothing more, and that criteria which are silent about a listing count in its favour.
+
+**Write reference criteria that can be decided.** `Python developer` said "mid-level or senior, no Junior or Entry-level" and left "Senior General QA (Python)" undecidable. `remote job` said any "legitimate remote software role" for a query that names no field at all. Ten of the twenty-two were rewritten as "a listing is relevant when… and is not relevant when…", resolved against the listings the agent actually returns.
+
+Two consecutive runs then agreed on eighteen of the nineteen cases whose criteria had not changed. The one that still moved — `django backend developer` — turned out to be another silent spec: nothing said what to do with a "Backend Engineer" listing that never names a language. The fix was to decide, and write it down.
+
+The number moved from 0.82 to roughly 0.85 along the way. That is not the agent improving; it is the criteria finally saying what was always meant, and it makes every earlier number incomparable.
 
 #### Known limitation
 
