@@ -167,7 +167,7 @@ def fetch_sjobs(state:State):
             if response.status_code == 429:
                 return {"fetched_jobs": []}
             data = response.json()
-            fetched_jobs = data.get("jobs" , [])[:10]
+            fetched_jobs = data.get("jobs" , [])
             return {"fetched_jobs": fetched_jobs}
         except requests.exceptions.RequestException as e:
                 print(f"Error {e}", file=sys.stderr)
@@ -182,7 +182,7 @@ def fetch_tjobs(state:State):
         if response.status_code == 429:
             return {"fetched_jobs": []}
         data = response.json() 
-        fetched_jobs = data.get("jobs" , []) [:10]
+        fetched_jobs = data.get("jobs" , []) 
         return {"fetched_jobs": fetched_jobs}
     except requests.exceptions.RequestException as e:
             print(f"Error {e}", file=sys.stderr)
@@ -212,7 +212,7 @@ def fetch_fjobs(state:State):
         if response.status_code == 429:
             return {"fetched_jobs": []}
         data = response.json() 
-        fetched_jobs = data.get("jobs", [])[:10]
+        fetched_jobs = data.get("jobs", [])
         return {"fetched_jobs": fetched_jobs}
     except requests.exceptions.RequestException as e:
         print(f"Error {e}", file=sys.stderr)
