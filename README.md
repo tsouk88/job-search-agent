@@ -350,7 +350,9 @@ The other half was the description, and it needed two changes that each look wor
 
 The description's contribution is capped below the weight of a title match, so it can only reorder listings, never admit one — the same discipline as the generic-word point.
 
-The admission rule itself is untouched, so `wordpress` still lets a Support Specialist in. It just no longer outranks a WordPress Developer by accident, and it is now the only case in the set that none of this moved.
+The admission rule itself is untouched: one title match still admits a listing, and a Support Specialist can still get in on the strength of the word alone. It just no longer outranks a real match by accident.
+
+`WordPress developer` is the one case in the set that none of this moved, and checking why was more useful than fixing it would have been. On the morning of 6 August the four boards returned **no listing at all** with "wordpress" in its title, so the agent correctly returned nothing — and scored 0.0 for it. That is the same failure as `COBOL mainframe developer`: the judge is unreliable when the right answer is an empty list, which is why the next eval here is a deterministic check rather than another query.
 
 The old 0.90 baseline is gone. It was measured against LLM-based filtering on a different dataset and was never comparable to this one.
 
