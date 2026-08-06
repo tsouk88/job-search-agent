@@ -69,7 +69,7 @@ def title_hit(token: str, title: str) -> bool:
     return token in title
 
 
-def score_job(job: dict, query: str) -> int:
+def score_job(job: dict, query: str) -> float:
     """How well a job matches the query. A title hit outweighs any number of
     description hits, so >= TITLE_WEIGHT means "matched in the title"."""
     title = job_title(job)
@@ -81,11 +81,14 @@ def score_job(job: dict, query: str) -> int:
     if len(words) == len(gen):
         gen_hits = 0
     else:
-        gen_hits = sum(1 for g in gen if title_hit(g ,title) )
-    desc_words = set(re.findall(r'\w+', description))
+        gen_hits = sum(1 for g in gen if title_hit(g ,title) )   
+    desc_words = re.findall(r'\w+', description)
+    freq = sum(desc_words.count(s) for s in signal)
+    bonus = freq/8
     title_hits = sum(1 for s in signal if title_hit(s, title))
     desc_hits = sum(1 for s in signal if s in desc_words)
-    return title_hits * TITLE_WEIGHT + desc_hits + gen_hits
+    hits = min(desc_hits+gen_hits + bonus , 9) + title_hits*TITLE_WEIGHT 
+    return hits
 
 
 def strip_html(text):
