@@ -84,7 +84,7 @@ Seniority words (`senior`, `junior`, `lead`, `principal`, …) are matched again
 
 Active filters are shown at the bottom of every response. Say **"reset filters"** to clear them.
 
-By default, the agent fetches 10 jobs from each API to control costs, and returns the top 12 after ranking. Both limits live at the top of `agent.py`.
+The agent reads everything the four APIs return and shows the top 12 after ranking (`MAX_RESULTS`, at the top of `agent.py`). RemoteOK is the exception: it is asked to match on the title before it replies, so its own ten are already ten that matched.
 
 > **LangSmith tracing is enabled.** Graph runs are fully observable — every node execution, its latency and its output. Note that the search path no longer makes LLM calls, so token usage now appears only for feedback extraction, CV upload and the n8n evaluator.
 
@@ -148,7 +148,7 @@ Use absolute paths to the virtualenv's interpreter — the client starts the pro
 | Backend | FastAPI |
 | Frontend | Next.js 15 + ReactMarkdown + remark-gfm |
 | Job APIs | RemoteOK, Himalayas, Remotive, Jobicy |
-| Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) — 0.812 / 22 cases |
+| Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) — ~0.8 across 22 cases |
 
 ---
 
@@ -292,7 +292,7 @@ There are two, and they answer different questions. The LangSmith eval asks *how
 
 ### Relevance — LangSmith, ~0.8
 
-The agent scores **0.812 across 22 test cases**, measured 31 July. Roughly four out of every five listings it returns are relevant to the query, and twelve of the cases score a clean 1.0.
+The agent scores **0.82 across 22 test cases**, measured 6 August against a control run of the previous code the same morning, which scored 0.76. Roughly four out of every five listings it returns are relevant to the query, and fifteen of the cases score a clean 1.0.
 
 Treat that as a range, not a reading. The same code scored **0.765** five days later without a line changing — the job boards had moved. A single case can swing half a point on its own: `rust` went from 1.0 to 0.5 across those five days, and the query has no moving parts in the code at all.
 
@@ -319,13 +319,20 @@ Most of the gain came from taking things out. Every step below was measured agai
 | Fixed the reference answers for the typo queries | 0.751 |
 | Fixed a missing comma in the generic-word list | 0.812 |
 
+Five days later the same code scored 0.765, so everything after that point is quoted against a control run of the unchanged code on the same morning:
+
+| Change | Control | Score |
+|---|---|---|
+| Let the query's generic word break ties in the title | 0.765 | 0.780 |
+| Scored descriptions on how often a word appears, and stopped truncating each source to ten | 0.76 | **0.82** |
+
 The big jump came from deleting a rule that guaranteed at least 8 results. On a query like `rust` the agent would find one genuine match and then pad the list with seven listings that happened to mention the word somewhere in their body text. Three good results beat twelve mediocre ones.
 
 The missing comma is worth a mention because Python never complained about it. Two adjacent string literals in a set silently became one, which quietly dropped `engineer` and `remote` from the generic-word list. It only surfaced because a nonsense query started returning listings with "Remote" in the title.
 
 #### What the number doesn't cover
 
-It measures the first response only. Users narrow results by talking to the agent ("no support roles", "no senior"), and none of the 22 cases exercise that path, so day-to-day use is better than 0.812 suggests.
+It measures the first response only. Users narrow results by talking to the agent ("no support roles", "no senior"), and none of the 22 cases exercise that path, so day-to-day use is better than the number suggests.
 
 That path is no longer untravelled. The scheduled digest reuses one thread, so its stored exclusions are applied twice a day against whatever the boards are advertising, and the MCP tool takes exclusions as an argument on every call. It now has a number too, though not from here — see below.
 
@@ -339,7 +346,11 @@ The obvious fix, requiring two matching words, was tried and rejected because it
 
 Half of it has since been chased down, from the other end. Dropping the generic word does not only fail to admit the right listings — it makes the ones already admitted indistinguishable. Search `AI engineer` and the query becomes `ai`, so an AI Engineer and an AI Sales Executive score identically; measured on 47 listings, 18 of 19 that passed the gate scored the same, and the cap then cut them by the order the four APIs happen to sit in `fan_out`. A generic word now adds a point when it appears in the title, which cannot admit anything on its own but does separate the role from the industry. Same-day control: 0.765 to 0.780, three cases up and none down.
 
-The admission rule itself is untouched, so `wordpress` still lets a Support Specialist in. It just no longer outranks a WordPress Developer by accident.
+The other half was the description, and it needed two changes that each look worthless alone. Relevance to the body text was scored by asking *whether* a word appeared, never *how often*, so a listing naming Python once ranked level with one naming it forty times: across 32 listings for `AI engineer`, that produced exactly one distinct score. Counting occurrences produces sixteen. On its own, that changed one case out of 22 — the other 21 came back identical, because a better order cannot help when there is nothing spare to order. Each source was also truncated to ten listings before anything read them, a leftover from when an LLM read the results and every listing cost money; for that same query Jobicy returned 100, of which 32 were relevant, and eight of the twelve best-scoring were never reachable. Removing the truncation alone had been tried the day before and scored as noise, for the mirror-image reason. Together, against a same-day control: 0.76 to 0.82, five cases up and none down.
+
+The description's contribution is capped below the weight of a title match, so it can only reorder listings, never admit one — the same discipline as the generic-word point.
+
+The admission rule itself is untouched, so `wordpress` still lets a Support Specialist in. It just no longer outranks a WordPress Developer by accident, and it is now the only case in the set that none of this moved.
 
 The old 0.90 baseline is gone. It was measured against LLM-based filtering on a different dataset and was never comparable to this one.
 
