@@ -4,11 +4,11 @@ An AI-powered remote job search assistant. Type in your desired job keywords and
 
 **[▶ Try it live](https://job-search-agent-blond.vercel.app)** — no signup, no API key.
 
-⚡ Instant results | 💰 $0 per search — searching and filtering are fully deterministic | 📊 [~0.8 relevance](#evals) across 22 eval cases
+⚡ Instant results | 💰 $0 per search — searching and filtering are fully deterministic | 📊 [0.90 relevance](#evals) across 24 eval cases
+
+The eval suite is itself under test. Two runs once scored the *same* nine listings 0.889 and 0.222, and the average came out identical both times because the disagreements cancelled out — so [the judge was audited and rewritten](#making-the-judge-repeatable) before any of these numbers were trusted.
 
 > The backend runs on a free Render instance that sleeps after 15 minutes of inactivity. If the demo has been idle, the first search takes about a minute — roughly 50s to wake the server, then 15s to query four job APIs. Every search after that is instant.
-
-If you find this useful, give it a ⭐️ — it helps others discover the project!
 
 ---
 
@@ -148,7 +148,7 @@ Use absolute paths to the virtualenv's interpreter — the client starts the pro
 | Backend | FastAPI |
 | Frontend | Next.js 15 + ReactMarkdown + remark-gfm |
 | Job APIs | RemoteOK, Himalayas, Remotive, Jobicy |
-| Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) — ~0.8 across 22 cases |
+| Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) — 0.90 across 24 cases |
 
 ---
 
@@ -290,9 +290,11 @@ Every endpoint is rate limited to 10 requests per minute per IP.
 
 There are two, and they answer different questions. The LangSmith eval asks *how relevant are the results in a live market*, and a model judges the answer. The [Harbor](https://www.harborframework.com) eval asks *does the filter still do exactly what I think it does*, and nothing judges anything — the listings are frozen and the output is asserted.
 
-### Relevance — LangSmith, ~0.8
+### Relevance — LangSmith, ~0.9
 
-The agent scores **0.82 across 22 test cases**, measured 6 August against a control run of the previous code the same morning, which scored 0.76. Roughly four out of every five listings it returns are relevant to the query, and fifteen of the cases score a clean 1.0.
+The agent scores **0.90 across 24 test cases**, measured 16 August. Two of those cases are not mine: they are real queries typed by strangers into the live demo — `Remote React jobs` and `Fullstack react remote jobs` — added after the logs showed both returning almost nothing. Both now score 1.0, which is its own finding: the metric is precision, so a response of two correct listings scores perfectly while the person who typed it went away and tried again. What they hit is the [known limitation](#known-limitation) below, and this eval cannot see it.
+
+Before those two were added the figure was roughly 0.85, and before the judge was fixed it was **0.82 across 22 test cases**, measured 6 August against a control run of the previous code the same morning, which scored 0.76.
 
 Treat that as a range, not a reading. The same code scored **0.765** five days later without a line changing — the job boards had moved. A single case can swing half a point on its own: `rust` went from 1.0 to 0.5 across those five days, and the query has no moving parts in the code at all.
 
