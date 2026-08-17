@@ -55,6 +55,25 @@ def signal_tokens(query: str) -> list[str]:
     tokens = re.findall(r'\w+', query.lower())
     return [t for t in tokens if t not in GENERIC] or tokens
 
+TAG_LIMIT = 3
+ENOUGH = 50
+
+
+def distinctive_tokens(query: str) -> list[str]:
+    """The words that narrow the search, in order, deduplicated and capped.
+
+    RemoteOK and Jobicy take one tag at a time, and picking the wrong word costs
+    almost every result: `?tags=fullstack` returns 1 listing where `?tags=react`
+    returns 101. Rather than guess which word matters, the fetchers try these in
+    order and stop as soon as one comes back full, so a normal query still costs
+    one request. Empty means no word narrows anything, and the caller should ask
+    without a tag instead."""
+    seen = []
+    for token in re.findall(r'\w+', query.lower()):
+        if token not in GENERIC and token not in seen:
+            seen.append(token)
+    return seen[:TAG_LIMIT]
+
 
 def job_title(job: dict) -> str:
     """The title, however the source spells the field. Lowercased for matching."""
@@ -62,11 +81,14 @@ def job_title(job: dict) -> str:
 
 
 def title_hit(token: str, title: str) -> bool:
-    """Short tokens must match a whole word — "ai" should not fire on "said".
-    Longer ones may match inside one, so "python" still hits "python3"."""
-    if len(token) < 4:
-        return token in set(re.findall(r'\w+', title))
-    return token in title
+    """A token matches a whole word, optionally with a plural, version or `js`
+    suffix.
+
+    Substring matching was the earlier rule for tokens of four characters or
+    more, which let "rust" fire on "anti-trust" and would let "java" fire on
+    "javascript". Only prefixes were ever the problem, so suffixes stay allowed:
+    "python" hits "python3", "react" hits "reactjs", "agent" hits "agents"."""
+    return re.search(rf'\b{re.escape(token)}(?:js|s|\d+)?\b', title) is not None
 
 
 def score_job(job: dict, query: str) -> float:
@@ -141,18 +163,28 @@ class State(TypedDict):
 def fetch_jobs(state:State):
         if not state.get("user_input"):
             return {"fetched_jobs": []}
-        first_keyword = state['user_input'].split()[0].lower()
-        query = urllib.parse.quote(first_keyword)
+        signal = signal_tokens(state["user_input"])
+        tags = distinctive_tokens(state["user_input"])
         try:
-            response = requests.get(
-                    f"https://remoteok.com/api?tags={query}",
-                    allow_redirects=False,
-                    headers={"User-Agent": "Mozilla/5.0"} , timeout=30
-                )
-            signal = signal_tokens(state["user_input"])
-            fetched_jobs = [job for job in response.json()
-                            if isinstance(job, dict)
-                            and any(title_hit(token, job_title(job)) for token in signal)][:10]
+            raw = {}
+            for tag in tags or [None]:
+                url = "https://remoteok.com/api"
+                if tag:
+                    url += f"?tags={urllib.parse.quote(tag)}"
+                response = requests.get(
+                        url,
+                        allow_redirects=False,
+                        headers={"User-Agent": "Mozilla/5.0"} , timeout=30
+                    )
+                if response.status_code != 200:
+                    break
+                page = [job for job in response.json() if isinstance(job, dict)]
+                for job in page:
+                    raw.setdefault(job.get("url") or job.get("id"), job)
+                if len(page) >= ENOUGH:
+                    break
+            fetched_jobs = [job for job in raw.values()
+                            if any(title_hit(token, job_title(job)) for token in signal)]
             return {"fetched_jobs": fetched_jobs}
         except requests.exceptions.RequestException as e:
             print(f"Error {e}", file=sys.stderr)
@@ -206,14 +238,22 @@ def fetch_tjobs(state:State):
 def fetch_fjobs(state:State):
     if not state.get("user_input"):
         return {"fetched_jobs": []}
-    query = urllib.parse.quote(state['user_input'])
+    tags = distinctive_tokens(state['user_input'])
     try:
-        response= requests.get(f"https://jobicy.com/api/v2/remote-jobs?tag={query}" , timeout=30)
-        if response.status_code == 429:
-            return {"fetched_jobs": []}
-        data = response.json() 
-        fetched_jobs = data.get("jobs", [])
-        return {"fetched_jobs": fetched_jobs}
+        raw = {}
+        for tag in tags or [None]:
+            url = "https://jobicy.com/api/v2/remote-jobs"
+            if tag:
+                url += f"?tag={urllib.parse.quote(tag)}"
+            response = requests.get(url, timeout=30)
+            if response.status_code != 200:
+                break
+            page = response.json().get("jobs", [])
+            for job in page:
+                raw.setdefault(job.get("url") or job.get("id"), job)
+            if len(page) >= ENOUGH:
+                break
+        return {"fetched_jobs": list(raw.values())}
     except requests.exceptions.RequestException as e:
         print(f"Error {e}", file=sys.stderr)
         return {"fetched_jobs": []}
