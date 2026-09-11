@@ -247,13 +247,20 @@ def fetch_fjobs(state:State):
                 url += f"?tag={urllib.parse.quote(tag)}"
             response = requests.get(url, timeout=30)
             if response.status_code != 200:
-                break
+                continue
             page = response.json().get("jobs", [])
             for job in page:
                 raw.setdefault(job.get("url") or job.get("id"), job)
             if len(page) >= ENOUGH:
                 break
+        if len(raw) == 0:
+            response = requests.get("https://jobicy.com/api/v2/remote-jobs", timeout=30)
+            response.raise_for_status()
+            page = response.json().get("jobs", [])
+            for job in page:
+                raw.setdefault(job.get("url") or job.get("id"), job)
         return {"fetched_jobs": list(raw.values())}
+    
     except requests.exceptions.RequestException as e:
         print(f"Error {e}", file=sys.stderr)
         return {"fetched_jobs": []}
@@ -269,7 +276,10 @@ def collect_results(state: State):
                 unique_jobs.append(job)
     scored = [(score_job(job, query), job) for job in unique_jobs]
     matched = [pair for pair in scored if pair[0] >= TITLE_WEIGHT]
-    matched.sort(key=lambda pair: pair[0], reverse=True)
+    matched.sort(key=lambda pair: pair[0], reverse=True)   
+    for i ,(score , match) in enumerate(matched, start=1):
+        url = match.get("apply_url") or match.get("url") or match.get("applicationLink")
+        print(f"{i}. (Score: {score} link:{urllib.parse.urlparse(url).netloc})")
     matched = matched[:MAX_RESULTS]
     correct_jobs = []
     for _, job in matched:
