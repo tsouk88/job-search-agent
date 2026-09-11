@@ -110,9 +110,9 @@ def evaluaten8n(request: Request , jobs : EvaluateInput ,  x_api_key: str = Head
     if not key or not x_api_key:
         raise HTTPException(status_code=401, detail="Unauthorized")
     check = secrets.compare_digest(key , x_api_key)
-    valid_jobs = jobs.jobs
     if not check: 
         raise HTTPException(status_code=401, detail="Unauthorized")
+    valid_jobs = jobs.jobs
     prompt =f"""You are a personal job evaluator. 
             I am looking for a remote AI/backend engineering job.
 
@@ -144,12 +144,15 @@ async def uploadfile(request: Request , file: UploadFile, thread_id: str = Form(
         raise HTTPException(status_code=415, detail="Only PDF files are accepted")
     file = await file.read()
     uploadedfile = io.BytesIO(file)
-    with pdfplumber.open(uploadedfile) as pdf:
-        pages = pdf.pages[:5]
-        text = "\n".join(page.extract_text() or "" for page in pages)
-
+    try: 
+        with pdfplumber.open(uploadedfile) as pdf:
+            pages = pdf.pages[:5]
+            text = "\n".join(page.extract_text() or "" for page in pages)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=415, detail="Only PDF files are accepted")
     prompt = f"""You are a job recruiter evaluating candidates , you read their CV through {text} extracting one sentence with all the keywords max 20 words
-                    about the candidate"""
+                        about the candidate"""
     # this endpoint must stay async — it awaits the upload — so the blocking
     # calls go to a thread rather than stalling the event loop
     response = await asyncio.to_thread(chain.invoke, prompt)
