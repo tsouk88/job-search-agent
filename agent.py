@@ -52,12 +52,37 @@ def filter_jobs(jobs: list, memory: list ,  title_only=SENIORITY) -> list:
 def signal_tokens(query: str) -> list[str]:
     """The words of the query that carry meaning. Falls back to every word when
     the query is nothing but generic ones, so "developer job" still matches."""
-    tokens = re.findall(r'\w+', query.lower())
+    tokens = re.findall(r'\w+', canon(query).lower())
     return [t for t in tokens if t not in GENERIC] or tokens
 
 TAG_LIMIT = 3
 ENOUGH = 50
 
+ALIASES = {
+    "large language models": "llm",
+    "large language model": "llm",
+    "natural language processing": "nlp",
+    "artificial intelligence": "ai",
+    "machine learning": "ml",
+    "full-stack": "fullstack",
+    "full stack": "fullstack",
+    "back-end": "backend",
+    "back end": "backend",
+    "front-end": "frontend",
+    "front end": "frontend",
+    "postgresql": "postgres",
+    "kubernetes": "k8s",
+    "javascript": "js",
+}
+
+def canon(text: str) -> str:
+    """Spell the synonyms one way, so a single token can match all of them.
+    "machine learning engineer" and "ml engineer" are the same job; without
+    this, they were two disjoint result sets (4 vs 10, none shared)."""
+    text = text.lower()
+    for phrase, short in ALIASES.items():
+        text = text.replace(phrase , short)
+    return text
 
 def distinctive_tokens(query: str) -> list[str]:
     """The words that narrow the search, in order, deduplicated and capped.
@@ -69,7 +94,7 @@ def distinctive_tokens(query: str) -> list[str]:
     one request. Empty means no word narrows anything, and the caller should ask
     without a tag instead."""
     seen = []
-    for token in re.findall(r'\w+', query.lower()):
+    for token in re.findall(r'\w+', canon(query)):
         if token not in GENERIC and token not in seen:
             seen.append(token)
     return seen[:TAG_LIMIT]
@@ -77,7 +102,8 @@ def distinctive_tokens(query: str) -> list[str]:
 
 def job_title(job: dict) -> str:
     """The title, however the source spells the field. Lowercased for matching."""
-    return (job.get("title") or job.get("position", "") or job.get("jobTitle", "") or "").lower()
+    jobs = (job.get("title") or job.get("position", "") or job.get("jobTitle", "") or "")
+    return canon(jobs)
 
 
 def title_hit(token: str, title: str) -> bool:
@@ -98,7 +124,7 @@ def score_job(job: dict, query: str) -> float:
     description = (job.get("description") or job.get("jobDescription", "")
                    or job.get("excerpt", "") or job.get("jobExcerpt", "") or "").lower()
     signal = signal_tokens(query)
-    words = re.findall(r'\w+', query.lower())
+    words = re.findall(r'\w+', canon(query).lower())
     gen= [w for w in words if w in GENERIC]
     if len(words) == len(gen):
         gen_hits = 0
