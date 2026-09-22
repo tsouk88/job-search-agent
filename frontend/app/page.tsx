@@ -48,11 +48,33 @@ function ThemeToggle({ isDark, onToggle }: { isDark: boolean; onToggle: () => vo
 }
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 
+// Workable and Jobicy both take the country as this same slug. Anything not
+// listed here still works - the agent falls back to a worldwide search and
+// filters on the listing's own location - so the list is for the user's
+// convenience, not a constraint.
+const COUNTRIES = [
+  ['', 'Worldwide'],
+  ['greece', 'Greece'],
+  ['cyprus', 'Cyprus'],
+  ['united-kingdom', 'United Kingdom'],
+  ['ireland', 'Ireland'],
+  ['germany', 'Germany'],
+  ['netherlands', 'Netherlands'],
+  ['spain', 'Spain'],
+  ['portugal', 'Portugal'],
+  ['poland', 'Poland'],
+  ['united-states', 'United States'],
+  ['canada', 'Canada'],
+  ['australia', 'Australia'],
+  ['india', 'India'],
+];
+
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isDark, setIsDark] = useState(true);
+  const [country, setCountry] = useState('');
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const threadIdRef = useRef('');
@@ -76,6 +98,15 @@ export default function Home() {
   useEffect(() => {
     document.documentElement.className = isDark ? '' : 'light';
   }, [isDark]);
+
+  useEffect(() => {
+    setCountry(localStorage.getItem('country') || '');
+  }, []);
+
+  function changeCountry(value: string) {
+    setCountry(value);
+    localStorage.setItem('country', value);
+  }
 
   async function sendMessage(message: string) {
     if (!message.trim() || loading) return;
@@ -124,7 +155,7 @@ export default function Home() {
       const res = await fetch(`${API_BASE}/ask`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ user_input: message, thread_id: getThreadId() }),
+        body: JSON.stringify({ user_input: message, thread_id: getThreadId(), country }),
       });
       const reader = res.body?.getReader();
       const decoder = new TextDecoder();
@@ -155,6 +186,7 @@ export default function Home() {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('thread_id', getThreadId());
+    formData.append('country', country);
 
     setMessages(prev => [...prev, { role: 'user', content: `📄 Uploaded: ${file.name}` }]);
 
@@ -313,6 +345,17 @@ export default function Home() {
                 accept=".pdf"
                 onChange={handleFileUpload}
               />
+              <select
+                className="shrink-0 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl px-2 py-2 text-sm outline-none focus:border-emerald-600/50 cursor-pointer"
+                value={country}
+                onChange={(e) => changeCountry(e.target.value)}
+                disabled={loading}
+                title="Where you can work from"
+              >
+                {COUNTRIES.map(([value, label]) => (
+                  <option key={value} value={value}>{label}</option>
+                ))}
+              </select>
               <div className="flex-1 flex items-center gap-2 bg-[var(--input-bg)] border border-[var(--input-border)] rounded-xl px-3 py-1 focus-within:border-emerald-600/50 focus-within:ring-1 focus-within:ring-emerald-600/20 transition-all">
                 <input
                   ref={inputRef}

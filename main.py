@@ -53,10 +53,10 @@ limiter = Limiter(key_func=get_remote_address)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-def run_agent(user_input: str, thread_id: str):
+def run_agent(user_input: str, thread_id: str, country: str = ""):
     config = {"configurable": {"thread_id": thread_id}}
     result = agent.invoke(
-        {"user_input": user_input, "fetched_jobs": []}, 
+        {"user_input": user_input, "country": country, "fetched_jobs": []}, 
         config=config
     )
     return result["clean_jobs"], result.get("memory", []) , result.get("last_fetch_time", "")
@@ -65,6 +65,7 @@ def run_agent(user_input: str, thread_id: str):
 class SearchInput(BaseModel):
     user_input: str
     thread_id: str
+    country: str = ""
 
 class FeedbackInput(BaseModel):
     thread_id: str
@@ -94,8 +95,9 @@ def askAI(request: Request, input:SearchInput):
     last_known_fetch = state.values.get("last_fetch_time", "")
     memory = state.values.get("memory", [])
     current_query=state.values.get("user_input" , "")  
-    if not last_known_fetch or current_query != input.user_input or (datetime.now() - datetime.fromisoformat(last_known_fetch)).total_seconds() > 14400 :
-        query, _ , last_fetch = run_agent(input.user_input, input.thread_id )
+    current_country=state.values.get("country" , "")
+    if not last_known_fetch or current_query != input.user_input or current_country != input.country or (datetime.now() - datetime.fromisoformat(last_known_fetch)).total_seconds() > 14400 :
+        query, _ , last_fetch = run_agent(input.user_input, input.thread_id, input.country)
     else:
         query = state.values.get("clean_jobs" , [])
     clean_jobs = normalize_jobs(query)
@@ -136,7 +138,7 @@ def evaluaten8n(request: Request , jobs : EvaluateInput ,  x_api_key: str = Head
 
 @app.post ("/upload")
 @limiter.limit("10/minute")
-async def uploadfile(request: Request , file: UploadFile, thread_id: str = Form(...)):
+async def uploadfile(request: Request , file: UploadFile, thread_id: str = Form(...), country: str = Form("")):
     max_size =  5 * 1024 * 1024
     if not file.size or file.size > max_size:
         raise HTTPException(status_code=413, detail="File too large, max 5MB")
@@ -159,7 +161,7 @@ async def uploadfile(request: Request , file: UploadFile, thread_id: str = Form(
     config = {"configurable": {"thread_id": thread_id}}
     state = agent.get_state(config)
     memory = state.values.get("memory", [])
-    query, _ , last_fetch = await asyncio.to_thread(run_agent, response, thread_id)
+    query, _ , last_fetch = await asyncio.to_thread(run_agent, response, thread_id, country)
     clean_jobs = normalize_jobs(query)
     jobs = filter_jobs(clean_jobs , memory)
     return PlainTextResponse(format_jobs_markdown(jobs, memory))

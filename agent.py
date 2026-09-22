@@ -34,7 +34,7 @@ def filter_jobs(jobs: list, memory: list ,  title_only=SENIORITY) -> list:
     for job in jobs:
         title = job.get("title") or job.get("position", "") or job.get("jobTitle" , "") or ""
         description = job.get("description") or job.get("excerpt", "") or job.get("jobExcerpt" , "")
-        location= job.get("location") or job.get("jobGeo") or job.get("candidate_required_location") or ", ".join(job.get("locationRestrictions") or [])
+        location = job_location(job)
         text = f"{title} {description} {location}".lower()
         title_words = set(re.findall(r'\w+', title.lower()))
         full_words = set(re.findall(r'\w+', text))
@@ -49,6 +49,55 @@ def filter_jobs(jobs: list, memory: list ,  title_only=SENIORITY) -> list:
             kept.append(job)
     kept = [job for job in kept if job.get("apply_url") and job.get("position") not in ("", "Unknown")]
     return kept
+
+
+REGIONS = {
+    "greece": ["europe", "emea", "eu"],
+    "cyprus": ["europe", "emea", "eu"],
+    "germany": ["europe", "emea", "eu"],
+    "netherlands": ["europe", "emea", "eu"],
+    "spain": ["europe", "emea", "eu"],
+    "portugal": ["europe", "emea", "eu"],
+    "poland": ["europe", "emea", "eu"],
+    "united-kingdom": ["europe", "emea", "eu", "uk"],
+    "ireland": ["europe", "emea", "eu"],
+    "united-states": ["north america", "americas", "usa", "us"],
+    "canada": ["north america", "americas"],
+    "australia": ["apac", "oceania"],
+    "india": ["apac", "asia"],
+}
+
+GLOBAL_WORDS = ("worldwide", "anywhere", "global")
+
+
+def job_location(job: dict) -> str:
+    """Where the listing says it can be done, however the source spells it."""
+    return (job.get("location") or job.get("jobGeo") or job.get("candidate_required_location")
+            or ", ".join(job.get("locationRestrictions") or []))
+
+
+def location_ok(job: dict, country: str) -> bool:
+    """Whether a listing is open to someone in `country`.
+
+    Empty `country` means no filtering at all. Otherwise a listing is open if it
+    names the country, or names a region containing it, or says it is open to
+    everyone - a worldwide-remote role is open to Greece too - or says nothing
+    about location, which most boards do when the answer is "anywhere".
+
+    Expected, with country="greece":
+        {"location": "Greece"}                     -> True
+        {"location": "Europe"}                     -> True
+        {"candidate_required_location": "Worldwide"} -> True
+        {"location": ""}                           -> True
+        {"location": "USA only"}                   -> False
+    """
+    if not country:
+        return True
+    where = job_location(job).lower()
+    if not where.strip():
+        return True
+    accepted = [country.replace("-", " ")] + REGIONS.get(country, []) + list(GLOBAL_WORDS)
+    return any(title_hit(word, where) for word in accepted)
 
 
 def signal_tokens(query: str) -> list[str]:
@@ -190,6 +239,7 @@ class State(TypedDict):
     last_fetch_time: str
     current_job: dict
     user_input: str = ""
+    country: str = ""
     memory: Annotated[list[str], add_or_reset]
 
 
@@ -271,14 +321,22 @@ WORKABLE_DETAILS = 6
 LD_JSON = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
 
 
-def workable_urls(token: str) -> list[str]:
+def workable_urls(token: str, country: str = "") -> list[str]:
     """The job links on one Workable search page.
 
     The page renders client-side, but it also carries a schema.org ItemList of
     the twenty results, which is plain JSON and enough to go on. `robots.txt`
     allows `/search/*` and disallows only the query-string form, so the path
-    form is the one to ask for."""
-    url = f"https://jobs.workable.com/search/greece/remote-{urllib.parse.quote(token)}-jobs"
+    form is the one to ask for.
+
+    The country sits in the path and is not optional: drop the segment and the
+    board stops reading the keyword too, answering `remote-python-jobs` with
+    commercial representatives in Rome. `worldwide` is the slug that means no
+    country. A country Workable does not recognise answers 200 with an empty
+    list rather than an error, so that is retried worldwide as well, and
+    `location_ok` sorts out what is really open to whom."""
+    where = urllib.parse.quote(country) if country else "worldwide"
+    url = f"https://jobs.workable.com/search/{where}/remote-{urllib.parse.quote(token)}-jobs"
     try:
         response = requests.get(url, headers=WORKABLE_UA, timeout=30)
         if response.status_code != 200:
@@ -287,7 +345,10 @@ def workable_urls(token: str) -> list[str]:
         if match is None:
             return []
         items = json.loads(match.group(1)).get("itemListElement", [])
-        return [item["url"] for item in items if item.get("url")]
+        urls = [item["url"] for item in items if item.get("url")]
+        if not urls and country:
+            return workable_urls(token, "")
+        return urls
     except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
         print(f"Error {e}", file=sys.stderr)
         return []
@@ -316,7 +377,9 @@ def workable_job(url: str) -> dict | None:
                 return {
                     "title": data.get("title", ""),
                     "company": (data.get("hiringOrganization") or {}).get("name", ""),
-                    "location": "Greece",
+                    # Who may apply, which is the country the board filtered on -
+                    # not where the employer sits.
+                    "location": (data.get("applicantLocationRequirements") or {}).get("name", ""),
                     "description": data.get("description", ""),
                     "publication_date": data.get("datePosted", ""),
                     "url": url,
@@ -327,18 +390,19 @@ def workable_job(url: str) -> dict | None:
 
 
 def fetch_wjobs(state:State):
-    """Greek postings, which the worldwide boards barely carry.
+    """The postings of one country, which the worldwide boards barely carry.
 
-    Workable is the ATS most Greek companies run, so its public board is where a
-    role in Greece actually appears. Two rounds of requests: the search pages for
-    the links, then the postings that survived the title filter - never all
-    twenty."""
+    Workable is the ATS most companies here run, so a role in Greece appears on
+    its public board and almost nowhere else. Two rounds of requests: the search
+    pages for the links, then the postings that survived the title filter -
+    never all twenty."""
     if not state.get("user_input"):
         return {"fetched_jobs": []}
     signal = signal_tokens(state["user_input"])
+    country = state.get("country", "")
     urls = []
     for token in distinctive_tokens(state["user_input"]) or signal[:1]:
-        for url in workable_urls(token):
+        for url in workable_urls(token, country):
             if url not in urls and any(title_hit(t, canon(workable_title(url))) for t in signal):
                 urls.append(url)
     fetched_jobs = [job for job in (workable_job(url) for url in urls[:WORKABLE_DETAILS]) if job]
@@ -372,13 +436,25 @@ def fetch_fjobs(state:State):
     if not state.get("user_input"):
         return {"fetched_jobs": []}
     tags = distinctive_tokens(state['user_input'])
+    country = state.get("country", "")
     try:
         raw = {}
         for tag in tags or [None]:
             url = "https://jobicy.com/api/v2/remote-jobs"
+            params = []
             if tag:
-                url += f"?tag={urllib.parse.quote(tag)}"
+                params.append(f"tag={urllib.parse.quote(tag)}")
+            if country:
+                params.append(f"geo={urllib.parse.quote(country)}")
+            if params:
+                url += "?" + "&".join(params)
             response = requests.get(url, timeout=30)
+            # A country Jobicy does not know is a 400, not an empty answer, so
+            # ask again without it and let location_ok do the filtering.
+            if response.status_code == 400 and country:
+                response = requests.get(url.replace(f"&geo={urllib.parse.quote(country)}", "")
+                                           .replace(f"?geo={urllib.parse.quote(country)}", ""),
+                                        timeout=30)
             if response.status_code != 200:
                 continue
             page = response.json().get("jobs", [])
@@ -402,9 +478,12 @@ def collect_results(state: State):
     seen = set()
     unique_jobs = []
     query = state.get("user_input")
+    # One place for the country, whether the source filtered on its own or not:
+    # the two that can (Workable, Jobicy) pass here untouched.
+    country = state.get("country", "")
     for job in state["fetched_jobs"]:
             key = job.get("apply_url") or job.get("url") or job.get("applicationLink")
-            if key not in seen:
+            if key not in seen and location_ok(job, country):
                 seen.add(key)
                 unique_jobs.append(job)
     scored = [(score_job(job, query), job) for job in unique_jobs]
