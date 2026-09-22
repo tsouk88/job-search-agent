@@ -1,7 +1,7 @@
 from typing import TypedDict,Annotated
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send 
-from datetime import datetime
+from datetime import datetime, timezone
 import urllib.parse
 import time
 import json
@@ -74,6 +74,37 @@ def job_location(job: dict) -> str:
     """Where the listing says it can be done, however the source spells it."""
     return (job.get("location") or job.get("jobGeo") or job.get("candidate_required_location")
             or ", ".join(job.get("locationRestrictions") or []))
+
+
+def job_company(job: dict) -> str:
+    """The employer, however the source spells the field."""
+    return (job.get("company") or job.get("companyName") or job.get("company_name") or "")
+
+
+MAX_AGE_DAYS = 120
+
+
+def job_is_recent(job: dict) -> bool:
+    """Whether the listing was posted inside the last few months.
+
+    Workable in particular keeps filled roles on its board - a December listing
+    still shows up in September - and a dead link is worse than one result
+    fewer. Sources spell the date as an ISO string or as epoch seconds, and a
+    listing that carries no date at all is kept: absence is not age."""
+    raw = (job.get("date") or job.get("pubDate") or job.get("publication_date")
+           or job.get("datePosted") or job.get("epoch"))
+    if not raw:
+        return True
+    try:
+        if isinstance(raw, (int, float)):
+            posted = datetime.fromtimestamp(float(raw), tz=timezone.utc)
+        else:
+            posted = datetime.fromisoformat(str(raw).replace("Z", "+00:00"))
+            if posted.tzinfo is None:
+                posted = posted.replace(tzinfo=timezone.utc)
+    except (ValueError, OSError, OverflowError):
+        return True
+    return (datetime.now(timezone.utc) - posted).days <= MAX_AGE_DAYS
 
 
 def location_ok(job: dict, country: str) -> bool:
@@ -365,6 +396,17 @@ def workable_title(url: str) -> str:
     return slug.replace("-", " ")
 
 
+def workable_key(url: str) -> str:
+    """What makes a Workable listing distinct: its title and its employer.
+
+    A role open in six cities is posted six times, one link each, and the link
+    carries both parts - so the copies can be spotted before any of them is
+    opened, which is what the per-listing requests are spent on."""
+    slug = urllib.parse.unquote(url.rstrip("/").split("/")[-1])
+    company = slug.rsplit("-at-", 1)[-1]
+    return f"{workable_title(url)}|{company}"
+
+
 def workable_job(url: str) -> dict | None:
     """The full posting, from the JobPosting block on its own page."""
     try:
@@ -400,10 +442,12 @@ def fetch_wjobs(state:State):
         return {"fetched_jobs": []}
     signal = signal_tokens(state["user_input"])
     country = state.get("country", "")
-    urls = []
+    urls, seen = [], set()
     for token in distinctive_tokens(state["user_input"]) or signal[:1]:
         for url in workable_urls(token, country):
-            if url not in urls and any(title_hit(t, canon(workable_title(url))) for t in signal):
+            key = workable_key(url)
+            if key not in seen and any(title_hit(t, canon(workable_title(url))) for t in signal):
+                seen.add(key)
                 urls.append(url)
     fetched_jobs = [job for job in (workable_job(url) for url in urls[:WORKABLE_DETAILS]) if job]
     return {"fetched_jobs": fetched_jobs}
@@ -481,9 +525,14 @@ def collect_results(state: State):
     # One place for the country, whether the source filtered on its own or not:
     # the two that can (Workable, Jobicy) pass here untouched.
     country = state.get("country", "")
+    # The same role is often posted once per city - six identical "Senior
+    # Backend Engineer" listings, six different links - so the identity is the
+    # employer and the title, not the URL. Deduplicate here rather than after
+    # the cut, or the duplicates take places in the twelve and the reader is
+    # handed seven.
     for job in state["fetched_jobs"]:
-            key = job.get("apply_url") or job.get("url") or job.get("applicationLink")
-            if key not in seen and location_ok(job, country):
+            key = re.sub(r'[^a-z0-9]', '', f"{job_company(job).lower()}{job_title(job)}")
+            if key not in seen and location_ok(job, country) and job_is_recent(job):
                 seen.add(key)
                 unique_jobs.append(job)
     scored = [(score_job(job, query), job) for job in unique_jobs]
