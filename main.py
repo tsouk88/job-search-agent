@@ -98,11 +98,14 @@ def askAI(request: Request, input:SearchInput):
     current_country=state.values.get("country" , "")
     if not last_known_fetch or current_query != input.user_input or current_country != input.country or (datetime.now() - datetime.fromisoformat(last_known_fetch)).total_seconds() > 14400 :
         query, _ , last_fetch = run_agent(input.user_input, input.thread_id, input.country)
+        searched_country = input.country
     else:
         query = state.values.get("clean_jobs" , [])
+        # Nothing was fetched, so these are the previous country's listings.
+        searched_country = current_country
     clean_jobs = normalize_jobs(query)
-    filtered_jobs = filter_jobs(clean_jobs , memory)   
-    return PlainTextResponse(format_jobs_markdown(filtered_jobs, memory))
+    filtered_jobs = filter_jobs(clean_jobs , memory)
+    return PlainTextResponse(format_jobs_markdown(filtered_jobs, memory, searched_country))
 
 
 @app.post ("/evaluate")
@@ -164,7 +167,7 @@ async def uploadfile(request: Request , file: UploadFile, thread_id: str = Form(
     query, _ , last_fetch = await asyncio.to_thread(run_agent, response, thread_id, country)
     clean_jobs = normalize_jobs(query)
     jobs = filter_jobs(clean_jobs , memory)
-    return PlainTextResponse(format_jobs_markdown(jobs, memory))
+    return PlainTextResponse(format_jobs_markdown(jobs, memory, country))
     
 
 @app.post("/feedback")
@@ -185,7 +188,7 @@ def human_review(request: Request , feedback: FeedbackInput):
     agent.update_state(config, {"memory": [keywords]})
     updated_memory = memory + [keywords]
     filtered = filter_jobs(clean_jobs , updated_memory)
-    return PlainTextResponse(format_jobs_markdown(filtered, updated_memory))
+    return PlainTextResponse(format_jobs_markdown(filtered, updated_memory, state.values.get("country", "")))
 
 @app.post("/reset")
 @limiter.limit("10/minute")
@@ -196,7 +199,7 @@ def reset_search(request: Request , input:SearchInput):
     clean_jobs = normalize_jobs(raw_jobs)
     agent.update_state(config, {"memory": None})
     filtered = filter_jobs(clean_jobs, [])
-    return PlainTextResponse(format_jobs_markdown(filtered))
+    return PlainTextResponse(format_jobs_markdown(filtered, None, state.values.get("country", "")))
 
 
 SOURCES = "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app | Jobicy.com | jobs.workable.com"
@@ -204,17 +207,23 @@ SOURCES = "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app |
 NO_RESULTS = ("No jobs matched your search and active filters.\n\n"
               "Try a different search, or say \"reset filters\" to clear what you excluded.")
 
-def active_filters_line(memory: list | None) -> str:
-    """Footer listing what the user has excluded, deduped and flattened."""
-    if not memory:
-        return ""
+def active_filters_line(memory: list | None, country: str = "") -> str:
+    """Footer: where these listings were searched, and what was excluded.
+
+    The country belongs here because feedback re-filters the last search rather
+    than running a new one - it is meant to be instant, not five more API calls.
+    So changing the dropdown and asking to exclude something shows the previous
+    country's listings, and this line is what tells the reader so."""
+    parts = [f"Showing: {country.replace('-', ' ').title() if country else 'Worldwide'}"]
     seen = []
-    for entry in memory:
+    for entry in memory or []:
         for keyword in entry.split(","):
             keyword = keyword.strip()
             if keyword and keyword.lower() not in [s.lower() for s in seen]:
                 seen.append(keyword)
-    return f"\n\nActive filters: {', '.join(seen)} — say \"reset filters\" to clear."
+    if seen:
+        parts.append(f"Active filters: {', '.join(seen)} — say \"reset filters\" to clear")
+    return "\n\n" + " · ".join(parts)
 
 # The boards spell their own names, and the domain does not always carry them:
 # jobs.workable.com reads as "Jobs" and remoteOK.com as "Remoteok".
@@ -234,8 +243,8 @@ def site_of(apply_url: str) -> str:
     return SITE_NAMES.get(domain, domain.capitalize())
 
 
-def format_jobs_markdown(jobs: list, memory: list | None = None) -> str:
-    filters = active_filters_line(memory)
+def format_jobs_markdown(jobs: list, memory: list | None = None, country: str = "") -> str:
+    filters = active_filters_line(memory, country)
     if not jobs:
         return NO_RESULTS + filters
     form_jobs = []
