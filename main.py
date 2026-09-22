@@ -197,7 +197,7 @@ def reset_search(request: Request , input:SearchInput):
     return PlainTextResponse(format_jobs_markdown(filtered))
 
 
-SOURCES = "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app | Jobicy.com"
+SOURCES = "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app | Jobicy.com | jobs.workable.com"
 
 NO_RESULTS = ("No jobs matched your search and active filters.\n\n"
               "Try a different search, or say \"reset filters\" to clear what you excluded.")

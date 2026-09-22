@@ -4,6 +4,7 @@ from langgraph.types import Send
 from datetime import datetime
 import urllib.parse
 import time
+import json
 import requests
 import re
 import sys
@@ -265,6 +266,85 @@ def remotive_feed():
             print(f"Error {e}", file=sys.stderr)
     return _REMOTIVE["jobs"]
 
+WORKABLE_UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"}
+WORKABLE_DETAILS = 6
+LD_JSON = re.compile(r'<script type="application/ld\+json">(.*?)</script>', re.S)
+
+
+def workable_urls(token: str) -> list[str]:
+    """The job links on one Workable search page.
+
+    The page renders client-side, but it also carries a schema.org ItemList of
+    the twenty results, which is plain JSON and enough to go on. `robots.txt`
+    allows `/search/*` and disallows only the query-string form, so the path
+    form is the one to ask for."""
+    url = f"https://jobs.workable.com/search/greece/remote-{urllib.parse.quote(token)}-jobs"
+    try:
+        response = requests.get(url, headers=WORKABLE_UA, timeout=30)
+        if response.status_code != 200:
+            return []
+        match = LD_JSON.search(response.text)
+        if match is None:
+            return []
+        items = json.loads(match.group(1)).get("itemListElement", [])
+        return [item["url"] for item in items if item.get("url")]
+    except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+        print(f"Error {e}", file=sys.stderr)
+        return []
+
+
+def workable_title(url: str) -> str:
+    """The job title, read out of the link itself.
+
+    Workable spells its links `/view/<id>/<title>-in-<city>-at-<company>`, so the
+    title is there without opening the posting - which matters, because filtering
+    twenty links would otherwise cost twenty requests."""
+    slug = urllib.parse.unquote(url.rstrip("/").split("/")[-1])
+    slug = slug.rsplit("-at-", 1)[0].rsplit("-in-", 1)[0]
+    return slug.replace("-", " ")
+
+
+def workable_job(url: str) -> dict | None:
+    """The full posting, from the JobPosting block on its own page."""
+    try:
+        response = requests.get(url, headers=WORKABLE_UA, timeout=30)
+        if response.status_code != 200:
+            return None
+        for match in LD_JSON.finditer(response.text):
+            data = json.loads(match.group(1))
+            if isinstance(data, dict) and data.get("@type") == "JobPosting":
+                return {
+                    "title": data.get("title", ""),
+                    "company": (data.get("hiringOrganization") or {}).get("name", ""),
+                    "location": "Greece",
+                    "description": data.get("description", ""),
+                    "publication_date": data.get("datePosted", ""),
+                    "url": url,
+                }
+    except (requests.exceptions.RequestException, json.JSONDecodeError) as e:
+        print(f"Error {e}", file=sys.stderr)
+    return None
+
+
+def fetch_wjobs(state:State):
+    """Greek postings, which the worldwide boards barely carry.
+
+    Workable is the ATS most Greek companies run, so its public board is where a
+    role in Greece actually appears. Two rounds of requests: the search pages for
+    the links, then the postings that survived the title filter - never all
+    twenty."""
+    if not state.get("user_input"):
+        return {"fetched_jobs": []}
+    signal = signal_tokens(state["user_input"])
+    urls = []
+    for token in distinctive_tokens(state["user_input"]) or signal[:1]:
+        for url in workable_urls(token):
+            if url not in urls and any(title_hit(t, canon(workable_title(url))) for t in signal):
+                urls.append(url)
+    fetched_jobs = [job for job in (workable_job(url) for url in urls[:WORKABLE_DETAILS]) if job]
+    return {"fetched_jobs": fetched_jobs}
+
+
 def fetch_tjobs(state:State):
     if not state.get("user_input"):
         return {"fetched_jobs": []}
@@ -352,7 +432,8 @@ def fan_out(state:State):
         Send("fetch_jobs", state),   
         Send("fetch_sjobs", state),  
         Send("fetch_tjobs", state),
-        Send("fetch_fjobs", state)
+        Send("fetch_fjobs", state),
+        Send("fetch_wjobs", state)
        # Send("fetch_fijobs", state)    
     ]
 
@@ -362,6 +443,7 @@ graph.add_node("fetch_jobs" , fetch_jobs)
 graph.add_node("fetch_sjobs" , fetch_sjobs)
 graph.add_node("fetch_tjobs" , fetch_tjobs)
 graph.add_node("fetch_fjobs", fetch_fjobs)
+graph.add_node("fetch_wjobs", fetch_wjobs)
 #graph.add_node("fetch_fijobs", fetch_fijobs)
 graph.add_node("collect_results", collect_results)
 
@@ -372,6 +454,7 @@ graph.add_edge("fetch_jobs", "collect_results")
 graph.add_edge("fetch_sjobs", "collect_results")
 graph.add_edge("fetch_tjobs", "collect_results")
 graph.add_edge("fetch_fjobs", "collect_results")
+graph.add_edge("fetch_wjobs", "collect_results")
 graph.add_edge("collect_results", END)
 
 
