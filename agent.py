@@ -3,6 +3,7 @@ from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send 
 from datetime import datetime
 import urllib.parse
+import time
 import requests
 import re
 import sys
@@ -238,20 +239,39 @@ def fetch_sjobs(state:State):
                 print(f"Error {e}", file=sys.stderr)
                 return {"fetched_jobs": []}
 
+_REMOTIVE = {"at": 0.0, "jobs": []}
+REMOTIVE_TTL = 6 * 3600
+
+def remotive_feed():
+    """The same fixed list of jobs, however it is asked for.
+
+    Their API documents `search`, `category` and `limit`, but the edge cache in
+    front of it does not vary on the query string: `limit=5` comes back with the
+    full 18, two unrelated searches return the same titles in the same order, and
+    every response carries `Cf-Cache-Status: HIT` with an `Age` of about three
+    hours - from another network too, so it is their cache and not a limit on us.
+
+    So it is one feed, not a search. Their terms ask for a few calls a day and the
+    data is 24 hours delayed anyway, so hold it here between calls and let the
+    caller filter it. A failed refresh keeps the previous list rather than
+    emptying it."""
+    if time.time() - _REMOTIVE["at"] > REMOTIVE_TTL:
+        try:
+            response = requests.get("https://remotive.com/api/remote-jobs", timeout=30)
+            if response.status_code == 200:
+                _REMOTIVE["jobs"] = response.json().get("jobs", [])
+                _REMOTIVE["at"] = time.time()
+        except requests.exceptions.RequestException as e:
+            print(f"Error {e}", file=sys.stderr)
+    return _REMOTIVE["jobs"]
+
 def fetch_tjobs(state:State):
     if not state.get("user_input"):
         return {"fetched_jobs": []}
-    query = urllib.parse.quote(state['user_input'])
-    try:
-        response= requests.get(f"https://remotive.com/api/remote-jobs?search={query}", timeout=30)
-        if response.status_code == 429:
-            return {"fetched_jobs": []}
-        data = response.json() 
-        fetched_jobs = data.get("jobs" , []) 
-        return {"fetched_jobs": fetched_jobs}
-    except requests.exceptions.RequestException as e:
-            print(f"Error {e}", file=sys.stderr)
-            return {"fetched_jobs": []}
+    signal = signal_tokens(state["user_input"])
+    fetched_jobs = [job for job in remotive_feed()
+                    if any(title_hit(token, job_title(job)) for token in signal)]
+    return {"fetched_jobs": fetched_jobs}
     
 #def fetch_fijobs(state:State):
 #    if not state.get("user_input"):
