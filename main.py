@@ -216,14 +216,31 @@ def active_filters_line(memory: list | None) -> str:
                 seen.append(keyword)
     return f"\n\nActive filters: {', '.join(seen)} — say \"reset filters\" to clear."
 
+# The boards spell their own names, and the domain does not always carry them:
+# jobs.workable.com reads as "Jobs" and remoteOK.com as "Remoteok".
+SITE_NAMES = {
+    "workable": "Workable",
+    "remoteok": "RemoteOK",
+    "himalayas": "Himalayas",
+    "jobicy": "Jobicy",
+    "remotive": "Remotive",
+}
+
+
+def site_of(apply_url: str) -> str:
+    """The board a listing came from, named the way the board names itself."""
+    labels = urlparse(apply_url).netloc.lower().split(".")
+    domain = labels[-2] if len(labels) > 1 else (labels[0] if labels else "")
+    return SITE_NAMES.get(domain, domain.capitalize())
+
+
 def format_jobs_markdown(jobs: list, memory: list | None = None) -> str:
     filters = active_filters_line(memory)
     if not jobs:
         return NO_RESULTS + filters
     form_jobs = []
     for job in jobs:
-        url = urlparse(job.get("apply_url" , ""))
-        site_name = url.netloc.split(".")[0].capitalize()
+        site_name = site_of(job.get("apply_url", ""))
         loc = job.get("location" , "")
         description = job.get("description" , "")
         if not loc:
