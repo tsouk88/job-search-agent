@@ -1,16 +1,18 @@
 {
   "keep": [
+    "https://jobs.workable.com/view/5pD9oCant6GhhYy6Uzv9XY/remote-mid---level-python-developer-in-athens-at-european-dynamics",
+    "https://jobs.workable.com/view/buczwQiK2Zc3KsKZiwtyU6/remote-junior-python-developer-in-athens-at-european-dynamics",
+    "https://jobs.workable.com/view/87gW9bnZMGhiuouxYfmutJ/remote-python-developer-in-athens-at-european-dynamics",
     "https://remoteOK.com/remote-jobs/remote-python-developer-astrolite-tech-solutions-llc-1135319",
     "https://remoteOK.com/remote-jobs/remote-python-developer-remoto-infortec-consultores-1135320",
     "https://remoteOK.com/remote-jobs/remote-python-developer-yo-it-consulting-1134923",
-    "https://remoteOK.com/remote-jobs/remote-python-with-gen-ai-capgemini-1134820",
     "https://himalayas.app/companies/micro1/jobs/python-developer-9928524976"
   ],
   "drop": [
     "https://himalayas.app/companies/micro1/jobs/junior-python-game-developer-panda3d-5366443650",
     "https://himalayas.app/companies/micro1/jobs/python-game-developer-panda3d-3574792652",
+    "https://jobicy.com/jobs/149543-python-engineer",
     "https://jobicy.com/jobs/149974-senior-software-engineer-python-mongodb",
-    "https://jobicy.com/jobs/149563-python-and-kubernetes-software-engineer-data-workflows-ai-ml-analytics",
-    "https://jobicy.com/jobs/149543-python-engineer"
+    "https://jobs.workable.com/view/hrFtaRqbZsYCPcCVeEr4Q2/remote-senior-backend-engineer-(python)-in-athens-at-european-dynamics"
   ]
 }
