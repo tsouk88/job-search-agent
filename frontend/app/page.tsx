@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useSyncExternalStore } from "react";
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -69,12 +69,40 @@ const COUNTRIES = [
   ['india', 'India'],
 ];
 
+// The chosen country lives in localStorage, outside React. Reading it through
+// useSyncExternalStore lets the server render "Worldwide" (there is no
+// localStorage there) and the browser pick up the saved choice right after
+// hydration, without setting state inside an effect.
+const countryListeners = new Set<() => void>();
+
+function readCountry(): string {
+  try {
+    return localStorage.getItem('country') || '';
+  } catch {
+    return '';
+  }
+}
+
+function subscribeCountry(listener: () => void) {
+  countryListeners.add(listener);
+  return () => { countryListeners.delete(listener); };
+}
+
+function saveCountry(value: string) {
+  try {
+    localStorage.setItem('country', value);
+  } catch {
+    // private mode or blocked storage: the choice still applies for this visit
+  }
+  countryListeners.forEach((listener) => listener());
+}
+
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [isDark, setIsDark] = useState(true);
-  const [country, setCountry] = useState('');
+  const country = useSyncExternalStore(subscribeCountry, readCountry, () => '');
   const chatEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const threadIdRef = useRef('');
@@ -99,13 +127,8 @@ export default function Home() {
     document.documentElement.className = isDark ? '' : 'light';
   }, [isDark]);
 
-  useEffect(() => {
-    setCountry(localStorage.getItem('country') || '');
-  }, []);
-
   function changeCountry(value: string) {
-    setCountry(value);
-    localStorage.setItem('country', value);
+    saveCountry(value);
   }
 
   async function sendMessage(message: string) {
