@@ -8,18 +8,21 @@ An AI-powered remote job search assistant. Type in your desired job keywords and
 
 The eval suite is itself under test. Two runs once scored the *same* nine listings 0.889 and 0.222, and the average came out identical both times because the disagreements cancelled out — so [the judge was audited and rewritten](#making-the-judge-repeatable) before any of these numbers were trusted.
 
-> The backend runs on a free Render instance that sleeps after 15 minutes of inactivity. If the demo has been idle, the first search takes about a minute — roughly 50s to wake the server, then 15s to query four job APIs. Every search after that is instant.
+> The backend runs on a free Render instance that sleeps after 15 minutes of inactivity. If the demo has been idle, the first search takes about a minute — roughly 50s to wake the server, then 15s to query the job boards. Every search after that is instant.
 
 ---
 
 ## What it does
 
-The agent connects to 4 job APIs simultaneously:
+The agent queries five job sources in parallel:
 
 - [RemoteOK API](https://remoteok.com/api)
 - [Himalayas API](https://himalayas.app/jobs/api)
-- [Remotive API](https://remotive.com/api/remote-jobs)
+- [Remotive API](https://remotive.com/api/remote-jobs) — read as a feed, not a search ([why](#remotive-is-a-feed-not-a-search))
 - [Jobicy.com](https://jobicy.com/api/v2/remote-jobs)
+- [Workable](https://jobs.workable.com) — the public board of the ATS most Greek companies run
+
+Pick a country from the dropdown, or leave it on Worldwide.
 
 Results are scored, ranked and filtered in plain Python — no model in the search path. An LLM is still used where judgement genuinely helps: turning your spoken feedback into filter keywords, reading your CV, and scoring listings for the n8n digest.
 
@@ -43,11 +46,13 @@ flowchart TD
     fan_out -->|Send API| fetch_sjobs[fetch_sjobs]
     fan_out -->|Send API| fetch_tjobs[fetch_tjobs]
     fan_out -->|Send API| fetch_fjobs[fetch_fjobs]
+    fan_out -->|Send API| fetch_wjobs[fetch_wjobs]
 
-    fetch_jobs --> collect_results[collect_results\ndedupe · score · rank]
+    fetch_jobs --> collect_results[collect_results\ncountry · dedupe · score · rank]
     fetch_sjobs --> collect_results
     fetch_tjobs --> collect_results
     fetch_fjobs --> collect_results
+    fetch_wjobs --> collect_results
 
     collect_results --> END([END])
 
@@ -56,7 +61,7 @@ flowchart TD
     classDef condStyle fill:#faf5ff,stroke:#c084fc,stroke-width:2px,color:#000;
 
     class START,END startEnd;
-    class fetch_jobs,fetch_sjobs,fetch_tjobs,fetch_fjobs,collect_results nodeStyle;
+    class fetch_jobs,fetch_sjobs,fetch_tjobs,fetch_fjobs,fetch_wjobs,collect_results nodeStyle;
     class fan_out condStyle;
 ```
 
@@ -64,9 +69,9 @@ flowchart TD
 
 A job scores on where your query words appear. A hit in the **title** outweighs any number of hits in the description, so `title_hits * 10 + description_hits` sorts real matches to the top.
 
-Four details that matter in practice:
+The details that matter in practice:
 
-Short query words have to match a whole word. Searching `ai` should not hit `p-ai-d media specialist`. Words of four characters or more still match inside a word, so `python` finds `python3`.
+Query words match whole words, optionally with a plural, a version number or a `js` suffix: `python` finds `python3`, `react` finds `reactjs`, `agent` finds `agents`. Matching inside a word used to be allowed for longer words, which let `rust` fire on `anti-trust` and would have let `java` fire on `javascript`; only prefixes were ever the problem, so only suffixes are allowed.
 
 A listing needs a title hit to qualify at all. Mentioning your keywords somewhere in the body text is not enough. Description hits still count, but only to break ties between listings that already earned their place.
 
@@ -74,7 +79,39 @@ The agent returns what matched, up to a cap of 12, and it will happily return th
 
 Generic words are dropped. `developer`, `engineer`, `remote`, `role` and the rest show up in half of all job titles, so they can't rank anything. If a query is nothing but generic words, they get used anyway rather than matching the entire board.
 
+Synonyms are spelled one way before anything is compared. `ml engineer` and `machine learning engineer` are the same job, but to a word match they were two unrelated searches: measured live, 4 listings against 10, **none shared**. Titles and queries now pass through one small alias table (`machine learning` → `ml`, `artificial intelligence` → `ai`, `full stack` → `fullstack`, …), and the same two searches return the same six. Against a same-day control the eval moved 0.896 → 0.903, with no case that touches an alias going down.
+
 RemoteOK's tags are not trusted. The API is still queried by tag, but every listing that comes back is re-checked against its own title. Across 101 listings that's an average of 23.6 tags each, a nursing role tagged `python`, `sql`, `postgres` and `golang`, and three unrelated listings sharing an identical 36-tag list. The tags are SEO filler. The title isn't.
+
+### Choosing a country
+
+The dropdown sets a country; Worldwide is the default and behaves as before. Each source filters on its own where it can, and the rest are filtered here, in one place:
+
+| Source | How the country is applied |
+|---|---|
+| Workable | in the path, `/search/<country>/remote-<word>-jobs` |
+| Jobicy | `geo=<country>` |
+| Himalayas, RemoteOK, Remotive | no usable location filter (Himalayas answers `location`, `countryCode` and `region` with the same number of listings as no parameter at all), so they are filtered on each listing's own location field |
+
+A listing counts as open to a country if it names the country, names a region containing it (Europe, EMEA, …), says it is open to everyone, or says nothing at all: most boards leave the field empty when the answer is anywhere. "Remote" is deliberately not one of those words. It says how the work is done, not where from, and "Remote, US only" is a common way to write a restriction.
+
+The two sources that filter on their side fail differently on a country they don't know: Jobicy answers `geo=xyzland` with a 400, Workable with a 200 and an empty page. Both retry worldwide and leave the decision to the local filter, so no country in the list can silently return nothing.
+
+Feedback re-filters the last search instead of running a new one, which is what keeps it instant, so the footer names the country the listings on screen were searched in. Change the country and search again to apply it.
+
+### Duplicates and old listings
+
+The same role is often posted once per city: six identical "Senior Backend Engineer" listings from one employer, six different links. Listings are deduplicated on employer and title **before** the top 12 are chosen. Deduplicating after the cut, as it used to, let six copies of one role take six of the twelve places and then collapse into one.
+
+Anything older than 120 days is dropped. Workable in particular keeps old roles on its board; a December listing was still showing in September. A listing with no date is kept: absence is not age.
+
+### Remotive is a feed, not a search
+
+Remotive documents `search`, `category` and `limit`, but its edge cache does not vary on the query string. `limit=5` comes back with the full 18, two unrelated searches return the same titles in the same order, and every response is a `Cf-Cache-Status: HIT` with an `Age` of about three hours, the same from a phone on mobile data, so it is their cache and not a limit on this app. The feed is therefore fetched at most every six hours, as their terms ask, and filtered on the title here.
+
+### Workable
+
+Workable is the applicant-tracking system most companies in Greece run, so a role here appears on its public board and almost nowhere else the agent looks. The search pages render client-side, but they carry a schema.org `ItemList` of the twenty results, and each link spells out its own title and employer. So the twenty are filtered and deduplicated without opening any of them, and only the survivors are fetched for their `JobPosting` (description, date, who may apply). `robots.txt` allows the path form of `/search` and disallows the query-string form, so the path form is the one used. The country segment is not optional: without it the board stops reading the keyword too, and `remote-python-jobs` returns commercial representatives in Rome. Worldwide is sent as the explicit slug `worldwide`.
 
 ### Feedback and memory
 
@@ -84,7 +121,7 @@ Seniority words (`senior`, `junior`, `lead`, `principal`, …) are matched again
 
 Active filters are shown at the bottom of every response. Say **"reset filters"** to clear them.
 
-The agent reads everything the four APIs return and shows the top 12 after ranking (`MAX_RESULTS`, at the top of `agent.py`). RemoteOK is the exception: it is asked to match on the title before it replies, so its own ten are already ten that matched.
+The agent reads everything the five sources return and shows the top 12 after ranking (`MAX_RESULTS`, at the top of `agent.py`). RemoteOK is the exception: it is asked to match on the title before it replies, so its own ten are already ten that matched.
 
 > **LangSmith tracing is enabled.** Graph runs are fully observable — every node execution, its latency and its output. Note that the search path no longer makes LLM calls, so token usage now appears only for feedback extraction, CV upload and the n8n evaluator.
 
@@ -147,7 +184,7 @@ Use absolute paths to the virtualenv's interpreter — the client starts the pro
 | LLM Integration | LangChain `init_chat_model` |
 | Backend | FastAPI |
 | Frontend | Next.js 15 + ReactMarkdown + remark-gfm |
-| Job APIs | RemoteOK, Himalayas, Remotive, Jobicy |
+| Job sources | RemoteOK, Himalayas, Remotive (cached feed), Jobicy, Workable (public board) |
 | Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) — 0.90 across 24 cases |
 
 ---
@@ -378,7 +415,7 @@ The old 0.90 baseline is gone. It was measured against LLM-based filtering on a 
 
 Both problems above share a root: the number moves for reasons that have nothing to do with the code. Live listings shift hourly, and the same input scored 0.333 and then 0.167 because a model was doing the scoring.
 
-So the filter is measured somewhere else. One capture of all four job boards is frozen into the repository, the container runs with its network disabled, and the expected result is five listings written out by hand. Same input, same number, every time.
+So the filter is measured somewhere else. One capture of every source is frozen into the repository (the four JSON APIs, plus Workable's search and listing pages reduced to the schema.org blocks the parser reads), the container runs with its network disabled, and the expected result is written out by hand. Same input, same number, every time.
 
 ```bash
 uv tool install harbor
@@ -394,11 +431,13 @@ python evals/check_reward.py evals/jobs/local
 
 Docker is the only requirement. No API key, because nothing in this path calls a model — the harness is the repository's own MCP tool, running unmodified against fixture files instead of the internet. That is also why it can sit on every pull request: it costs a runner minute and no tokens.
 
-The query is `python developer`, excluding `senior`, `game` and `canonical`. Three terms rather than one, so that both halves of the filter are exercised: `senior` through the title-only seniority rule, `canonical` through the full-text rule, where the word appears in descriptions and in no title at all. Five listings survive, five don't. Leaving one in and dropping one too many both score zero.
+The query is `python developer`, excluding `senior`, `game` and `canonical`. Three terms rather than one, so that both halves of the filter are exercised: `senior` through the title-only seniority rule, `canonical` through the full-text rule, where the word appears in descriptions and in no title at all. Seven listings survive, five don't. Leaving one in and dropping one too many both score zero.
 
 The expected set is written by hand, which is the whole point. A verifier that recomputed it by calling `filter_jobs` would be comparing the code against itself and would pass forever.
 
 It bites: collapsing the filter so every keyword is matched against titles only takes the score from 1.0 to 0.0, and the failing test names the two listings that leaked through. Notably, deleting `senior` from the seniority list does **not** — the word would still match the same title as an ordinary keyword. Controls that fail to fail are worth knowing about.
+
+It also caught a change it was never written for. Adding Workable turned it red before anything shipped: the frozen environment knew four hosts and refused the fifth, because the fan-out had changed and every assertion after it would have been measuring something else. The expected set was rewritten by hand from the new fixtures. Three Workable listings joined the kept set and its senior one the dropped set, and a Jobicy listing left both, because twelve places are still twelve and a fifth source competes for them.
 
 What it does not cover: one query, one moment in the market, and no listing in the capture carries "senior" in its description alone — so the rule that seniority is judged on titles only is never tested in the one shape that separates it from ordinary matching. The fixtures are real captured data and were not edited to manufacture that case.
 
