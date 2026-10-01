@@ -1,0 +1,164 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:f2bb020c75871c536521d7ab15422e6e99303a054c8a34439dbf523bbe157e1c",
+  "claims": [
+    {
+      "id": "claim_b7cdcae34849440192c49589de0c4ce1",
+      "statement": "The API base URL is configured via NEXT_PUBLIC_API_BASE, defaulting to http://localhost:8000, and the client appends the /ask, /feedback, /reset, and /upload paths to this base.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/page.tsx#L49-L49",
+          "version": "repo-lines-v1:sha256:64f868f4f41a5ec06ee905e9373e7fc0b0dfb6a38109472204d9ffa3025119c0:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRmODY4ZjRmNDFhNWVjMDZlZTkwNWU5MzczZTdmYzBiMGRmYjZhMzgxMDk0NzIyMDRkOWZmYTMwMjUxMTljMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjRmODY4ZjRmNDFhNWVjMDZlZTkwNWU5MzczZTdmYzBiMGRmYjZhMzgxMDk0NzIyMDRkOWZmYTMwMjUxMTljMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjU4MDdmM2JmNjk0OTIyNmQ1Mjk3MDFjMWRkNWVkYjU4NWIxODg5YWE2YmMzNWIyZTcwMzBkZTdiOWNjNjI2NiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWI4NDI2NTYyYTAxY2JjNmU3MTdkOGZmOWQ1MWUxZjFkYmM0ZWM2MDliZGRmMGRkN2IxZDQxMGYzMDNjMTczZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_efb2898da1614dcaad23686060457023",
+      "statement": "Each browser session gets a stable thread_id persisted in localStorage and cached in a threadIdRef; it is generated with crypto.randomUUID() on first use and sent with every request as the key for the backend's memory.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/page.tsx#L108-L120",
+          "version": "repo-lines-v1:sha256:ace8752a5192718d4d5430559938b04fd8083f39cb6bb999e404f12ae84fcb8f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkYjMwNDI2NzhkYThiNjEwZGM5Nzc2NzZhNDEyMWNkYTAxODg5YTc5NDgwNjg3YTc3MDEzMzdhNWY2YjM3MzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjNkODNiODA0N2U5ZjZhNzc3Yjk1M2U0OTIyMjA4NTRjYTk0MzE5ZDJhZDBkNjY5YWI3Yjc1OTAyM2UwMDdhMTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM4NzAwMWUzNTIzYTJjODE0YjBkNmM2NzI1MjIwY2Q2MjY2OTNjZWEyZDg2NjZkYjQyY2YwMTVkZmMyZjAxOTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_39a1611199af4a378138b1e79a440d89",
+      "statement": "The selected country is stored in localStorage outside React and read via useSyncExternalStore (subscribeCountry/readCountry/saveCountry), with a server-snapshot returning '' so SSR renders Worldwide and the browser picks up the saved value after hydration without setting state in an effect; localStorage failures are swallowed.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/page.tsx#L76-L105",
+          "version": "repo-lines-v1:sha256:a1f305cb8e3a8664387cff7409d29fd1820b7e1f25b416b7e1780b52f710ff30:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk3NTc1NmY4NDc5MTNkZmYwY2VjZmIzYzM2ZDljNmFmYmU5NWIzZmE0MTBmYTQ1NWNkOWRkMmE3NWUwYjA5MmEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ0MzMwZjU5OTZmM2JmZmZiNmRjYTViODQzYTcyODk5NTU1N2I1MzhmNzBiMzg1ZWY3Mzk2NjRmZDIxMzY0MzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwMjFmYjdkNjdkN2UxYWI2NDZmZmI4M2VhOTM3OTg3YjlmOTc2NWVjMTM3NzQ4OTMxNDJlMTA2MWRhMDZmZDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg0ZDk1MDEwMDg5MTgwYTBlNWRkZDQ2N2UxYzk1NTFjOWIzYTBjMjIwYThmODIxMDYxOTM2MTE3MGUxNWI4NzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_884285719c65453f859e88a1017d4efb",
+      "statement": "COUNTRIES is an array of [slug, label] pairs where the empty slug maps to Worldwide and the non-empty slugs are the shared Workable/Jobicy country slugs; unlisted countries still work via worldwide fallback, so the list is a convenience not a constraint.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/page.tsx#L51-L70",
+          "version": "repo-lines-v1:sha256:a56aa2eb5745d8dd48b0f02855f5a6a38efc1ce8dc64fcf3f3eebde7057d5934:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjllNjIzOWRkYzBjODU4ZGNhZjY0NDBjMmVmNmE5NGVjMTg5ZGJhNjExY2NjNzI2NTBjMjhlZDA4Y2Q1Y2YzMTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwMmQyYzBkNmRjNWU3NGQ5MmZhMTRiOTFkYmVhMjY0MDkwYmViMzVmZGI5MTg4ZDliMzQxMTgxZGNlOWY0Y2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1NmVkYzM3NzhkMjZiMjMyZjM0MzQxODBjODNiMjRmY2JiNTk5YzlmY2VhYmVlNTUxYzRlNjNhMzUxZWViMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIzNjNiYjIzOGNjMTkwODRlNzE2ZGRjNTE0YzAyMzNhMTg4ZjQ2MDZmNTUzOGNkMWYxZDI2Y2I5NWZkNzA5YWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f465495ffea14ff68aada6087d8f5f07",
+      "statement": "The country is included only in the /ask request body and the /upload FormData; it is NOT sent with /feedback or /reset.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/page.tsx#L143-L181",
+          "version": "repo-lines-v1:sha256:4920a29c0d8ef7e7747145a00b82b584c15b55cc544434352d25a4133d5d8251:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNlY2JjODI1YTQzZjRjZDNjZTU1ZTg1YzZkZmE3YTY0MjE1ZjNiMDQxOGVlNzVkNDcyNDY5YmFlMDNmYzc3MTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwODNiMjEzZjdmNWJhZTlkN2Y5YjRlNGMyNjVhNzIxNjJiZDc0ZWQzZGE5ZjJlNzVjMzkyOTQzMzY5MjBlM2EiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRmMjFkM2Y3MmU4MTgyNmM3MWFmNTdjMzg0NTgxNWFiYWRhYzJjMDJkMWM0Mzc3N2RhMzZlM2U0ODg5MDkwNWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI4ZDc0MDNlNDgyYWQzMDY0NWY3ZjRmZGJlMTM4MjBkMzlkYmMwYmZhYzBjYTJmY2RkYTkxYWRlYWZhNmZiNTAifQ"
+        },
+        {
+          "resource": "repo://frontend/app/page.tsx#L205-L221",
+          "version": "repo-lines-v1:sha256:4149ce7b464fe52612f26a2f4a14ae812caa56e89c81257c9e699f95c944370f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2YTY1MGY4NzkzZmY2N2QzMzNiNzg1ZmFmOTA2MzkwYWFiNzY0NWY1ZTM3MWRlYzM0ZWRjNGQ2ZjJlZWY4YWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwZDM2YTU3YWNkNGEyNTQ4YzE1YmZiODY4M2FmNmMzZTc0Yjk2YmRmZTRhZDk5ZGQ2ODk1ZGY2MTRkYjE3ZTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1NDI3NGI0NTExNzliZGNhMzYwODU3YzNmMGEzMzk5MjJmZGM3MDUzNGRlM2QxMzBmMjBkMzUyNDdjZjZlMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVkM2JjNzEyZDdiMTUwY2JjNjA2YjliMDAyMjIyZmQwODlmYWU5MTA1ODE4OTA5ZDAzMDI3ZWM1NjIzZDgxMzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8db2f7b6e4cf4d30a33b914a632b0af9",
+      "statement": "sendMessage routes by lowercased prefix: a command starting with 'reset' POSTs to /reset, one starting with 'no ' or 'skip ' POSTs to /feedback, otherwise it POSTs to /ask; /reset and /feedback read the full body via await res.text() while /ask uses the streaming reader.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/page.tsx#L141-L203",
+          "version": "repo-lines-v1:sha256:c2ac85fb801cbb6bbeb0e6f37695b54ed912522a991d77bf2c01eb3a12fcd484:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUxMTY5M2M4ZTdjYzBiZmZhOTdjNTlkMGYxMDQ2MTFmMDY5NTliYjg0ZWI3MzMxYTViOTI5OTZkYjEzYjUzNzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIwYmU3ZjFmOGE3NTU0N2ZiNjhiN2MzNzYzYjBjOTEzY2I1MzI4YjllMWRiNTM5YTgzZDUwNDRmNWU1NzViZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4MGFhN2JlMzc2NWJhZGI1OGRlYzBhY2QyYTFlNGQ1MGFhNzJlMzQwMTMzNTdlMmIxNjM0ZTFmNGExMmRjNzQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c13cfac117b8439383dd6b719dda729f",
+      "statement": "For /ask and /upload the frontend streams the response via res.body.getReader() and a TextDecoder, appending each decoded chunk to the last assistant message so markdown renders progressively; /feedback and /reset instead read the whole body with await res.text().",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/page.tsx#L183-L196",
+          "version": "repo-lines-v1:sha256:68632a4fe2b629b0c0434d227f793ab1eaa044e969cfdc0988c9b35cbe34a9fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwZDM2YTU3YWNkNGEyNTQ4YzE1YmZiODY4M2FmNmMzZTc0Yjk2YmRmZTRhZDk5ZGQ2ODk1ZGY2MTRkYjE3ZTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjOTBkZTc2NDNkMjI0ZjQxYmVmNjJkZTA1ZTJmZWI1MmI0MWRiOTZlMGE3MWI1Y2ZhMzU5OWZkNzcxNjUzODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ1MjhhNmRkYzBlMTYwMWMyOTg4Nzc2MTRjYjYxNWFkYWFmMmZhMGI5OThhYmYzZmE2YTRjNjhiN2IwZDcxMmUifQ"
+        },
+        {
+          "resource": "repo://frontend/app/page.tsx#L221-L234",
+          "version": "repo-lines-v1:sha256:68632a4fe2b629b0c0434d227f793ab1eaa044e969cfdc0988c9b35cbe34a9fc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjEwZDM2YTU3YWNkNGEyNTQ4YzE1YmZiODY4M2FmNmMzZTc0Yjk2YmRmZTRhZDk5ZGQ2ODk1ZGY2MTRkYjE3ZTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliNjJmNjBkODU5MGE1NzljZjQ2ZjhkNjczNzhjNGM1NzJiOTYyY2VjY2RiOTBjN2E1ZjdiNDJiOTYwNzgyYTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIzNjRkMDkyNjdlNmUzOWFkNGMzODgyNzZkZGJkYjlmZjllYmZjMDBlZGQ5ZDhjZTFkMjA0NGFjZmE4MTI5NDkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYmRkOTg2ODhiYzA1NzE4MWI1N2M0MjE2MTgwZGQ4ZjQ1ZTkwYmJiNTc2ODQwYWQ1MDNjMjljMmRmNWRiMjcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c4ac0b6bd16246e796811e9c1c6cebee",
+      "statement": "handleFileUpload sends a FormData with file, thread_id, and country to /upload, accepts .pdf only via a hidden file input triggered by a button, reuses the same streaming reader as /ask, and resets e.target.value afterwards so the same file can be re-selected.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/page.tsx#L205-L241",
+          "version": "repo-lines-v1:sha256:88879159cb56f247680627dc260bfea4202023f15ce1b66517c6da93879b6e84:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2YTY1MGY4NzkzZmY2N2QzMzNiNzg1ZmFmOTA2MzkwYWFiNzY0NWY1ZTM3MWRlYzM0ZWRjNGQ2ZjJlZWY4YWIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZTU3ODhkNWQ5ZDczZDI0YTgxZGJjMGE1YTc0YmZhODJjOWMzYjNhZjk5ZTUyYWY3OTZlOTBiNDY4YThhM2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM1NDI3NGI0NTExNzliZGNhMzYwODU3YzNmMGEzMzk5MjJmZGM3MDUzNGRlM2QxMzBmMjBkMzUyNDdjZjZlMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgwZmFkZTU0YmNhOTY5ZDcwOGJmNDI3YTQzZDllZjQ4MWRkMTNhNzJlMDYxYjhhMTI5MDc2MDIzMWUyNmE3OGIifQ"
+        },
+        {
+          "resource": "repo://frontend/app/page.tsx#L364-L370",
+          "version": "repo-lines-v1:sha256:6243096977a06d8817b8b0919796547f1f812f6ca1aa5118c342cf58f2f7bc83:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDk1NjQ5MjU0ZGE0MjJkZTI5ZTY3OWNiZDY2NjdhNjVlYjIyODBhMjM3YTJkY2NmMTJlYzU0YWYwZDBhMGFiMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTU3NTU0ZjQ2MDFlMzBiNTc0NmZjODQ5ZDU0MzZmZTk5MzViMTZkMWRkOGJiYzRlMmYxZTU0MDlmYWEzZWFiMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYWEwOWI1N2MxOGU4YzViMzY0NDg4NmQ2Zjc4MzJhMzcwMDczZjFiMjZmNTZjMjQxOTE2YmI4NTljOGUwZjI2NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZGM0N2JlZDk3YzQ2YTQ5OWIzNzIyOWY4NjYyODNjMmRjZDQ1NWEzMGY0YTk0ZGQwNWMxYjZiZmVmZTRmNjJkYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a4cf0fdfb33b4c71b38e99c2be5413a8",
+      "statement": "Assistant messages are rendered with ReactMarkdown plus remark-gfm; custom components style ul/li/a/code/strong, and links open in a new tab with rel noopener noreferrer; the prose container toggles prose-invert based on isDark.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/page.tsx#L308-L329",
+          "version": "repo-lines-v1:sha256:02d2e865abfcf00527c4318011349b7673166355059e7f2b6be570340ed894a7:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1MjNjNDUwYjJlN2VkY2JjM2M1MmRiYzk3YmE5MjAxMDE1YTQ1ZjQ0MDZiMzVjNGY5YjJiMzk5NDE3ZTJmYzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0MGU5Y2E1Y2I1ODQ1MTFlMDk4Zjg4ZjcwNjY0N2FmOTRkZDgwYzY4ZTk2NTY2OTMxNzVhYWQxMjI3Y2Y3YjciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBjMWEwZjRhZThlNTBkMDZmODYzMTQ2YzI1NTg1Y2UzZjJlMGNjOTg2MmQzNzk4NWFmM2FlYTUzYzU3YTNhNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI0YzVlZGEyNTJjMDQ4MzM4NzdkMjNjMzU5NzUyMWY2NWI4YTIzZTAyODYyNWM4NDY2YTM5ZTI5ZWExOTE2OTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_267c63db04e44dccb623bb2f48d80922",
+      "statement": "Theme is controlled by an isDark state defaulting to true; an effect sets document.documentElement.className to '' in dark mode or 'light' in light mode, and globals.css redefines all color CSS variables under a .light selector.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/globals.css#L4-L16",
+          "version": "repo-lines-v1:sha256:df330912a475c7b622e08e08202c493657f5425ecc86e9fc8f4e662412d77121:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlZWE1MDRiZjIwYjQxYzQ3MjlkM2NjZTQwYzIzODUxZDNhZTk1YjUwMTdlNmIwYTFhOGNhMzg1ZWIzMzU3YzgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhmNmVhMGJiM2JmNTMzZDcwZTY5ZmNhNjAwMjQ1NWI5OTE3M2RjNzQ1OGM0NTYwYzFmYjcxODVmZjQyNjY4MmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmNzgwNGE5MWQ0NTM1Nzg2Zjc1MDQ3ZGYxOTBiZTUwOWYyYjkxNjI3YzViYjg3ZTAyM2VkYjYwMDcwMmNjYTkifQ"
+        },
+        {
+          "resource": "repo://frontend/app/globals.css#L71-L84",
+          "version": "repo-lines-v1:sha256:2d66fa77f122e71bbf55f798f7456c4fd20ab0140b9c9c3c9ed6e82b82227e85:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM4ZTFhYjg0N2FlNjEyMDIxOTdkMGNmZDI5ZGJiMjYwYzFjZmQ5MWViYTFjN2VkMzI5YzEwZTAyYmFlOTE5YjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImJhNDI1Nzk2NDU4MzNhN2JlM2M1OWQ4YTU5YjY2OGE5ZTU5Mzk4NjJlYWM5MzkwOWJkZGU2ZTk5MzZiYTNhYmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhhOTkwMjM3MGZjNzVhYTNiZjA4YjcyNGViN2QxN2FhZDQ5YmViMWE5ODkxNWYzZmMxYTI2YTliMGU3NGZjMDkifQ"
+        },
+        {
+          "resource": "repo://frontend/app/page.tsx#L122-L128",
+          "version": "repo-lines-v1:sha256:030dbfb2eeda66125ad3532bf70f5f1af82aec934d9f17fa91b31f526c9ec000:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTk2NmZiZmE4ODk5OGRhNzQ2NTZjNTAxOTQ5NTZjMjVmMDg0OTQ1NzY2MGMwMDlmZTYzZDFlOWZhOWRjOTMxYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTdmZWViN2QwY2JmNWUwZDI3Njk1Y2IyN2ZjNWU5ZTA5NzBkM2EzNmU3ZTNkZTBlZDk0NTcwOWRkZmFkZWM1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDc3MzNhMmJjMzk0ZWQyZDUwNWNiNzMwYzUwYjNiMDc3OGM2MzE3MjQ5MmQyMmZjMDcxYjQ4NjFhZTA0MjZkMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDEzYWRjMGMxMjgyZmFjNDlmYzljYTM5ZTFjZGJhYWMwNTBmMTQwNTE3YzljNDAyMzMxNzhmZDA3MGU3MjU5MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_c47ef3f0555c4d988e2990b479b53415",
+      "statement": "Two loading indicators are gated on the loading flag: TypingIndicator (three animated dots) shows when the last message is not an assistant message, and SkeletonLoader (shimmer bars) shows when the last message is an assistant message with empty content; once the first stream chunk lands the skeleton is replaced by the rendered markdown.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/page.tsx#L12-L31",
+          "version": "repo-lines-v1:sha256:2f75f3fad6cae9f864b7d9183c131d41c868ce2f26a0dd5ab5fc901ce55aa127:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4YWQxZmFkYWI4YWZjZjU4NTRkZWYxNWFjNjk2Y2Y3MGY2Y2ZjZjI3NjVhMmEyYWZlZDBmZTdmYzdmYWM0Y2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxMjc2YjA1ZWE5NmQxZDVkMDU2NzkyNDg1MDI3NzdkYzVmN2UxMzI4ZmY0MDQzZGFiZWZmNzUwNzQyNDE2ZmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI2NzdmN2E5Njk0NGVkN2JjZjQ0YTNlYWY5MjZiYjY4MWQ1MTgxYTFkNjNmOGQ4ZWE4ZjBlODM2YjIwZGIzYjAifQ"
+        },
+        {
+          "resource": "repo://frontend/app/page.tsx#L335-L349",
+          "version": "repo-lines-v1:sha256:e4c328ac3add7fbc17ac601ee5eb0df6241dccdaac5ee790429d1cc66e1afeca:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiMzcxODIwYTVhYTI2NGUyMTFlZDA3YmEyOThmZjA1NzJjM2MwZTdlNjQ3NDMwMzRlYmMxZTY3NjdiYzVjMDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE0NDRhMzFkOGVjN2U4OGY4NTU3MTUyNmJmMjdjOTU4ODIwZGZmZDI5ZjY4NTIxZDBjMDViNzcwNWExZjE4YjQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBmNGVmYzhhNjMwYTEyNThhZTNmOTdkYTllMTFhNGY1YTFlNjdkZTEwOWZiNmQwYjRiMTAxZGM4ZWQzZWM2ZTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjFjZDdjZDZlMWY1YmE5MmNlMjVmODQyODRlMjVhYzMyNWM1OWZiYTYxZmMzMWRlZDQxMmVlYjI1ZjgzNjQ5YjQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e17b04281a8c41a5be6efa30db25092b",
+      "statement": "layout.tsx wraps the app with Geist Sans and Geist Mono fonts (exposed as --font-geist-sans/--font-geist-mono) and Vercel Analytics, and sets the metadata title to Job Search Agent - AI-Powered Job Finder.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/app/layout.tsx#L1-L37",
+          "version": "repo-lines-v1:sha256:a5aaa05bb4425a74e82bfd8ddb3ac122cec82786dc1eee7c4b840e72f8452329:eyJzZWxlY3RlZExpbmVDb3VudCI6MzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlZDAzOWNiMWM0MzA0OTlkYzkyNDZiZTdhNDIyMWYwMDM4NTU4ODhjMjk5YzMzMTk2MmQ1MDAxMWNjZjczM2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b223b640da9d4e3e89924430a5bc7c86",
+      "statement": "frontend/AGENTS.md warns that this vendored Next.js build has breaking changes versus standard Next.js and instructs reading node_modules/next/dist/docs/ before writing any frontend code.",
+      "evidence": [
+        {
+          "resource": "repo://frontend/AGENTS.md#L1-L5",
+          "version": "repo-lines-v1:sha256:e3447d84251880fb34cfae09131cb4c57471529bbfe60976a3245793cf621627:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzYzZWI4Mjk1ZjBiOGM2NGY4Y2ExYWY3MjI0OTU4NTFhNzBhMTFkYTRmMGUwM2JjNmUzMmRlMTdhMDlhMTE3ZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDE5ODJkZTdiODcxNGQ3MDY4YjFkMTk2YTg3NjU4NjI4NTYyMDIxMDM2NGFjMmI4ZjIxMDNlNjlkODQ0NzRkMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-10-01T12:03:35.670Z"
+  }
+}

@@ -1,0 +1,192 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:f9cf23f62cb02de7c645d832008dc4b79ca6dd929ed34220993bdbf01b845697",
+  "claims": [
+    {
+      "id": "claim_36c3c09a64724f5091d61cb1a5b54e60",
+      "statement": "The agent aggregates remote job listings from five public sources queried differently: RemoteOK (tag-based, re-checked on title), Himalayas (full query search), Remotive (cached feed, 6h TTL, not a search), Jobicy (tag-based with geo), and Workable (two-round crawl of schema.org LD+JSON from search pages then posting pages).",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L279-L307",
+          "version": "repo-lines-v1:sha256:b61c8bc78c889ebc91db4418521ba03d8538ce80c9c835488b6d36e9a6b2033a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5YTZkNjZmZjEwODNiNTQ5MzA5YTI4NDE2ZDJkN2NiYTIxZGE4OTgyMDBmZDg3M2IwZTg5OWVkYmE0OTFjZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NmI4YWJlODA4NDFmMWQxMDRmZTllZTM4YjNkNzdlMmIzZGI1YWI3MDRiZTRmN2UwYWQwNGNiOGFlNTUyYWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY5MDdjNmY1ZDRjMjg0ODBmZDQ2YThjYzE3NTJjYzU0ZGNmNjhkMDVjZTgzNDMxZjMxOWJhZWI2MTRjNWNiN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3ODAzYTJkY2JmYjgwNDg0ZGQ1NzY0ZDBmZDcxYWFkZWNhYmY2MmFlNThlOGFjNTgxMWQ2YTkzYzA3MjA5MWIifQ"
+        },
+        {
+          "resource": "repo://agent.py#L309-L322",
+          "version": "repo-lines-v1:sha256:c7b90b1685a08e6a50732f3d1eb76af6d2e84910533babd870108e4b5ef00fb9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3NmEyZTVjN2MwZDRkNzM2NWI0MTcxY2I5Yzc5YmJjMzEyNmE1NTNmMDRhZGQ1ZGRhMWVkYzNlNWJjNmEwZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyZTczNzgzYTQ0NzBiYWYyMmJjZDViYjMwZjA5NjhmYTM0M2ZkMGYyMjU4MTY4Y2RiMmZkNDc5YzQ2OWJjNjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0OWU4NjZjN2I0ZjY1ZDJkNDU1NWZiM2Y2NWEzYmU4MjcwYzg4YzEwMzNlZDY1ODYxODNiNTkwNWFmNGU4NmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2MWQ0OGRhMzk4NTQ1MWI4MmY2MjdiNmQyMjU1NDRiMDRhY2MwYzdmOTBjYmU2ZWJmMjE2ODJkYWYyNThkMWQifQ"
+        },
+        {
+          "resource": "repo://agent.py#L324-L348",
+          "version": "repo-lines-v1:sha256:1516378cd7b8a14e79eff0d5a658f85caebd431e5e8d12c27a81f20b236b15d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3ZWM3OGJhNmYyNTFmMmUzOWZiZDVjNjcxMDMwYmU1YmMyYzU5ZGY5OTRkNmFhM2QzMTNmMDQ0OWMxMmYzNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkYzE4ZWVkOGNjMTBjMzUxNmU4NWUxYjIyNTNlYTRmMzNkYjE4NTMzNTVmZWQ3MTk5YzM4NGYyN2I4ODhlOTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1YzIzMTg3ZTQ4NzhlOTNlODM2ZDg1NGVhZTYxODU1ZTNlMTZiZWQxMjlkYTQxOWVhNjlmNjEyZWYwYzNlOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmYjA2MGUyYmMyNDU3NmVmODAwZDg0MTA3M2QzYjkyMTllNmY3MjM5YWFmZDMzNjFhOTZjN2Y5ODBkZGVhNjkifQ"
+        },
+        {
+          "resource": "repo://agent.py#L355-L453",
+          "version": "repo-lines-v1:sha256:6e1e29581984f404f8bec9478b9dbc564009edbea83e06d30c18386d56da1f79:eyJzZWxlY3RlZExpbmVDb3VudCI6OTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4Nzk1NWY0ZmVkYmY2MzMyMjU2M2I2N2ZjZWFjZDdiYjc1MzQ1M2M2MTM3OTNlMmMxMjczYjkwMDM4M2I5MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlOWNmZjZiMmIzOTAwZjEzMTI2NGIwMWQ3Yjg2NjU0OWJhMTNkNDlmMTNhMDI1MzI2Njg0MTBjZDdiMjBiODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiM2MwYzU3YTA4Y2VjMDllNmQ2NTYzZTcyYWY2YWExZmVlNTBiYzBhZGQ3YWFhMDFkNGNlNjk5YWQ2MGY0OWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyYjM3NGI0OTdiNTM1ZWM3MGQ3MDQwMzMyNDkwOGI2OWY1ZGJmYmU4YjAyYTk4NDkyMTVhOGI1MDYxNzNiYTkifQ"
+        },
+        {
+          "resource": "repo://agent.py#L479-L519",
+          "version": "repo-lines-v1:sha256:ecbc2bc73c3e383c9c3206d99e3ef83985700720e2ea159b95aff1440357b9fc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxM2VhZjdhZWE3ODVmZTA0ZWIxMWMzZDAzNDZmMmNjMTNmNDEwNjEzNTQ3ODI4ZGQzZmQyYjEzMGViZjIyZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMjRlOTdhZDA5ZDIwMTc0ZDM1NzcyYjdlZWM3NTc3MDY1MDUyNWJhNTZiY2FjYjBjNTlmY2FkOTRlMWUyMjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzMTE0NTZjNmYxMTFhNDlhM2Q4NjBkZGU3ODk0NmVmNDcxNTMyNjQ1YzkxYzc2ZjQxNTU1NTMxN2UzYjQ2ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1Yzg0M2NlNjMxZTJlMDA3MGQ0NGZiMWMzNTU1ZTRlZTcwYTEzNTUyYjczOTFiYTY3Y2MxMjM5ZTAyZDg2ZTMifQ"
+        },
+        {
+          "resource": "repo://agent.py#L558-L586",
+          "version": "repo-lines-v1:sha256:5d0cc266b85eb13822d3c3878357a502074eccc2e299891b90cacfacdce23f4e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNzkzOTZkM2FhM2ZhYzkwYTZjMTc0NzcxYjliOTNkMDI1ZDI2ZTNlODIxZDQwMmMwZDM4NDhhYzk3OWFkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlOTk2N2YxMjk5MWNhM2VmNmI2ZmVmYjZiNDRmN2IwODdjOTQxMzYyNzkxNDBjYmNkNzFmMDk5M2I2MDQ4ZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZjE5MjFjOWJjNGY5MGI4NzQwNThkNGQ5MTFmMjAxNWQ1MzU4ZWUwODRlNDZhNDAwYWEwMTM5YjczNDdhOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhM2NmNTE5MjM1NGY3MTYxNWFjNTEwMzRiM2U5N2MyMGVkYTk5NjQzZmNhZjViYmU2ZDQxYWQ1OWJkMTIxNjcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_52057bdc37b94964ad3138d14e12dfd8",
+      "statement": "collect_results deduplicates by a company+title hash (not URL) because the same role is posted once per city with different links, and this happens before scoring so duplicates do not take places in the top MAX_RESULTS.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L235-L264",
+          "version": "repo-lines-v1:sha256:88489091ce1c7002a44621fa630180a8f9ec907e1473f8fcf24f2da3597c9e3b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1YTkxMDE3NzVkODY1NzdjMmUzNjk5NWM5OWZjYzFhNWVlZjNkOTU4MzQ4NzFjMGY4NGI1OWYwMzIwODE0MzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4ZjQwZDU2MDNmNmY5N2I1M2EzYzI0YzBiOGQ2MTE4YWQ1YmRjMzg5YjE0ODQyMWI5ZTM5NDU4NmY2MWVmMmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4NmRkYTYzMjBjOGI3NmEzZThhYmUyZjdhMzIyY2MwNDFlMzZlMzhlZDRmZjNiZTJjMGUzOTFmOTU5Nzk2MTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhMGMyZGEwODc3OTg4OTI3Yjc1MDJkZDJlMmFkNmFjZmNjMWE4NzQ0ZWVhODc1Zjk1MDk4MGVkZDdlNTg3ZDEifQ"
+        },
+        {
+          "resource": "repo://agent.py#L521-L553",
+          "version": "repo-lines-v1:sha256:0eb014b93ed1efb07188b7cdb7a17e8d11529bbc5985536d08becf73a285525b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MmM4YjRhYTRjYjRjZDA1MDQ4NDBiODdhZjY2NDAyMGI1ODFmMWNiZjFmZjc1NmE2MTE1NzNmNDZjYjA0YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzZjVkMjA2YTQ4MDgzYjJkOTU0Y2ZhNTE2OGE0OTg3ZDVlMWM1MjFjYWM2Mzg5YWE5MTBhMmI3ZjVjMTA0NWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzY2JlYWEwOTVlNTYwYzg4OTJlMGMzOWY3ZjAyNjE1NGIzZTlhNzAxOTMyNzEyM2Y5NzJkNWU5MDA5MDMwMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNkNWZiN2NiNGE3ZDRlZWJmMDIxZmQ0MjM2MTg3MDhkNDhmN2RkMzc2YWQwMDRlMzg1NzNjNjg4NjE0NWRmYzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_dae492a83172471ca20f305494466ea1",
+      "statement": "canon() applies an ALIASES dict (machine learning→ml, artificial intelligence→ai, full stack→fullstack, back-end→backend, postgresql→postgres, kubernetes→k8s, javascript→js, etc.) so that synonym spellings match; without it 'ml engineer' and 'machine learning engineer' were disjoint result sets.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L143-L167",
+          "version": "repo-lines-v1:sha256:25bbf359355a7b27537a3fbd454cb0b766f85df9081e03fe89fde6b9535df092:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4MjdlZjUyMzg4YWU3ZWQxMWJmYjViOGEyNDc2YTI3NDE1ZjAzOTcwZTMwMTQ3NjhmNjE2ZDE1NDU0OWIzN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhYjhmNGY0MTM1OWY2YzBiZjdhYmMwNDdkNGM1Nzc0NTcyMjMzNGY1ZDJkNmU3MmUxNjZhNTViM2EwOTc0NzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhYmRlMmMxNzdiMzY4MzhhYmRjYTU3YWM2MzE0NjcyZjY2MzRkZWNkNzE2NTUxZDRjOWVmMjZhMTRmNjY3ZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxMjEwNGQzZWUyNWIwZTE5ZTgyZDgzZjFjYjE4NmQ5M2E1ZTIwMzE4ZTAwNTRjYzM1NWM0MDM5Yzc2ODQ2NWEifQ"
+        },
+        {
+          "resource": "repo://agent.py#L185-L188",
+          "version": "repo-lines-v1:sha256:66d5c4063b0d512a6c4a0b192ead6bd13c9faee30f5a405bdd836462c69f5f94:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTVkNjAyZTdhNjlkYjA5ODZjYjFlNTUxZWRiNzczM2Q1M2U0YThiMWU1NmU3NTg2MzA4NjhhNmRhNWU2ODhlMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjlhOTY0MWQwNmI1ZTNhZTFiNjYxMzhjNDg1ZjVmYzRiMTlkZDkxNWZhOGYzZDM3ZTFhMTY0OTFhMDdjNTVlYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTY2OGRmZDE4ZGMyODE0ZmRhOTliOGQzNmIyNzlhOWI4YTAxOTUyOTU3NzFjMDcwZjM0OWI1MzVkZTdmMWNjOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2IyNzFjZmM2MmFkZWUzM2RjOWIyMTlmODk1NTIyZmU0NTMxNjdmMDQ0Zjc2ZDc5NWVjOWViZjllYTA5MWU1ZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_46911d440a6146fc8b640e0df48908d0",
+      "statement": "score_job computes title_hits*TITLE_WEIGHT(10) plus a description contribution (desc_hits + generic-word title hits + freq/8) capped at 9, so description hits can only reorder listings that already earned a title hit and can never admit one; collect_results admits only jobs with score >= TITLE_WEIGHT.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L202-L221",
+          "version": "repo-lines-v1:sha256:83f64c2ce9b0502f419876755a59d17544b82edde03daa3d1af3d526f78a35ba:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlYzUyYjU1MWRjMjRlMmEzMmE2MDhhZGY2ZWVkYzE1MzYwMWZhYWI0ODUzMTAyZjU5OTQxM2VjNzUxMzI5NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2NjU1MDMxODdjNzdlNDgzMzU4M2Y4MDc3YjYwYzU1OGZjMzE2MDc3ODViZjljMWY0MjhhYmUwMWVhNjIwMWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2MDkwZTJjNTc4ZGZhN2UzYjFlM2RjNGYwZjg1YzMyNzFlNWRmZTUxYWQxYzhmZWQxODk1OTliNDc3YmFjODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1MmM4YzViYjMxN2E2OWFlNmE3ZDA4Y2U5YjY0ODIxMzBhMjJiZTk5N2FiOWQ1NzBiZTFmNDE2ZDM3ZGVhN2QifQ"
+        },
+        {
+          "resource": "repo://agent.py#L521-L544",
+          "version": "repo-lines-v1:sha256:f90cc87eaf1337f3cd44dffdbd79102388251a153f3eaf7b06c808e6184bf47a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MmM4YjRhYTRjYjRjZDA1MDQ4NDBiODdhZjY2NDAyMGI1ODFmMWNiZjFmZjc1NmE2MTE1NzNmNDZjYjA0YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1MzM3MzcyNmE2OGI5NjQxYmRlYjUwMGQwZDdhNWU2MTU4ZTY0ZDk0YmViMDYyM2I4NjJhMjFlYmYwMDkxNmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzY2JlYWEwOTVlNTYwYzg4OTJlMGMzOWY3ZjAyNjE1NGIzZTlhNzAxOTMyNzEyM2Y5NzJkNWU5MDA5MDMwMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1MTM5MjNlZDAwNmY1NzAyZjgyZjYzMzI4MWIwYmMxZTgyMDAxZGM1MmJlODFhODFjMjJmZTJiMTc3MWFkM2IifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0addb141d1a840e5befcac76590a788e",
+      "statement": "title_hit uses regex r'\\b{token}(?:js|s|\\d+)?\\b' — whole word with optional suffix (plural, version digits, js) but no prefixes — replacing the earlier <4-char whole-word vs substring rule; rust does not match anti-trust, python matches python3, react matches reactjs.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L191-L199",
+          "version": "repo-lines-v1:sha256:9be826f93953bd3893d7519b825061d4d7e8dbb27510cafdb059e53168bc7fd1:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDY4NWY0Yjg4ZmI1MzQwZTY1ZTQwNWQ3Yzc4MjhjZjdiMTEwY2RmZWUyZjZkYTY3M2QzMWZlMjcxNjVmNGViZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGVhOTQzY2ZiYzczZmFkZGNlMjBiZjM1MWNlZjQ5OTc2YzViZjIyMGQxN2U2Y2RkNThiOTMxZTI4MjYwZGFlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWMyYjQ1NGNjNWVlNTg1NzE5MmZmODZiMmE1NDllMjExOWJhMzVjODA2OTg5ZTYyNmZjYmYwNmI4MjczZmQ3MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FkMzlkZjAzMTQ2ZDdlMWYwYWM0MDRmZjZlNGUxYmE1OTBkNjIyYTIzN2IwNDI3ZGVlNDhlMTEzNWZjMDQxMCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fa8cebcb79394f478e2059349710dc9a",
+      "statement": "distinctive_tokens returns non-generic tokens in order, deduplicated and capped at TAG_LIMIT=3, used for tag-based API queries by RemoteOK, Jobicy, and Workable; it falls back gracefully (empty means the caller asks without a tag).",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L169-L182",
+          "version": "repo-lines-v1:sha256:047f5f3687502a37bc0078e22bd8e88adb26f93aa9ec4b117e325913793e7ef9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwOTQ0M2RmOTk5Y2Y1YWY4OWY5MmVjOWNlMWIwZGE1NzdlZTU0OWExZjYyYTk2NDlkY2FmZmE1ZDY2MjE4MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzOTI2Y2VkNWI0MDdiYzliNjg1NmZhNjVlZDQwZDBiYTM0ODkxYTg1NmVjODc1MDMyMmFmMTY0OTllNDdmOTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyNTliZWFlYWU5Yjk1Y2U5ZmFlNTk4NGNiZjM4ZDg3NmE1ZmY4YmVmNzI5YTk3OTRhOGY2NmVhYmUzN2EyMjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2Njg1YzY5ZGIwMDMzYTIyMzBlMGZjOGJlMTVhZGRjZmY4MDBiOTkzOWE2ZjhhMWE4ZjUyMzI4MGQyZDM3NDIifQ"
+        },
+        {
+          "resource": "repo://agent.py#L279-L307",
+          "version": "repo-lines-v1:sha256:b61c8bc78c889ebc91db4418521ba03d8538ce80c9c835488b6d36e9a6b2033a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5YTZkNjZmZjEwODNiNTQ5MzA5YTI4NDE2ZDJkN2NiYTIxZGE4OTgyMDBmZDg3M2IwZTg5OWVkYmE0OTFjZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NmI4YWJlODA4NDFmMWQxMDRmZTllZTM4YjNkNzdlMmIzZGI1YWI3MDRiZTRmN2UwYWQwNGNiOGFlNTUyYWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY5MDdjNmY1ZDRjMjg0ODBmZDQ2YThjYzE3NTJjYzU0ZGNmNjhkMDVjZTgzNDMxZjMxOWJhZWI2MTRjNWNiN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3ODAzYTJkY2JmYjgwNDg0ZGQ1NzY0ZDBmZDcxYWFkZWNhYmY2MmFlNThlOGFjNTgxMWQ2YTkzYzA3MjA5MWIifQ"
+        },
+        {
+          "resource": "repo://agent.py#L434-L453",
+          "version": "repo-lines-v1:sha256:0712e198bfc6de08ec30c78f7fb5819ed27c14967eee70ed51790ede601d96a8:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4NDMzYzdkZGI3ZWRkMDlhMGY4Y2YyMDAyNzY2OTM2NDc4NTk3Y2NjZjAwN2EzNGZjMzNiMDYyYjgxNzc3YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlOWNmZjZiMmIzOTAwZjEzMTI2NGIwMWQ3Yjg2NjU0OWJhMTNkNDlmMTNhMDI1MzI2Njg0MTBjZDdiMjBiODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3MDE0OWUwNjlhZDY3ZWNjZjQ3MzY0NmZmMWM3NTAwNTBkMzI5ZDExMDAxOGRjNTc2Njg3OGVhZmExZDYwN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyYjM3NGI0OTdiNTM1ZWM3MGQ3MDQwMzMyNDkwOGI2OWY1ZGJmYmU4YjAyYTk4NDkyMTVhOGI1MDYxNzNiYTkifQ"
+        },
+        {
+          "resource": "repo://agent.py#L479-L519",
+          "version": "repo-lines-v1:sha256:ecbc2bc73c3e383c9c3206d99e3ef83985700720e2ea159b95aff1440357b9fc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxM2VhZjdhZWE3ODVmZTA0ZWIxMWMzZDAzNDZmMmNjMTNmNDEwNjEzNTQ3ODI4ZGQzZmQyYjEzMGViZjIyZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMjRlOTdhZDA5ZDIwMTc0ZDM1NzcyYjdlZWM3NTc3MDY1MDUyNWJhNTZiY2FjYjBjNTlmY2FkOTRlMWUyMjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzMTE0NTZjNmYxMTFhNDlhM2Q4NjBkZGU3ODk0NmVmNDcxNTMyNjQ1YzkxYzc2ZjQxNTU1NTMxN2UzYjQ2ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1Yzg0M2NlNjMxZTJlMDA3MGQ0NGZiMWMzNTU1ZTRlZTcwYTEzNTUyYjczOTFiYTY3Y2MxMjM5ZTAyZDg2ZTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_e536b5d1c1e549a3ae117b365d90a66e",
+      "statement": "job_is_recent keeps listings posted within MAX_AGE_DAYS=120, accepting ISO strings and epoch seconds; absence of a date is not age (kept), and a date that fails to parse is also kept.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L521-L537",
+          "version": "repo-lines-v1:sha256:64f50be3b95915ab0a5c28d40fe8c0648f3fb684bab1501b8c490db0048326da:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MmM4YjRhYTRjYjRjZDA1MDQ4NDBiODdhZjY2NDAyMGI1ODFmMWNiZjFmZjc1NmE2MTE1NzNmNDZjYjA0YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NjUxYThjNzIxMzZmYTYwYzMwMWEwZjc0N2JkMzdmNDg2NDU2NTY1MDQzNGY1YjYwYWNjODAyZmNjNzgzYjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzY2JlYWEwOTVlNTYwYzg4OTJlMGMzOWY3ZjAyNjE1NGIzZTlhNzAxOTMyNzEyM2Y5NzJkNWU5MDA5MDMwMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkNzEzMWI4MTFiMGY4NzZiYWYwZDQzNTg5OGJlMTIwMTljZDM1ZmI5NTg3NzVkNGRmOTYyZTljYjRiZTBlYjQifQ"
+        },
+        {
+          "resource": "repo://agent.py#L84-L107",
+          "version": "repo-lines-v1:sha256:40ce377ba0bcf6d74f1cd2f081b627abbde044c0c6e33e474c91ae7051f27e7e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImViY2IzM2I3MjY0MjY4YzFkNGE1YTgzMDgyNDFjMzY1NzYwYzE4N2JhOWQwZTkxYTliODg5ZDZiYmM5MTI5N2QiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU2YWU5ZmZjYzU2NGY2YjIyZjg3NDhlM2M5ZjcyYjY2MjhiNmMzMmVhOGI1OWVjYTJlMTViMDAxZDZiYmE4ZmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImI5MDRiY2IyN2I4OTI0OTNhYjUzNzRiZTE5YTg2Yzk2NGIwZmE3MDRlMDdiM2JmYzUwYzlmYmNkMmFmZDlkNDMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzMGYxNGJiNWMxZTJmNThkZDA0M2ExZjE0ZGZjMDUwNmNmOTMzYTIzZmNjY2Y0MWYyMzg3M2MzMWJhMWRkMGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4c2565a66cfa4aae9cbba8b576a53b74",
+      "statement": "location_ok counts a listing as open to a country if it names the country, names a containing region from the REGIONS dict, says worldwide/anywhere/global, or says nothing about location; 'Remote' alone is deliberately not a match because it says how, not where.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L521-L537",
+          "version": "repo-lines-v1:sha256:64f50be3b95915ab0a5c28d40fe8c0648f3fb684bab1501b8c490db0048326da:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MmM4YjRhYTRjYjRjZDA1MDQ4NDBiODdhZjY2NDAyMGI1ODFmMWNiZjFmZjc1NmE2MTE1NzNmNDZjYjA0YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE4NjUxYThjNzIxMzZmYTYwYzMwMWEwZjc0N2JkMzdmNDg2NDU2NTY1MDQzNGY1YjYwYWNjODAyZmNjNzgzYjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzY2JlYWEwOTVlNTYwYzg4OTJlMGMzOWY3ZjAyNjE1NGIzZTlhNzAxOTMyNzEyM2Y5NzJkNWU5MDA5MDMwMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjRkNzEzMWI4MTFiMGY4NzZiYWYwZDQzNTg5OGJlMTIwMTljZDM1ZmI5NTg3NzVkNGRmOTYyZTljYjRiZTBlYjQifQ"
+        },
+        {
+          "resource": "repo://agent.py#L54-L131",
+          "version": "repo-lines-v1:sha256:3fa247c69d514c40141b25daa2a9272538be955885495a4740e29849f7b52a13:eyJzZWxlY3RlZExpbmVDb3VudCI6NzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZlM2NiYmZmNzNmZjhlN2YzOTYzN2JjNTVmZDJhZTllZWFhNDMwODIxNWIxOWFmNjczZWJiYTVlNDA1ZmU2NjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUzMTk1MDNhOWY1ZjczNzYzMzI2YmRlNTEzZmEyZGJlZjI1YzEwMTRiNmRmNzY0NjliMWFjZjg4ZTNiYmE2M2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkwNGE4YjUwMTkzODJkYjFjY2EwMDBmZTBmMzY2MmY5OThkODE0OGQ2NjE5NjcwYWM3NzJhNmUyMzFjNjAxNzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI5OWFjZmRiMmZhN2QxOGRmYTdmMmM0YTcwZjBhOWFiMGNiMzc2NzE3YzA1OGQyY2ZiZjUxZmM3NWM3YzE0NmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_81e264f7f51a434c96b9fc8cabdde0e3",
+      "statement": "filter_jobs matches seniority terms against the title only and everything else against full text (title+description+location); it also removes jobs without an apply_url or with empty/Unknown position.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L13-L14",
+          "version": "repo-lines-v1:sha256:b01b96304fd3d5e7ebc696100ed59488a40d98e8893c9af79d4e1b3849e9f738:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGM0OTcxNzc2OTE5Y2NiOTgwODg3OWYzZjRjMjRiM2JiYjA2MzMxMTE1ZGJlNzdhZGVmNzI5Njc0OTk1NTc5MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmQ1NjMyNWU3Y2FlZDI5OTQ3NGE0OGM1Yzc0OTMzODA4MTY2YjQ4NDA4NTkyYTA5YTFjYmYyNjRiY2QyYjUyMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjEzYzc2YmNlYzY1ZDBlNjY3N2VhNWI2YTMwNTZiNjMzMzZhZWYwMWNmMmFmMmFlNTI3NDgzMDQwODMyNDEwMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDRmNDc5MDI5ZjBlMTYzOWZjZDU5YzQzYTVlZDI1ODI0OTZmMzIwYjQyM2JkYjczMjQ5ZTMxNzc5YzViZjE3ZSJ9"
+        },
+        {
+          "resource": "repo://agent.py#L29-L51",
+          "version": "repo-lines-v1:sha256:4db8d4e8c3adf3710f34575ef561e56f9e7fcaa2cd54fa42f6230df238cb0161:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkN2NkZmE0MjczNmJhNDE3Y2JlMTkwMmI1MzRhNjYwMjg5OGU0MDc3ODFmOTBlNzZiNDdlOTMwYjNjZjJmNDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5OTQ5YjAxZjUzYTNmZmJiODBlOTk1ZDlmZWNiOTllZmM5OGRmMTYwNjZmNjIzMzRlZmJkNTYyN2NhZjc5YzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzZDRiZGNiNTMyOWYzYjVkZGNmYzM5ODBmZmNmOTlhZDUxZDBhMmQyNjJmZTk2NWZkZDM2NWYwMGJmZGNhOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkMmYwZjM4MDg3NjdhMTFhMGI4ZjU1MjVjYTI1ZmEwYmE1NGQzOTUyMzY5N2FkZWIyYjhhZDVkYTExNDczMjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_ac7c231efbff4e4197fd255f7c5ddcbe",
+      "statement": "The LangSmith eval is 24 cases at ~0.90 baseline with a rewritten repeatability-oriented judge: an empty_ok flag short-circuits examples that expect no results to a perfect score without judging, and the prompt carries explicit, decidable grading instructions.",
+      "evidence": [
+        {
+          "resource": "repo://eval_runner.py#L13-L17",
+          "version": "repo-lines-v1:sha256:b531343431ace07fdab01ed267106a263d55786a948cff00c103a46a14207291:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTgzYjVhODczN2FlZDliYzBmNThkOGUzMjM2YWM3NDI0MTZkNWMwNDdiYmY3YTk2MTk3MGJkNzU5NmFlNGRjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjNhZDhlODUzNDlmZTExODE5ODg1OTc2ZWY5NmNiZTNmNmY2NWMyODhiMjkwNzEzYWNhZGJkZjlhOTI4MDM4OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmQxMDU2ZTVjYTZkZjhmZWY2YjBjZjQ1OWFhMDAxYjcxMDNhMjRlZTAwOWY4NDU4MDgxYmI4ODQxMDJlYjUzNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2Q0YjMyZjQwNjcwMTllYTI2NmU5M2JjNWE3NGJkZjY0ODA4MWIwMzQ1ODQwNmNkZWE5NWU5NzRhMWE1OGE4NyJ9"
+        },
+        {
+          "resource": "repo://eval_runner.py#L41-L90",
+          "version": "repo-lines-v1:sha256:5ccd25dd34064cf5264073001274a0ad620ffdc40a3864505ff72530b19c6a69:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1MTUwODU4NDMyOTliZDMxZmM2MWI3MmYwOWI5ZTIwMTdjYTg4YmE4ODJkMzcxOGJjN2YzN2UwZDE4MjBlMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhMGY4NTBkZWQyZGY3MTEwZTM1OTQ2NmVmZmMxMDBjNGVkMjQ0ZDQ4YmQ1YTdjMGU0MDE0NDc3NjdjODA2YTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkZDk2M2Y2YmIzYWRkNWY4Njg1MjE0NmViZTEwNDQ5ZDlmZWM3OTA2MjM3MmFmZWE1NmE5YjU5MzBhZjIyZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImVmYTYzNDc2ZDBjMTQ0N2RkMzUwN2NiNTg0YjM4YWFhNzNlMzM1NWEwYWUwMjYyYzg0NzBkNTU5MjhiYjlmMWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_0e09046180784357bf1fa455fe55b6ff",
+      "statement": "The Harbor eval runs the production mcp_server.search_remote_jobs against five frozen source fixtures (RemoteOK, Himalayas, Remotive, Jobicy, Workable) with no network, database, or LLM in the path, and asserts deterministic set equality against a hand-written expected.json that the verifier never recomputes.",
+      "evidence": [
+        {
+          "resource": "repo://evals/filter-exclusion-senior/tests/test_outputs.py#L53-L79",
+          "version": "repo-lines-v1:sha256:8df478ad8b39b73871b8e5e9f6739f3e03570facc32570022e467d5fdb369848:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjMTRjNDQwNTNmYzc1M2YwMDU2ZDEwMWIzYzNhMGU4M2FhMmIxOWYyOWRhNzMxOTVmNjhkNWU0Yjg1NTk1OWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyMGM5MjIxZGU1N2E5MDAwNjQyNzNmMzIyNmYzMjg3OWFiZTdkNWQ5ZjNmYjBhYzc0N2QxNGYxYmE0ZjZlMjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1ZjQ4MWQ5MTBiMzcxZjZhY2I1MDY5NmE4YTBiNmIzNGE2ODJmNGMyNzZkMzM2OTNjMGY5ODlkNjE1ZjE0ZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://evals/harbor_agents/pipeline_agent.py#L1-L58",
+          "version": "repo-lines-v1:sha256:a366bde8dfbe78d2e2f47b4fe041a7d2e45cb5d35b54765a2023b58082c0401c:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjYjlmZmNjYmE1MTQ2YjJkZDE3N2EzMGMzMDU3YTQzOTVlYmQ1Yzc0NWQwNzg5ZDJlZDk1ZDBjZjRhZmUyNzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://evals/harbor_agents/run_pipeline.py#L1-L35",
+          "version": "repo-lines-v1:sha256:fa15fcbdc68ccf8767c236051c34ce37df11cba5a8379492dcb5479f1258b154:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2MWE5MTEyYTI5MThlMmFiYTAzZTE5YTJmMjIxYTAyN2FiNGI2ZjllOTQ2YTZjMzk4MTRmNTRlMThlMDdkZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNjNDA0NTRmMDg4Zjc1ZTIyNTFkMWY4MzI0NjUwNDZjY2E3ZWMyNGMzYTcxMTI4Njg4NjE0OWFkZTNlNjE0NWQifQ"
+        },
+        {
+          "resource": "repo://evals/specs/filter-exclusion-senior/environment.md#L1-L87",
+          "version": "repo-lines-v1:sha256:960de0b42ae29413316cfcb968af497a3c212551734115de7e369ef3db323626:eyJzZWxlY3RlZExpbmVDb3VudCI6ODcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNhNTU2ZTU5ZTZlMjg0ZThlYmQxYjY3NmU1Y2U5MmI4NjIxZDI2MjJmMDFkMmZmYjI5Y2MwNTVhNThlMWY3MjAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZmNjZmOWRiZDBkMzZiMzAzNWQ4YzliMWVhNGQ4ZTNlNDJiOWQ0ZWRjYjA2YzhmNTQyZTU3OTAwMjViOTY2M2MiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-10-01T12:03:35.670Z"
+  }
+}

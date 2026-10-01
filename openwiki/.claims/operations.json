@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:1cbf28465765f84400cbfd0090e59bdeb029ab5681c2cbac854ff0f13001e87b",
+  "claims": [
+    {
+      "id": "claim_1f71d1a4865144e1835e4cc1eb5cf027",
+      "statement": "EVALUATE_TOKEN is not declared in render.yaml and must be added manually as a Render dashboard environment variable; without it the /evaluate endpoint returns 401 because os.getenv('EVALUATE_TOKEN') is empty.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L111-L119",
+          "version": "repo-lines-v1:sha256:90ae113cd380c1a2067928446f91462ceed168d5f666f8c9abe97fc1660dcea3:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODZjMTE1ZTkzMzRhYjliOThkNWRmOTczMDY5N2E5MjFiNzgxMDAyNjQ3OTU1MWE0NzMxNzdjY2ZlMjkyODJiNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmJmNTMyZGNmZmZjNmI1ZDgyNjlhOWYzZjBiYjI0Mzc2ZDc4MmJkYzEwMzk1MGE1YjM4NWM1YTYwYTMzZDc5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTdiMjQ0MTEwZTViMzRjOWQwYzFkNjRkNjEwMWNkMjA4NzRiODIwMWYwY2NjMmVjMzE4NmY0NjIzYTZhYjVlNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODRmY2NkYjQzYWNkZjM4N2VlM2FiMDkzMzQzOTUyMDk3NWYwNzU2NTY3MjViMWZjYzg5YzExMDRkYzgzNThlMSJ9"
+        },
+        {
+          "resource": "repo://render.yaml",
+          "version": "repo-file-v1:sha256:1560a3eeabaf3587f10349d09e8b4d88dceaba87d030abe361b407957ecf7e82"
+        }
+      ]
+    },
+    {
+      "id": "claim_6ce39169168148ec84172860d1f8093a",
+      "statement": "The free Render instance sleeps after 15 minutes of inactivity and takes ~50s to wake; the n8n workflow mitigates this with a wake node (GET /docs, On Error: Continue) plus a 60-second wait before calling POST /ask.",
+      "evidence": [
+        {
+          "resource": "repo://n8n_workflow.json#L106-L135",
+          "version": "repo-lines-v1:sha256:dd5dc214485582555f0fbd0bb7405d068160dfd9e7462431ab02b7154383df48:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2OGZjZjBlYWU1ZWM0Mjg0Mzk1ZjVmMzgzNjRkZmQ4ZTE4ZmEyMDI5OTU1YjI1NzhlMGIxZWM2MDQzYmEyYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViNTRkYTg3NmYyYTEyNjcxYzRhOWU5OTIwMmY3NmFhY2Y2YjI3ZTU0OGZiYjNjYmQ5MDBmYjkzMjUzYmU4ZTcifQ"
+        },
+        {
+          "resource": "repo://render.yaml#L1-L9",
+          "version": "repo-lines-v1:sha256:51509fea383b56005051845a0a3559337041c49ff5e0a50b47cc22466347261a:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmE3M2ZjY2RjOTllYTgzNTk2N2M3ZGVlN2VmYmVkMWYzY2E4NzI2MGQ5MjkzMTg1MGZkZDY2ZGE4Y2IxMmYxZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzVhNGNkM2Q0ZjkyNjVhYjM0MWY2Y2M1ZTRjZTJiYzUxOWU3MDYxZjBhYWUxN2Y0Y2E2NWE3ODg5MjBkNDNkMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODg0MzE3ZWFhZWQ5ODM5NDBlMDcxZTY2N2U3MzEzNzExZTM1ZDY2MzQ3YWFlOTI5MDFiYzI3OTVkODNkNTY1MSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-10-01T12:03:35.670Z"
+  }
+}

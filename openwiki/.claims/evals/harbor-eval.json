@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:a956a2136f3e09641370eaa1c4d16a8014114e672ff981aa4ac09ae3a671e738",
+  "claims": [
+    {
+      "id": "claim_0391a247f6e84f1fb3d5f869c427fb84",
+      "statement": "The Harbor eval freezes five job sources: RemoteOK, Himalayas, Remotive, and Jobicy (JSON APIs mapped by hostname in HOSTS) plus Workable (HTML at jobs.workable.com, served via a separate workable_fixture path router). Any host outside these five, or any Workable path the fixture map does not recognise, raises RuntimeError, so adding a sixth source to agent.py would turn the eval red before it ships.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L570-L586",
+          "version": "repo-lines-v1:sha256:0109ad8f3809d0f1454a106e9a83ca0bfd17c76903600d90bc1b3369566596cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliMzJiMGZmZjNlMWJkYTk3MzUxOGFmMTEwMGYyYmE1ZDY2YzEyNmQzZWQxYzAzMjlmZGZmZjBiOTNiYmRjOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlOTk2N2YxMjk5MWNhM2VmNmI2ZmVmYjZiNDRmN2IwODdjOTQxMzYyNzkxNDBjYmNkNzFmMDk5M2I2MDQ4ZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3ZmVlMjlhNTNhNTE2OGJiMGVkM2E3ZTg5MzA3MWYyYTZmYTAyY2MwOTIxN2JkYjdiODZiMTkxMTVhNTE4YTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhM2NmNTE5MjM1NGY3MTYxNWFjNTEwMzRiM2U5N2MyMGVkYTk5NjQzZmNhZjViYmU2ZDQxYWQ1OWJkMTIxNjcifQ"
+        },
+        {
+          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L9-L55",
+          "version": "repo-lines-v1:sha256:abd66484644cc4f3e0e1473ec4f10c36b63d2534da2045f72795f552c0e77e38:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwY2JiMGVhMmUxNGNkZDNkZWJiYmNjOWNhMTkwODY1MTBlYWRmMGI4MWI0YWVjYTczMTI1ZjQ3YmJjNDhiMjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3ZDAxNzAzOGI5OWU2YzU4MjMxOTdjNTRkM2VlNDNmYzdkZDMwZTgzN2M2MTQ0YzViMTZlZTI2ZTUyOWUwNDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhMDgwNTBhNWE0ZjRiNmEyYjEwOGEyZGI5YmYxYmIzODNkZGU4ZWVkOTY0NjE3MGYzMjVmZTAzODFiNmU3MGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2YmEwNGFlN2NkMzc1MzFjZWNkYjViN2Y4MDM3YTQ1M2U2NzQ4ZjRjZGUxZTE3MmYxZGIwYTJkZTMyNGU5MmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b851f50b50df4644a53bcfa39ce59cb6",
+      "statement": "Workable differs from the other four frozen sources in two ways: it serves HTML rather than JSON, and the fetcher makes two rounds of requests (a search page for listing links, then a page per posting). The FrozenResponse stub carries a text attribute for the Workable HTML path and a payload attribute for the JSON path, both with status_code = 200.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L355-L431",
+          "version": "repo-lines-v1:sha256:96b6f55e74c97425bf37de80062720ed5c33ee98b09083d4cc7c14513d5d36fc:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4Nzk1NWY0ZmVkYmY2MzMyMjU2M2I2N2ZjZWFjZDdiYjc1MzQ1M2M2MTM3OTNlMmMxMjczYjkwMDM4M2I5MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTYwMGE3M2QyZTAyZjM1MmI5MGZlZjFkOGQ2MzgxMWJhNGE4ZWUwYzFiZWFhN2FlNDY1OGYzNmFhMmUxOTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiM2MwYzU3YTA4Y2VjMDllNmQ2NTYzZTcyYWY2YWExZmVlNTBiYzBhZGQ3YWFhMDFkNGNlNjk5YWQ2MGY0OWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjYWI1YTVjMDQ3ZDYzZDI0YTAyMjdhZTFiN2RhYmEwMDc2MGI0MmRhZWIwNWI1NzFiNTViOTMzN2FlZGRiZTcifQ"
+        },
+        {
+          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L16-L55",
+          "version": "repo-lines-v1:sha256:4bb47d65fb3f5d2de19c70717068451ba31e0ef217b173e2b27daebcb499490d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2YzY2ODllNmI5NTNjYmMwNGM2MjA3MTQ5NzRlMmRlNzZiZTc5ZDkyZTA2MzY2MDQ1MDZmZWI2MzVjZWZjYzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3ZDAxNzAzOGI5OWU2YzU4MjMxOTdjNTRkM2VlNDNmYzdkZDMwZTgzN2M2MTQ0YzViMTZlZTI2ZTUyOWUwNDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQyN2M4ZWFkYjVkZDdmNjBmOTIzNzFiZjg0MzE1ODYyNTUwOWY1NzUwM2I5ZGMyMWE2NTUwNGE4MWUzMWE4NGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2YmEwNGFlN2NkMzc1MzFjZWNkYjViN2Y4MDM3YTQ1M2U2NzQ4ZjRjZGUxZTE3MmYxZGIwYTJkZTMyNGU5MmIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d4a59ce629f64b60bf4126ebff5b4d62",
+      "statement": "After Workable was added as a fifth source, the expected.json set was rewritten by hand from the new fixtures: three Workable listings (Python Developer, Junior Python Developer, Mid-Level Python Developer at EUROPEAN DYNAMICS) joined the kept set and the Workable 'Senior Backend Engineer (Python)' joined the dropped set on the title-only branch, moving the split to 7 kept / 5 dropped.",
+      "evidence": [
+        {
+          "resource": "repo://evals/filter-exclusion-senior/environment/fixtures/workable/view-hrFtaRqbZsYCPcCVeEr4Q2.html#L3-L3",
+          "version": "repo-lines-v1:sha256:fbc1fa12e06cc6c3eb3b69bbea76a7b9b17d92481844272a7a862f6acf74e473:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmJjMWZhMTJlMDZjYzZjM2ViM2I2OWJiZWE3NmE3YjliMTdkOTI0ODE4NDQyNzJhN2E4NjJmNmFjZjc0ZTQ3MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmJjMWZhMTJlMDZjYzZjM2ViM2I2OWJiZWE3NmE3YjliMTdkOTI0ODE4NDQyNzJhN2E4NjJmNmFjZjc0ZTQ3MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjIsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjI1ZDY5NGMzYTI5MTk4NzkwZjljYjUzOWNkNmI4ZTY3NTMzMWE0ZjcwMWIxZGQ4OWE5OWU0MGRhNzBkOTI2MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNGZiYmZhN2U1YzUyMzNmOGQyNDJkMWI1MDhlYjYxNjYyNjc1YjkxMzA1YzRiODBhMzFmYjhkMTUxYWMxNmFiZiJ9"
+        },
+        {
+          "resource": "repo://evals/filter-exclusion-senior/tests/expected.json",
+          "version": "repo-file-v1:sha256:7999ec870b7c5b558dd57ada207b645f0b4be5ae91dcf1ade3050ab109532a88"
+        }
+      ]
+    },
+    {
+      "id": "claim_da6a5baa1cb14f68b220104b414621ed",
+      "statement": "The test query 'python developer' with exclusions ['senior', 'game', 'canonical'] exercises both branches of filter_jobs: 'senior' (a SENIORITY term) drops listings via the title-only branch (the Jobicy 'Senior Software Engineer - Python/MongoDB' and the Workable 'Senior Backend Engineer (Python)'), while 'game' and 'canonical' drop via the full-text branch (title + description + location). 'canonical' matches only in the description of the Jobicy 'Python Engineer' (149543) listing, not its title.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L29-L51",
+          "version": "repo-lines-v1:sha256:4db8d4e8c3adf3710f34575ef561e56f9e7fcaa2cd54fa42f6230df238cb0161:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkN2NkZmE0MjczNmJhNDE3Y2JlMTkwMmI1MzRhNjYwMjg5OGU0MDc3ODFmOTBlNzZiNDdlOTMwYjNjZjJmNDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5OTQ5YjAxZjUzYTNmZmJiODBlOTk1ZDlmZWNiOTllZmM5OGRmMTYwNjZmNjIzMzRlZmJkNTYyN2NhZjc5YzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzZDRiZGNiNTMyOWYzYjVkZGNmYzM5ODBmZmNmOTlhZDUxZDBhMmQyNjJmZTk2NWZkZDM2NWYwMGJmZGNhOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkMmYwZjM4MDg3NjdhMTFhMGI4ZjU1MjVjYTI1ZmEwYmE1NGQzOTUyMzY5N2FkZWIyYjhhZDVkYTExNDczMjYifQ"
+        },
+        {
+          "resource": "repo://evals/filter-exclusion-senior/instruction.md",
+          "version": "repo-file-v1:sha256:b01b24e8e92fc64a5375e31b0d6a57050278638cb6afa306f37d8c2d98a07cbf"
+        },
+        {
+          "resource": "repo://evals/filter-exclusion-senior/tests/expected.json",
+          "version": "repo-file-v1:sha256:7999ec870b7c5b558dd57ada207b645f0b4be5ae91dcf1ade3050ab109532a88"
+        }
+      ]
+    },
+    {
+      "id": "claim_e01cab2b5a8148d2b966abeb0f51cd3e",
+      "statement": "run_pipeline.py produces two JSON artifacts: prefilter.json (the pipeline output before filter_jobs, pulled from mcp_server._cache) and output.json (the output after filter_jobs). The verifier asserts the prefilter set equals keep union drop (environment guard) and the output set equals keep, so a fixture or fan-out change is caught independently of filter correctness.",
+      "evidence": [
+        {
+          "resource": "repo://evals/filter-exclusion-senior/tests/test_outputs.py#L53-L79",
+          "version": "repo-lines-v1:sha256:8df478ad8b39b73871b8e5e9f6739f3e03570facc32570022e467d5fdb369848:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjMTRjNDQwNTNmYzc1M2YwMDU2ZDEwMWIzYzNhMGU4M2FhMmIxOWYyOWRhNzMxOTVmNjhkNWU0Yjg1NTk1OWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyMGM5MjIxZGU1N2E5MDAwNjQyNzNmMzIyNmYzMjg3OWFiZTdkNWQ5ZjNmYjBhYzc0N2QxNGYxYmE0ZjZlMjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1ZjQ4MWQ5MTBiMzcxZjZhY2I1MDY5NmE4YTBiNmIzNGE2ODJmNGMyNzZkMzM2OTNjMGY5ODlkNjE1ZjE0ZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://evals/harbor_agents/run_pipeline.py#L23-L34",
+          "version": "repo-lines-v1:sha256:e82628a6a07efae432d4e6c8f0396bd71743a4c9bb59931058a0fd76897bebff:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkyN2IzODNkNDk4OWFhMTkwODZhYWFlN2M3YTYzNzU1YjUwZjA1MDNjZTJmMWMzMTY4YTgwY2JmZWViMTI0N2UiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwMTJjYWEzMDlmNmU4NTkwYzEyZWY1N2ViOTY3ZWU4YjJhN2FjNjAzNTBlODgwOTg0MDk0ZDVlNTJkZjlkMTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwMWYyZWMwMTA0MThlMjAyNjFjN2I0YjY2YWYxNTAyNjlhNTU3ZjgyMDJmZjkxODRmODQ0ODBhYzFmZjMxZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4MmJmN2RjYzVmODMzMWJjMzEyZDU3NGRkZmUxY2RjNjA1NmU2MGU2ZDFhYzE5NmNlNWUxYTdhZDA0NjZlNzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9c3139f9a7774d9292888c7c9e3c0257",
+      "statement": "frozen_apis.py replaces requests.get with a host router and replaces every other requests entry point (post, put, patch, delete, head, options, request) and Session.request with a function that raises, so a call that escaped the frozen stub would fail in-process even on a networked host.",
+      "evidence": [
+        {
+          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L58-L66",
+          "version": "repo-lines-v1:sha256:9862de36c64caa1d6923d4b9786a29262e37cc68d81885da1db2f591d2110ebf:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTg5YzJlYzBlY2IzMTVkOGY4NGE1YTNiMzcxNjkyNjkzOWVlYzQ5MjlkYmY3OWMyYjNjZjUxYWY0YjY2NGQ5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmYyZjhkZDdjMzFhZjgwMGNjOGI3Y2ZjOTA0OWFiYTdiMDRjYTJkZWUxNzlkM2YzN2Q0ZDE5Y2NhYzc4Y2Y4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWYyZTYyNWY1ZWIwODA1ZWU5NTAxMDFjYmMzODNjZmU4MDcwYTJjYmU4MmY3ZTI0NmI5ZjBkOTg2YWJkOGVhZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_76a0cb7f1a754496bf67b28dca3c3f5d",
+      "statement": "Network isolation is enforced by a Docker Compose overlay (evals/configs/no-network.yaml sets network_mode: none on the main service) passed via --extra-docker-compose, while task.toml declares network_mode = 'public' because Harbor's no-network policy is unavailable on WSL2 hosts; the overlay is the enforcement, not the declaration.",
+      "evidence": [
+        {
+          "resource": "repo://evals/configs/no-network.yaml",
+          "version": "repo-file-v1:sha256:17ceef0a82e7dfb63d9f5ce974350f392dd8a323eac174ec69d28a90c7de8388"
+        },
+        {
+          "resource": "repo://evals/filter-exclusion-senior/task.toml#L22-L24",
+          "version": "repo-lines-v1:sha256:f69257fc35e8f0e2d887fdc04dfeb9889a455381d8a6ce98e36378fbad4b3aac:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2UzYjgyZjFlNDcwZGZhNDc2YjM5OWRiNTA1ZGM1N2UzMTQyNTE4NTRjOTljZTI1ZjQ5MDdlMTYxNzMxNzc2YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTZlNjg4MDU5NTg3M2UwN2Q1MWQ2MzM0MGJlZGNkODcwYjJlZmM0ZjY4YTk4NjY1NzI4NTE1OGI0Yzg1ZDk5OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmRhZTEyZmNlZDBjMmExNWU3MDk2MzJiNmRmMTM5ZDBiZTNkZWU4OTE0NjU1YWUyMzAwMTFlMzViY2JkN2JjNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWFmMWQ0OTA5MzcxM2E3ODlkM2Y5YjllNzM2OGM0Mjg3ZGJkYjFiYWUwZmFiMWYyMjE5NTIzNDQ3YjU0MGI5MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f2c169bb1238483594da00c9440a8485",
+      "statement": "check_reward.py translates a Harbor job into a build verdict with three exit codes: 0 when all trial rewards are 1.0, 1 when any reward differs from 1.0 (eval failed, the filter changed behaviour), and 2 for infrastructure error (result.json missing, errored/cancelled trials, or incomplete trials).",
+      "evidence": [
+        {
+          "resource": "repo://evals/check_reward.py#L15-L47",
+          "version": "repo-lines-v1:sha256:06bfde220ff680f7afbba998dd054a1c6ed3c7360dce35d2ea3d7cdcfb2d7d52:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVkNTVkZGU2ZTYyNzA0NmI0ZGZhMjNmOTE1YzdjYWQxMWJjYzc3ZDcwNjIxNzgwOWIxMmQyODNhZDc4OTgyMTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiMjZjMjZlYTUwYWNjMzJlZTkyMTQwNWNjZjMwMzVlNjNkZmRlNTRmNWZlNDU1OWM5NjYxNzY2MTFlYTQ5YTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5ZjFiZmEyMjNiOGU0OGIwMTRmNzY1MjIxZWMxNDM0Zjk3NWNiMjVmNGVjMzYzMjkwNjcxNzk4NWIxMDY0MzAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_056a75d937ab433d83576ac488b52766",
+      "statement": "CI runs the eval with 'harbor run -p evals -i *filter-exclusion-senior* -a evals.harbor_agents.pipeline_agent:PipelineAgent -e docker -o evals/jobs --extra-docker-compose evals/configs/no-network.yaml --job-name ci-<run_id> -y' with PYTHONPATH set to the workspace so the adapter import resolves; locally the same command uses --job-name local and check_reward.py takes the job directory as its argument.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/eval.yml#L36-L50",
+          "version": "repo-lines-v1:sha256:cce659b6291cf34ba2260a7978ae48585cfb3b4998b79d08253bab4d000799da:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiMDc4NDhhNDM2NjY1NmIyYmE2MTk3YmUwMmI5MjA4MTQ1NDZmOWQ5YWQwYjUzMzllNGMyNmEyYzk0NjUxMTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc5YjQyNzM2YjRmNmY5NTA1NmMyMzc5OWMwMGM1NzQxMzJhOGU5YjNhOWM5MDkwOWJkYTI5NTcwYTQ4NzQ3MmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNjYWYxMWQ5MTk0M2U0ZWY4ZWVjMGUwZTViNTYzNmU5MGNhMTMyNzZmZjBmZGU1Nzg0YjhmMGE4NzNiOGM5NjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlkM2RhNWM1MWZkZWU3YTdkYzllNzI2MWRhNDI5NTk1NjExOGNmOTMyMmUzYTYzNTJhNDI5OTYyOTJmMDg2NzAifQ"
+        },
+        {
+          "resource": "repo://evals/check_reward.py#L15-L15",
+          "version": "repo-lines-v1:sha256:5d55dde6e627046b4dfa23f915c7cad11bcc77d706217809b12d283ad7898212:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWQ1NWRkZTZlNjI3MDQ2YjRkZmEyM2Y5MTVjN2NhZDExYmNjNzdkNzA2MjE3ODA5YjEyZDI4M2FkNzg5ODIxMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWQ1NWRkZTZlNjI3MDQ2YjRkZmEyM2Y5MTVjN2NhZDExYmNjNzdkNzA2MjE3ODA5YjEyZDI4M2FkNzg5ODIxMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzlmMWJmYTIyM2I4ZTQ4YjAxNGY3NjUyMjFlYzE0MzRmOTc1Y2IyNWY0ZWMzNjMyOTA2NzE3OTg1YjEwNjQzMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTEwMzc2OGU3NjBiNjgwYjdmNzJiNmZiODk0NGIyMTgxNzUzZmQ0ZDJkZjEwNGM2OWE0YTcxOWI0YzJmOWY5MiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_088e836aa8824bf2a120ebd9afe542ce",
+      "statement": "PipelineAgent implements BaseAgent and runs the repository's own pipeline with no model involved: it uploads instruction.md, agent.py and mcp_server.py unmodified from the repo root, plus run_pipeline.py, then executes 'python /app/run_pipeline.py' and records stdout/stderr/return_code. It contains no answer, expected set, or filtering logic.",
+      "evidence": [
+        {
+          "resource": "repo://evals/harbor_agents/pipeline_agent.py#L8-L57",
+          "version": "repo-lines-v1:sha256:56044c8f27892b772d06269eec70fc028c298c78b0215387a906769647f4bbec:eyJzZWxlY3RlZExpbmVDb3VudCI6NTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY1ZWVmZTRkYTc5NTg3ZjM5YjZkOTJjNDk3MDBmODkxODZkOWNjNGZjZDExNjVhNzMwYmNkYmI1OGFhNWZjMDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5MWQzMmVlMzU4YjU5N2U5ODdhOGE5ZjA0ZGY5NmM4ZDlkZWQ0MjM5MmY0OWZlNTBjNWQ0MjYzYzY3NjE5MzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0M2JlZTEwZTYxN2E2M2FiODBkZGJmNjRkMDA1YmMxY2YyYzkwOWMyZGMwYTYxODdkMTY5Y2JlNTJkYzA5YjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-10-01T12:03:35.670Z"
+  }
+}

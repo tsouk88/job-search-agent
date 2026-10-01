@@ -1,0 +1,142 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:ed7e488d39ee7ff91238350d4b5c25e732a3d1bfafb2dd4b6560bfe9741edaaf",
+  "claims": [
+    {
+      "id": "claim_1418192c938d4920801a53e134d6c56f",
+      "statement": "The n8n workflow runs every 12 hours and holds no filtering logic of its own — it delegates entirely to the backend, which was a refactor introduced in commit 51b9e94.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L278-L294",
+          "version": "repo-lines-v1:sha256:83be02514c80dcd76d95c6ee09e4c74d9486fd2ef97c9916dace7e535208f864:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyMzk2ZGFmZDY0MTM0NThlN2JkNThkZGZmOTQ3NDMyZTgyODQyZWY5OTA0MzdhYjRiMDZlYTEyMTg4ZmI0ZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxZjI2NGFhNDcyYTk5MWI0OTQzZDA4ZTRlOWE4ZmI0YzgyNDk2MjA0NjA4MTQ4YWNhYmJhMTNjYTRjMTYyZWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkZDY4MWYzMjI3ODZkNDc1Y2ViNjIyY2U1OGM1ZDRjYjMwYzEwMWQ3N2RlMDdiMTdlN2RjMzE2MGZlNTI1MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjM2ZiZjA0MmM2YTA3NDVkNjNhMzE4OTBlM2M3ZTBhNTJhNjNkYmEwMzRhM2MwNWJjODQ5MzZiYTEwYWRiY2QifQ"
+        },
+        {
+          "resource": "repo://n8n_workflow.json",
+          "version": "repo-file-v1:sha256:edb3ee6a6f4e5c5290c41c6c76c66d73c2254f94cdfac64c5989035710a3cadd"
+        }
+      ]
+    },
+    {
+      "id": "claim_7dab64df2b204ed89a74054414131407",
+      "statement": "The workflow node chain is Schedule Trigger (every 12h) → Search Settings (query + thread_id) → Wake node (GET /docs, On Error: Continue) → Wait 60s → HTTP Request (POST /ask, 5 retries, 5s apart, 90s timeout) → Gmail (Send a message).",
+      "evidence": [
+        {
+          "resource": "repo://n8n_workflow.json#L138-L198",
+          "version": "repo-lines-v1:sha256:db1ad85bdc7ff5b0977de0f91e6017dcd0bf04a036ca2682a2288a78cfffae32:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5NzkwMTlmZTQ5MDc3ZDE0NWIwYzY0YWQ1NWQyN2M5MWU0OTQwN2U2MzhhMDU2NWNjZTA1MmY2YjZlNDU3MDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlZmVlYmEwNWNhOTBmMTQ2ZGQyMGNmNWUxNjJkMDBlOTlmNWQ3ZDFhNDcwYzg1MzFkNjMzNzI1MjJmNzYwYmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5NzkxNjczOWQwNjUwNTJjNDllNTllZGE2NmFlMDVkNTk4YjgzZTBkN2I2ZmJjNTUyNjg5NjMyOGFkNDU5ODkifQ"
+        },
+        {
+          "resource": "repo://n8n_workflow.json#L29-L136",
+          "version": "repo-lines-v1:sha256:66ab71a2f5c7dea95c72eae5d9c8f70929683378d07ac7376f31063aa64098d0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmOWNhODkxYmZmN2FjMWY3Y2VhYWU0MGVmMDUxMDY2YmU5ZWZlNDdiNGU0MjgxZTg2YzMxOWJlMmM1NWViY2U0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI5NjRkOGMwNzM0Mjk4OTMxMDE1NzZkODhkOTkxMjdlODlkNjg5MWQzYjE3ZTg5ZGYwMmVjOWFlNzA3MDVkOGJlIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4NDZlZDZhY2Y1ZjY5MWRhZWRiZjE3NmQzMmUwMmY4YjUyMjY4MWZmMTdjOWQ2NzA5ODM2NWEzMTc1MjZmNTY2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxMGFiZjVlMmQ4MDQ2NDBjMDQ0MDA1MzhhZmFlOTRiNzM3MmJjMzE3NjRiYWNhMmE3NmRhMmNhMGY0NzA1OTU1In0"
+        }
+      ]
+    },
+    {
+      "id": "claim_6978165961964bb08a8a476029468f72",
+      "statement": "The POST /ask HTTP Request node uses retryOnFail=true, maxTries=5, waitBetweenTries=5000ms, and a 90000ms timeout; its JSON body carries query and thread_id from the Search Settings Set node.",
+      "evidence": [
+        {
+          "resource": "repo://n8n_workflow.json#L49-L76",
+          "version": "repo-lines-v1:sha256:ce8da8145d6d864fada91a564314eb3fd816c8641e964a05b659bcd3a30be25a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2OTUwZThjZGY1YzlhZjZhMjFlMjAxMGRiYTg2MWRkNDhmOTE5OWIzYTVjNDhiOTc3NGJmNmQ5MWFlMzUxMTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1MjA5YjlmMjM5YjMxNDg3NDUyNzU0MjI1ODdiYzZiMDA2OTc0ZGUwMTNlMmEwY2FmNDIyYjAzZjJiNDkxZDAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_302340b312d547e58e8ad70fdf44a823",
+      "statement": "The Wake node sends GET /docs with onError set to continueRegularOutput (On Error: Continue), existing purely to trigger a cold boot on a sleeping free-tier Render instance; failing is its normal outcome and the workflow continues regardless.",
+      "evidence": [
+        {
+          "resource": "repo://n8n_workflow.json#L106-L121",
+          "version": "repo-lines-v1:sha256:f19209569a1ab663da9243f921d3eed88abb4ca4371840ba4d79900379111e88:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2OGZjZjBlYWU1ZWM0Mjg0Mzk1ZjVmMzgzNjRkZmQ4ZTE4ZmEyMDI5OTU1YjI1NzhlMGIxZWM2MDQzYmEyYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4YmNjOWI0OGY1ZTAxMzdkMzZlNzMzMDE2Nzg1MjI5YTlkZGJlMjUxMmQ4OTExN2M4OWQ5NmYwYTg0MTliNzcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d5474573618f4ec59ce99a23c997ab87",
+      "statement": "The /ask call goes through five job sources in parallel — RemoteOK, Himalayas, Remotive, Jobicy, and Workable (fetch_wjobs) — via LangGraph's Send API fan-out, then collect_results deduplicates by employer and title, scores, and caps at MAX_RESULTS=12.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L17-L24",
+          "version": "repo-lines-v1:sha256:56454ba3f3e6c3f23a87ebee5d72886db5874d0828f849f25e46febf65b15b57:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzM2NWQxOWYzOTQ4MWE5M2IyNTg0NmI4ZDYxMmFhZjAyZGZmZWMwZjQ4MmE5NDg2MGExN2QwZjZmNjY2ODVlNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk3MmZkNGJkM2I1YzBmNDlmZGIyMDk4ZWYzZTBlYzk2MmVmMWRiMDkxY2YwZTUyYTBkYzg5NzFhOTg1MGRhNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2QyODYxMGJjMDgxZDhjZjlkNjU2YThiNmQ3ZDk0NTM3MjMzOTU0MmQwNzI1MzA3YjE4MjRkN2Q5MWRlM2M1MyJ9"
+        },
+        {
+          "resource": "repo://agent.py#L22-L22",
+          "version": "repo-lines-v1:sha256:a578a099baede83376a86e945ba1b3609892d11ab9dfe89b9c2c8d2800ae8fac:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU3OGEwOTliYWVkZTgzMzc2YTg2ZTk0NWJhMWIzNjA5ODkyZDExYWI5ZGZlODliOWMyYzhkMjgwMGFlOGZhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU3OGEwOTliYWVkZTgzMzc2YTg2ZTk0NWJhMWIzNjA5ODkyZDExYWI5ZGZlODliOWMyYzhkMjgwMGFlOGZhYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGFhYmU4NTk1NDkwYTUzZjFjNmRjMmMwNDJkYTA3ODk0MTNhMTNmMjVmOWNhZTNjZWEyOTNhZWMxZjMyZjUxOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGRiNzljZDU5NTQzY2I2ZThkMzdlMzI2OGU4ODQ4MmZlZmIzZjEyMzBlYmRkOTc5YTZlMzgwYTlmN2FiZTkxMSJ9"
+        },
+        {
+          "resource": "repo://agent.py#L558-L586",
+          "version": "repo-lines-v1:sha256:5d0cc266b85eb13822d3c3878357a502074eccc2e299891b90cacfacdce23f4e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNzkzOTZkM2FhM2ZhYzkwYTZjMTc0NzcxYjliOTNkMDI1ZDI2ZTNlODIxZDQwMmMwZDM4NDhhYzk3OWFkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlOTk2N2YxMjk5MWNhM2VmNmI2ZmVmYjZiNDRmN2IwODdjOTQxMzYyNzkxNDBjYmNkNzFmMDk5M2I2MDQ4ZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZjE5MjFjOWJjNGY5MGI4NzQwNThkNGQ5MTFmMjAxNWQ1MzU4ZWUwODRlNDZhNDAwYWEwMTM5YjczNDdhOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhM2NmNTE5MjM1NGY3MTYxNWFjNTEwMzRiM2U5N2MyMGVkYTk5NjQzZmNhZjViYmU2ZDQxYWQ1OWJkMTIxNjcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_562f3dd89ae64535a51444c5b3b28462",
+      "statement": "Search Settings is a Set node carrying query (default 'python AI backend engineer remote') and thread_id (default 'YOUR_UNIQUE_THREAD_ID') — the only node the operator edits to configure the digest.",
+      "evidence": [
+        {
+          "resource": "repo://n8n_workflow.json#L77-L105",
+          "version": "repo-lines-v1:sha256:c396eb1ef0296350b84b8cb1bdcc325d0dda7ba38b500ed2ca34452e374c9e79:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwZDg0ZDYyNWMwZmQwYmExM2NmMjg3MmNjZGRmZDNlMTkyNTY4ODc4ZjYyMGFmMzMzMjgyZTAzY2JhYTJlZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzZjlhMGE2MjJjYWZmOGEyOGJkMDQ5Y2FhZWI1ODhkZGRjODdjNWM3MGI3NTlmMmZlZmU2NjRkYzQ4YmYxOTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b5052f14817c46a4b91b09870e72aa49",
+      "statement": "Persistent filters are set by calling POST /feedback once with the same thread_id; the thread outlives the workflow so stored exclusions persist across digest runs, and the response footer lists the filters actually stored (extraction done by an LLM and may generalize more than intended).",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L305-L306",
+          "version": "repo-lines-v1:sha256:cdd52513d21d00ac63990b40aab807e05c30e73635335ec6ee4aacd2a38d3dc8:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTMzMjcyZmI2MjllOWVmMTQ5Yzc0NDRiYjJjYmQ4ZjE3ZWIwMTMzNDc1ZTYwMGUxZjk4M2VkOTJhYjYzZGU2NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzIwZWI1MjVjMWFlNjllOGJhOGYwNTQ5MWYxZmZiMDkzMTUyNzRmNDAxMzgyYTkzYzI5MjMxMWViNjJiYTBmYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        },
+        {
+          "resource": "repo://main.py#L173-L191",
+          "version": "repo-lines-v1:sha256:2292e95fa43679182d623ff4b9af1f54f06eff620baad51403f34d36d5530742:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiZjdhM2IyMDNjMmNiMjIxODZiNmEwNDU3ZjkyMTc3N2QzYzIzMWUwZTkwNWY3Njg2YzZlZjZlYmQ1NmE4MjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NTZkOTEzYjIyODYyOWU0MGZkZDA2NmZhM2M2NjA3ZWZkYzM4NGE5ZmYyYjU5NWUzYjg1NTEzYjgwZTE2NDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzNGRhZWE5ZTcxNjQ0YjYzZDBkZGE4OWRjNDdlMGJkNmU0YTY0MWRiN2YzZGU4NzNlZDkzYmFjODIyOTdjZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4ODU3NWI0MDcwYTY2MTM4ZTQ3MDBlN2NkNTEwNjUxMzE0MDE3YzdhZTI0ZjFlNGYwMjc2MmMyYzA2NWY1ODAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bf5200cf4ed14226aeb91c5186b85c57",
+      "statement": "The /evaluate endpoint is auth-gated: it requires an x-api-key header matched against the EVALUATE_TOKEN env var via secrets.compare_digest (constant-time), and returns 401 without the env var or header. The exported workflow carries a YOUR_EVALUATE_TOKEN placeholder for this token.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L322-L322",
+          "version": "repo-lines-v1:sha256:6cf0e38faa042ff5a84cfc6e14eb1520fcbc81d1684250282396390f372bc7c5:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmNmMGUzOGZhYTA0MmZmNWE4NGNmYzZlMTRlYjE1MjBmY2JjODFkMTY4NDI1MDI4MjM5NjM5MGYzNzJiYzdjNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmNmMGUzOGZhYTA0MmZmNWE4NGNmYzZlMTRlYjE1MjBmY2JjODFkMTY4NDI1MDI4MjM5NjM5MGYzNzJiYzdjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjZlNGFiNjUwOTZjNmQ1OTg5MjVlNWMwYThmMTQ5ZTQxNWE4ZjAyMTQ3MzI0ZGJmYWIwYzMzM2ZmNTI4OTAzYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+        },
+        {
+          "resource": "repo://main.py#L111-L119",
+          "version": "repo-lines-v1:sha256:90ae113cd380c1a2067928446f91462ceed168d5f666f8c9abe97fc1660dcea3:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODZjMTE1ZTkzMzRhYjliOThkNWRmOTczMDY5N2E5MjFiNzgxMDAyNjQ3OTU1MWE0NzMxNzdjY2ZlMjkyODJiNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmJmNTMyZGNmZmZjNmI1ZDgyNjlhOWYzZjBiYjI0Mzc2ZDc4MmJkYzEwMzk1MGE1YjM4NWM1YTYwYTMzZDc5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTdiMjQ0MTEwZTViMzRjOWQwYzFkNjRkNjEwMWNkMjA4NzRiODIwMWYwY2NjMmVjMzE4NmY0NjIzYTZhYjVlNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODRmY2NkYjQzYWNkZjM4N2VlM2FiMDkzMzQzOTUyMDk3NWYwNzU2NTY3MjViMWZjYzg5YzExMDRkYzgzNThlMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_255b3f6a081e47b3bde07bde866b8320",
+      "statement": "Both HTTP nodes in the workflow should point at the backend URL — http://host.docker.internal:8002 from Docker, http://localhost:8002 without Docker.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L302-L302",
+          "version": "repo-lines-v1:sha256:903e11c53b87b1b2034534e88748bc3201ecc2e9794ed90397d2e70283e8570c:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTAzZTExYzUzYjg3YjFiMjAzNDUzNGU4ODc0OGJjMzIwMWVjYzJlOTc5NGVkOTAzOTdkMmU3MDI4M2U4NTcwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTAzZTExYzUzYjg3YjFiMjAzNDUzNGU4ODc0OGJjMzIwMWVjYzJlOTc5NGVkOTAzOTdkMmU3MDI4M2U4NTcwYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmVlNjczOTM3OWQ4Y2MxYTM5ZmNkY2U5NmQ5ODAyY2ZjOTM1NDYzYTk0NWFiNTg4M2RiMGEwMTRiNTA5ZWYzYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmRkNTNjNTBhZWI5YzlhZDA3NTkwZDMxNDM1MzA2N2M3Y2M2YTQxODlhNzY2MTI5ZThkYjczMjQxM2Q2MjhlYSJ9"
+        },
+        {
+          "resource": "repo://n8n_workflow.json#L106-L108",
+          "version": "repo-lines-v1:sha256:13f9a0a622caff8a28bd049caaeb588dddc87c5c70b759f2fefe664dc48bf199:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjljYTg5MWJmZjdhYzFmN2NlYWFlNDBlZjA1MTA2NmJlOWVmZTQ3YjRlNDI4MWU4NmMzMTliZTJjNTVlYmNlNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2MyNWRkYjM0ODUxNDE5ODAwMTZiZDVjYzJiMDU1YmM1NzEzOWYxMTkyOTIyZGIzMDc5MjM4YTk3ZTYzMTVjMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDY4ZmNmMGVhZTVlYzQyODQzOTVmNWYzODM2NGRmZDhlMThmYTIwMjk5NTViMjU3OGUwYjFlYzYwNDNiYTJhYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjVmZGUxNGQzMzFkMDgzMDA3ZWU1OGUxN2Y0MmMwZDJjOTU3Y2MwNDQ3MGMwNTU2NzdhZjk3Y2JkOTVlYjcwYSJ9"
+        },
+        {
+          "resource": "repo://n8n_workflow.json#L51-L52",
+          "version": "repo-lines-v1:sha256:494287c4ba35521aaefe347a4ef089ec0031d57e4cae2346f119fd7acfdc337d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODQ5NTAwM2Q3OTg1ZjQyZmM2NmYxYjQ2YzUyNWQ1MjU3MTY5ZjZlYzliNWE2MjM2NWFiMTE3ZjE1MmI0NmZjMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjU5NTM4MTZlNjJkNDE4NmIxNjdiYTNmZTNlZTM0M2IzYzA5OGVkMGRlMTM4MzFhNDQ1ZWVjODliMzkxZGEyNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjNlNGM3YjM3NGJlODc3ZDI2MTU0OTM1NTUyYTNmNDE3NGQ0ZTNmYTc5NDg5NmFiMDQ1ZGJlMWRlY2QxNDUwYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDI3OWJlODcxZTdiNDgxMjUzODYxMjc1MTZjYTYyMWE4OGEwYWExZmRmZDk2NTAwY2E4NzBmYjg5YTVkZjhhMyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_4e453baf2b484ae3ad5975987b7ddbc6",
+      "statement": "If the backend is always on (not a sleeping free-tier instance), the Wake node and the Wait node can both be dropped — they exist only for cold-start handling.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L304-L304",
+          "version": "repo-lines-v1:sha256:7ee770983585e653c678933f3c0113a83556204f033020abebacc89ebb07916e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2VlNzcwOTgzNTg1ZTY1M2M2Nzg5MzNmM2MwMTEzYTgzNTU2MjA0ZjAzMzAyMGFiZWJhY2M4OWViYjA3OTE2ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2VlNzcwOTgzNTg1ZTY1M2M2Nzg5MzNmM2MwMTEzYTgzNTU2MjA0ZjAzMzAyMGFiZWJhY2M4OWViYjA3OTE2ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTllOTY5YmQyN2EwZmYzMmQyMTBmOWVkNzM1NmI1ZDQ4MThmY2NiNjQxN2RmY2RjYTk0ZmVjYmY0YmVmOTkxMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDYzZGQ4MjFlNmM2NTllM2VlZmJiY2ViMTA3YTQ0YjViZWFlZmE4ZDA0MmMxOWIzYmMyMWIwYzkzNjcwMmVhMiJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-10-01T12:03:35.670Z"
+  }
+}

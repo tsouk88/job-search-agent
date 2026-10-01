@@ -1,0 +1,80 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:d114773dd7e10d695e274d11e435a12f8d454435fd01e1328eade693833c89dd",
+  "claims": [
+    {
+      "id": "claim_ee7e5f1ecab84656b513e7ea0865c868",
+      "statement": "The MCP tool's text contract (the MCPServer instructions string at mcp_server.py lines 10-11 and the search_remote_jobs docstring at lines 33-35) names only four sources — RemoteOK, Himalayas, Remotive and Jobicy — but the underlying graph actually fans out to five, because agent.py's fan_out dispatches Send to fetch_wjobs (Workable) alongside the four named fetchers.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L434-L456",
+          "version": "repo-lines-v1:sha256:edd2e0ed52448e6f8b5ca94ed9fe6712ba50a913d032e46ad979f3172f24610f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4NDMzYzdkZGI3ZWRkMDlhMGY4Y2YyMDAyNzY2OTM2NDc4NTk3Y2NjZjAwN2EzNGZjMzNiMDYyYjgxNzc3YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlOGM2MjlhMTAwMDAwNmYxMjY3M2U5ZGYwMjFhNDlkNzFiZTcwZTg1MzVjZjAwMDFjODU4Njc4MzMwOWE0YTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3MDE0OWUwNjlhZDY3ZWNjZjQ3MzY0NmZmMWM3NTAwNTBkMzI5ZDExMDAxOGRjNTc2Njg3OGVhZmExZDYwN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwOTk4YmZiNjg3OTA2N2YwYmVmMmY0ZjNkZTQ0ZWYyYjc5MmQ3YjA3MTdlNGZjYWUyODM4ZTRiNTAyMTRkZDMifQ"
+        },
+        {
+          "resource": "repo://agent.py#L558-L565",
+          "version": "repo-lines-v1:sha256:b143d02db64d9f5443ac4a43f1cb723d0b6fff1591d382ed9e603dc11fb9bdfc:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M3OTM5NmQzYWEzZmFjOTBhNmMxNzQ3NzFiOWI5M2QwMjVkMjZlM2U4MjFkNDAyYzBkMzg0OGFjOTc5YWRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODliZTM1NWU3MTZjZWVjOTM0YzlhYTBmOTk3ZGIwMGNkMWE4OTdlODczODRiZGU3OWRhYzJkZWI1MjUyMjJkNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRmMTkyMWM5YmM0ZjkwYjg3NDA1OGQ0ZDkxMWYyMDE1ZDUzNThlZTA4NGU0NmE0MDBhYTAxMzliNzM0N2E5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWE4MmViZTllZDQwN2MzYTZiYTRiMDAzNDI5MmJhYTUyYzExY2U1YWUyODYxMDc0MDJkZTQ3OTJlZWVjYWNmYyJ9"
+        },
+        {
+          "resource": "repo://mcp_server.py#L10-L12",
+          "version": "repo-lines-v1:sha256:d3c585f1f0231d863a4e9d47006329d60d20c0ecc2a057d9b87b32a17084f1ca:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGUyZTM1YTAzOTEyNzI1NmM1NGVhMmNhNGJhZDY5ZTM3ZmQyNWQ0MzZjZjY0MTM4NDViNzZjNzcwNDQxZDRjNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmFmYmEwNTI3YzM5NTNjNGI2ZTBlNWI1NzM5YmE4MzYxMmY4MDUzYmNkYzk0NjY3MzAxOTNjZDFkNTkwYjQwOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjk3NmYxNGRhYzRlZTJiM2FjZGVmOTUwZWQ0N2ZkNTM0ZDEwYmMzMWQ5MTFlMDFlMWFjOTQ0ODgzMmNhYmNlMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmNkNGQ5YmUzNjQyYjY4Zjk5OTMzOTgwMmJmZjM3NGU3NTJlY2ViNDE4MjRmNjcwOTM3MTc3MTE5Mjg5Njg2NiJ9"
+        },
+        {
+          "resource": "repo://mcp_server.py#L33-L35",
+          "version": "repo-lines-v1:sha256:4e3378b1ca09745ffba16c068a5c3fb108e0113b2d587d29662b33ce433d439f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzRmNGM2YjdlYjJjMjBjYWE0MTY1MGJiODFjZjZhMDI1YjI2NDk0NzczMDFlNTQ5NzdjMWYzMTk0NzgzZTgzMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWVlYzJmOTYxZDIzNmI4YjA3MWZjYTgyNTA2MThiZDhiOTYxY2I5YzI3Mzk5OTBhNmExZTJkYWUyM2RiMzU5NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjJmN2NjYmUwMWY0ZTYwYzNhN2UzMDBlODM2ZjllZjc4MTA1MWU3MjMxNzM5NGIwYzYxYmQ4ZGNkZjFhN2ViMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2VlMzhlZjQyYmY1ZmM1Yzc5ZjYxNWZjNzg0MGI5M2VkNDEzZDU0MDllNWNkODI2YTRiYTU0NTg0ZTFlODkxZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_5b3e183b326645ea8d5fd99d4daf5cc4",
+      "statement": "The MCP server's in-process cache uses CACHE_TTL=14400 seconds (4h), the same freshness threshold the REST backend applies to its persisted last_fetch_time before re-running the agent graph, so both interfaces share one freshness policy.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L99-L100",
+          "version": "repo-lines-v1:sha256:43c9283fbf8c34136f1f4c0c055533ae53296cc00e0e773023ee699748ceb969:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTkwZjEyMTNlMTBmOWVlYWQ0NDJkMWY3ZjU2ZmU0ZGJiZWNhNWQ2YzE2YWZkZWJiYjFjOGYwZTBjYmIxZjMwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODk4MzViOWFlZTFlNDQ1NmQzYWY2YzgyYmE0OWU0ODNlMWVkZDRjMzU0Nzk2MDk5Njc1N2ZjMDYzM2U0MzY5OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTI5ZDMzYTkwNDkxNDI2OWU4NDYzMjRiZTg1M2I5ZjZhNDg2MjhiZTdmOWFhOTk5ZjUzZTg0MDhiYTUzMDRmMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDEzZjIwOTA3YzU2MTBjMDJjMDgwZGNiMzlmMDkwMWE0NjZmNjYxNWZmMDM4NzFmNjkxMTU0YzI5MjA5MjFjMiJ9"
+        },
+        {
+          "resource": "repo://mcp_server.py#L14-L27",
+          "version": "repo-lines-v1:sha256:5c41d821e30a711de6976fbe820cd7b3890a050a4f9a089d2c20106e337c2179:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4N2I4ZTk4MjlkNTNkZTM2OWUwNTUwZmQ0ZmNiMDhmNjUwNTA4NzlkZjRlNDlhNjRmNGE0M2VmMDE5MjdkNDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOTJhZjI3YmVjMGQ2MmNlMjdlZjQ2MzBhYTdmNDk3OTllMDNiNmViNDYzY2QxNDUzODdkNzdhOTUzMDA2YzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1ODFlNjg2NjA1NTFkZGRjZGJiZmNjODZkNzExMmEwYzgxOTllODNlY2E2NTVmMDYxNzMwMWE5Y2RjNTk4YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjMDk1NzBmY2Y1YWUxMjdiNGEwOWMyNDYxZjFiZGI0MWI5NGM5MDRjNWE4MTkwYjNlNGQwNTBjOThkZmZlNGQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bab0d928ba6d4dbea2f0125bf3d8a264",
+      "statement": "fetch_fresh caches the normalized job list (post-normalize_jobs, pre-filter_jobs) keyed by the stripped-and-lowercased query, so subsequent calls with different exclude_keywords filter the cached list locally without re-invoking the graph or re-hitting the job boards.",
+      "evidence": [
+        {
+          "resource": "repo://mcp_server.py#L14-L27",
+          "version": "repo-lines-v1:sha256:5c41d821e30a711de6976fbe820cd7b3890a050a4f9a089d2c20106e337c2179:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4N2I4ZTk4MjlkNTNkZTM2OWUwNTUwZmQ0ZmNiMDhmNjUwNTA4NzlkZjRlNDlhNjRmNGE0M2VmMDE5MjdkNDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOTJhZjI3YmVjMGQ2MmNlMjdlZjQ2MzBhYTdmNDk3OTllMDNiNmViNDYzY2QxNDUzODdkNzdhOTUzMDA2YzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1ODFlNjg2NjA1NTFkZGRjZGJiZmNjODZkNzExMmEwYzgxOTllODNlY2E2NTVmMDYxNzMwMWE5Y2RjNTk4YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjMDk1NzBmY2Y1YWUxMjdiNGEwOWMyNDYxZjFiZGI0MWI5NGM5MDRjNWE4MTkwYjNlNGQwNTBjOThkZmZlNGQifQ"
+        },
+        {
+          "resource": "repo://mcp_server.py#L17-L42",
+          "version": "repo-lines-v1:sha256:e45d3c1fa4ae87d4afca92df4e440b30d67bb776c74c58b23f5e151da3081a69:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiNzUwOTY2MTg0MWQ5ZGUyNjEzYTE0ZDU4YmNhZjM2NzFkN2JmYmY5YjcxY2Q5Y2Y3MTJmNGI0Y2U3YjEzYzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2ZDBkZTk1OWI3MGVlNzExZGNmZGU2YzZiNDk3YWUxYTBjZWFiYzBiMTgwN2ZjYzMwZTBiNzcwODY0M2EyODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE5MDU4NDhkMmNhZDMwZmRkOWMwMDk3ZWUxNjI4NTViMmU2ZGMwMjI4ODU0MWRhN2FkYjkzODViMmVkZTE2NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyZWJmZTNmYmYzMWZjY2MxNDE0ZTdlMjFmNmM5YTM3OWFkMzRjNzU0NWYwMjcyYmRjZjQ3ZDU0YjM2Zjk2MWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bcb9c031fd98454e86a06b8708f2afb8",
+      "statement": "search_remote_jobs is annotated readOnlyHint=True and takes exclude_keywords as an explicit per-call argument, making the calling client's conversation the memory for exclusion refinement instead of accumulated server-side thread state or an LLM feedback-extraction call.",
+      "evidence": [
+        {
+          "resource": "repo://mcp_server.py#L31-L42",
+          "version": "repo-lines-v1:sha256:c251171b07013abf949b316dde4c80c6b0d99f6da626dd55edd5967df51fbf49:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxODUwOWRlYTJjYWI0NjQ5YmZiMzM1ZTYwOGE4NDhiNmRjYTg4MTMzMjljMzNmMzY2M2YzN2E3MDg3ZTNjYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2ZDBkZTk1OWI3MGVlNzExZGNmZGU2YzZiNDk3YWUxYTBjZWFiYzBiMTgwN2ZjYzMwZTBiNzcwODY0M2EyODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRjMDk1NzBmY2Y1YWUxMjdiNGEwOWMyNDYxZjFiZGI0MWI5NGM5MDRjNWE4MTkwYjNlNGQwNTBjOThkZmZlNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyZWJmZTNmYmYzMWZjY2MxNDE0ZTdlMjFmNmM5YTM3OWFkMzRjNzU0NWYwMjcyYmRjZjQ3ZDU0YjM2Zjk2MWYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_4ed4e9d349b549f6aa1532e7cabe46e8",
+      "statement": "The Harbor eval pipeline imports and invokes search_remote_jobs directly as the entry under test, with frozen_apis patching requests.get before the fetchers load, and reads the prefilter snapshot from mcp_server._cache to compare against the filtered output.",
+      "evidence": [
+        {
+          "resource": "repo://evals/harbor_agents/run_pipeline.py#L9-L24",
+          "version": "repo-lines-v1:sha256:3a9c2787901277555e68d85c9487c8dd32f9221de7aad0811cc2776d8723a09a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQxYWQxODFlNTE5NTQ4NTE2Y2FjM2JkOWM4ZTE1OWYyZjNjZDE0MGUwMWViOTNhZmIxM2JjYzlkNTU5ODc5NTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1NmM2OWYyMWVjNzEyZTA0ZjFiMTRjNGUxZGEzMTJlNmRlNGE2NGZiZjMwN2E2YWUwOTJhZTU5Y2FiYzRlMGYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhiY2NkMzljNTEwZjNlODNmMjdlNWJiOWNiYmI2YWI0MGEwNzE1NDM2NjgxZDUyOGQ5MjQ0NDY1MGJhNGE3MTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjliOWY0ZTQ4ZTJhMTdjNTQ0NmVhYmUxMGQ4ZTkzZGEzZGZiZjA2YjE0YThkYzdlNWMwYTgzYjJhNmQ5ZDJmZTcifQ"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-10-01T12:03:35.670Z"
+  }
+}

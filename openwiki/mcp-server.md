@@ -1,8 +1,21 @@
 ---
 type: Subsystem
 title: MCP Server
-description: The Model Context Protocol stdio server in mcp_server.py — one read-only tool (search_remote_jobs), in-process 4h cache, no database, no LLM, no env vars. Designed for intent-based exclusion via explicit args.
+description: The Model Context Protocol stdio server in mcp_server.py — one read-only tool (search_remote_jobs), in-process 4h cache, no database, no LLM, no env vars. Designed for intent-based exclusion via explicit args. Backs five job sources through one LangGraph graph.
 tags: [mcp, model-context-protocol, stdio, tool, deterministic, cache]
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-10-01T12:03:35.670Z
+sources:
+  - id: openwiki-source-eca60e2ced68ba99bd0ac710
+    resource: repo://agent.py
+  - id: openwiki-source-1691a76fbd7a6781b3420f6c
+    resource: repo://evals/harbor_agents/run_pipeline.py
+  - id: openwiki-source-833e692518af9eeaf8564cc6
+    resource: repo://main.py
+  - id: openwiki-source-7a041713b68b973227e27f3e
+    resource: repo://mcp_server.py
+generated: { by: "openwiki/0.6.1", at: "2026-10-01T12:03:35.670Z" }
 ---
 
 # MCP Server
@@ -29,6 +42,23 @@ def search_remote_jobs(query: str, exclude_keywords: list[str] = []) -> list[dic
 ```
 
 The client's own conversation is the memory — say "no senior roles" and the calling model calls the tool again with a fuller exclusion list, extracting the keywords itself instead of spending a Gemini call.
+
+## Five sources, four named in the contract
+
+The tool's text contract — both the `MCPServer` `instructions` string and the `search_remote_jobs` docstring — names four sources: RemoteOK, Himalayas, Remotive and Jobicy. That text has **not** been updated to mention Workable, even though the underlying graph fans out to five sources. `agent.py`'s `fan_out` dispatches five parallel `Send`s:
+
+```python
+def fan_out(state:State):
+     return [
+        Send("fetch_jobs", state),     # RemoteOK
+        Send("fetch_sjobs", state),    # Himalayas
+        Send("fetch_tjobs", state),    # Remotive
+        Send("fetch_fjobs", state),    # Jobicy
+        Send("fetch_wjobs", state)     # Workable (HTML scrape via workable_*)
+    ]
+```
+
+So the MCP tool actually searches five boards — RemoteOK, Himalayas, Remotive, Jobicy **and Workable** — while only advertising four. Workable results flow through the same `collect_results` path and are cached and filtered identically; the omission is purely in the human-facing instruction text. Treat this as a known discrepancy when reasoning about what the tool *says* it searches versus what it *does* search (see [Architecture Overview](architecture/overview.md), which already lists Workable as the fifth source).
 
 ## What it does NOT need
 
