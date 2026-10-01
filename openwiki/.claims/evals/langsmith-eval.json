@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:483ffaf49a249bcd3876395dfcce3299d8a79ca0b90e40d8527250b2550e2c16",
+  "claims": [
+    {
+      "id": "claim_bc3de60195ab43e68973b002f14bbe7f",
+      "statement": "The eval posts 24 queries to the /ask endpoint, each with a fresh UUID-based thread_id (eval-{uuid}), and a 180-second timeout per query.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L332-L333",
+          "version": "repo-lines-v1:sha256:33e3d1e54b3a64c0c0d97886a4126cd8b70cf67b05ad64a951eec1ae655d6d54:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRkZjFhMzAxMGVjZWI5ZDAxMWVkY2U2MzljZGE1NWY5YWZhZjM3NDhjYWU3Mzg2NTZhMmY4NTZjYzczY2QyMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjM5MTc1Zjk5ODA4YmYzMjc1ZDQ2NGNiZWI4YWZhNjlkYzZlOWE3MjJhMjUzNjUwM2E3N2VmNGZmN2UwOGRjNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGE5NzhjMjhjNmI3OGIxZWUzM2Q0Zjc0Y2Q3NTAwYjU0MWUyMGFhMDU1NjBlYzE4MTEwMzA4NTBiMDdhZmMwZCJ9"
+        },
+        {
+          "resource": "repo://eval_runner.py#L32-L38",
+          "version": "repo-lines-v1:sha256:40023b8be64bd6f8474ff64c75547e0a06fa804b34455cf2737e7f03776da9be:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYjE1OTc0NjZlMjU2NDg4YzgzYjNkN2UxYThjMGMyZmFiNjM5YzdhYjRhYzM3NTRmM2ExYTIxYjFjN2U0YzdkYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDE2NDg4MDkxOTMxZGVlZmMwM2VmNzg3ZmI5MDhhZDgxOWI4Y2VjMDdlODViZGE5YjliMWJhZjE3ZTZjMmY3NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmE5NjM3Mjk4ZDMyOWJiNjQxMTBlOTI3MzA2MjY3YmVmNTQ0NjFiZmVhOGE2YmU4ODc1NjhlNzAwNDU5YjY3MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWQyOWJmMDdmZmQ2MzcyNDE5OTdiODViODZiYjk0MGUzZDI1NWY4MWI2ZDM4MzY3ZjZjYWVmYWExZWM0OWE4NyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_162dda2b782d464aa63a988dd6f79578",
+      "statement": "The empty_ok flag short-circuits to score 1.0 before the judge is called when the response starts with the NO_RESULTS constant imported from main.py; otherwise the Gemini 2.5 Flash structured judge returns {reason, relevant, total} with total>=1, and score is relevant/total.",
+      "evidence": [
+        {
+          "resource": "repo://eval_runner.py#L13-L16",
+          "version": "repo-lines-v1:sha256:d599394456ae9efd9f0dc10159c78af46289efd163b5b72a7e43795911d724b8:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTgzYjVhODczN2FlZDliYzBmNThkOGUzMjM2YWM3NDI0MTZkNWMwNDdiYmY3YTk2MTk3MGJkNzU5NmFlNGRjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmI1ZTQ1YmUxNzczNTFjODk0YjNjYzA0NmNkOWUzZWZmNTQwNmEzNGVkNmRlNmM0OWY0MGNkNDcwNmM3OTczYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZmQxMDU2ZTVjYTZkZjhmZWY2YjBjZjQ1OWFhMDAxYjcxMDNhMjRlZTAwOWY4NDU4MDgxYmI4ODQxMDJlYjUzNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTdkOWZhZmNlN2I1MGJhYWU2MmQ2YjBhNGQzZjY1ZDVhZDNmZjkwY2EwNWFmZWFkMjYxMjY3MDc4ZWUwMzA0ZSJ9"
+        },
+        {
+          "resource": "repo://eval_runner.py#L45-L83",
+          "version": "repo-lines-v1:sha256:6b40cb8ec58a7e0b1f9c9f8dcb766782b4eb11f422f4d045d1d31716deafb055:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3YTVlN2QyNTM2MDRlYjNkN2U5OGRiMWY5NDMzNjM2NDc3MDU2Y2JiZmQ5YjNlZGJiOGFhN2ZiMTU0ZDE1MzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc0YWRkOGI0MjA4ZTZiMTc1MDFlMDUxZmMzM2JkMjM0NDc4YjA5Y2Q1ZWM4ZjYzMmIzNWM0YWEwZWI1ZjM0MWYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFmMTFkOWI4MzFkZjZmMjRlODRhYzkxYWM3YjIzMDdjNTc3N2NmMGFiNzU2YjE4MTcyYWMzZGY4NDJmNDRhZGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZlNTRjMWJkZmJmNjBhOGYwODE1OWQ3OWQ1YmQ5MDIwYWQ2NWU1M2JkM2I3ZmYzNWJkOWJhMWU0MmNmMjEzM2IifQ"
+        },
+        {
+          "resource": "repo://main.py#L207-L208",
+          "version": "repo-lines-v1:sha256:9c9bf00bd84c012d03d378cd7432240e288e1cf7c67a4279707534a8597b887c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2VkNWJmNjBhYzE0MGYzYTM2NWRkYjEwMzdhNjA5NmU3ZmZhMGJmZWM5OTA2ZGU0MmQ4Njg1NDMwNzFiZWZhYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTE2Y2Q3YzM0N2EzMTY0MDYxMjEzNGU4YmI4YjMwYjc3ODBlNmE3ZTVjYjZhYjEyZjRkY2UxZTBiMzk0ZjQyMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTRkYzM4NzcyZGE1OTVmNzhhMDEwMWQ4NTg2MjU4NjU4NjM3NGJiZDZhNjI2ZjE3Zjk5MWEyZGE2MTExNjUzMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzJmNjlkZTFiNGMxY2NmN2ZiMjU4ZmRhZmRkMDAzYzE2OGJhYjVlZWVmZDZjZmY5MTNkMmQ3NGQ2MzZmMGY2YSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f9641f78e5be4c60b2b6060ff5a45079",
+      "statement": "The grading prompt states the judge should grade only what was returned, that a rejected listing subtracts one and nothing more, that criteria silent about a listing count in its favor, and that an empty response sets total=1 with relevant=1 only if the criteria accept empty.",
+      "evidence": [
+        {
+          "resource": "repo://eval_runner.py#L51-L79",
+          "version": "repo-lines-v1:sha256:15758557f9a49486b168107615b828964042c5cb39bd9905b0b3fef44b9dc612:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNlZTdmOGRkZmQ4NTVlOTcwMmMxMzA3N2I3YzhkMTJhNzc1MTRkYzNjZjlkOWM5YTA5N2FiZTVkNDM4MWMzMTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYyMDlkODQ2NjRiOGJmZmI0MjlmZGUyMGE0NTg1YzQ5ZGY2NjM1Zjc1NjI4NzEyNDRlZTU3ZTVlM2JkZWY3YzMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhNWZkZTRiYzdmZGFiODU2ZGQ5NGUxNjZkZTE5YjkzZDU5MmQ0MmUzNjRjNmQ5ZDg4YmExMDMzMjY2ZmFmNjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_5f543e10b275417da4660a5322ddc824",
+      "statement": "Changes to the agent are judged against a control run of the unchanged code on the same day, not against a stored baseline, because live job boards shift the score as much as code changes (same code scored 0.82 then 0.765 five days later; a single case rust went 1.0 to 0.5).",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L336-L338",
+          "version": "repo-lines-v1:sha256:7345a94695e5be6596ca1b325e9aca98f372b1bf8628987be7f8f0ccd9bfbc87:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDdmODg5OWM3ZmVmYjgyY2FlOWJkNGU2NzQ0NjY0NDU2MGE1MjdkNjQ5ZDRmN2U5NmE0OTkxNTc3ZDQ5M2U3NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzI2NDRmZWNkOGI4ZmVlMjhmM2Y4NmNlMmJlYmEyNTI5ZTZjYzU4MWQ2MGZjMTRkZGVjOTllYjc1MTc3ZDZiYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjZkODNmYTE2YzlmNWQxOGYzZDU3ZjI2M2ZmMzE1ZDhlNTU3NWEzYTM3YTU0MjczOTg1NTUyNGVmMjI2NTk3OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjg0NjdhMDQwYWQ4Mjg1MjczODFmNGY1MDFkMzJiNzY2ZjVkNTAxNzYxZDJjMTNkYmRiZTFlYzc0MWY2ZDhlOSJ9"
+        },
+        {
+          "resource": "repo://README.md#L363-L364",
+          "version": "repo-lines-v1:sha256:e1a37458b62e9419bc06fa0072e22ff2257f6ffae915fb8c70884f2a638fa15c:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTc1OWMxMGQ0N2Q3MGZkMDk3YzJmZmMzMzJiYTRlOTBiYTE5NmMzMGQ2ODcxOTI0YjhlZmVmNmZlYzIwY2U1NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDhhMzE0NGU2OTUwMjIwNGEyZWQ5MzA3YjFkNWQ5NWU0YmU5OTAxZmUwZjYyZmI1YjkxNTNlMzJkZjEyYzMyNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGZiZDVkZjk5NzNhYzQ4OGI5MTQxOGVjMjk4NjExOGFlODg5NmQwNjM4M2ZiZThlYTIyMGZiM2Q1YzVjY2FiNiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_db7b2eb40fe14002a185e18d181c5af3",
+      "statement": "The current baseline is ~0.90 across 24 cases measured 16 August; previous baselines 0.82 and 0.812 are not comparable because the dataset and judge changed; two real demo queries (Remote React jobs, Fullstack react remote jobs) were added after logs showed both returning almost nothing and both now score 1.0.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L332-L334",
+          "version": "repo-lines-v1:sha256:e2b67196cac9f3e651a0e6ff394907885f44c2e3069bf07a9d979c3ab292ff8f:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRkZjFhMzAxMGVjZWI5ZDAxMWVkY2U2MzljZGE1NWY5YWZhZjM3NDhjYWU3Mzg2NTZhMmY4NTZjYzczY2QyMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmI2MGU4ZDgyYmM3NjkxMTAzOWU2MDE0Nzg0M2QzOGUzMzRmZTczZWFhNDViZjE2ZGNhZGViZmQ3YzhiYjNjNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjM5MTc1Zjk5ODA4YmYzMjc1ZDQ2NGNiZWI4YWZhNjlkYzZlOWE3MjJhMjUzNjUwM2E3N2VmNGZmN2UwOGRjNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGVjNjE0OTk0ZDEzMTMxYWY0ZGU1NjFkMjY5NzA3MTA3ZjY3Mjc0OGM3OTU2NTM2YzcyNDZiZjIxY2QwODVhYyJ9"
+        },
+        {
+          "resource": "repo://README.md#L411-L412",
+          "version": "repo-lines-v1:sha256:184b889c7bbc8574c0e576cbf0a828590ce0f2f6f105ebf1c886b22a164bfe19:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzQ1ZDYyMWNkY2UyNDM2MjU1NWIxMzcwMmM2MTIyOTE4NGFmYmZhZjUwNTVhMzczODg3OGNkNDFjODMyMzBjYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTRkYjQ4M2VlM2JmYzM5MDAyY2RlZjJmOGRmZWE4YWRjNzZjZDAyYmQzMjRjMjYxY2NlNGNmNDZiNjk4NGEzYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDQ4OTQ5OWZmYjcyYjBiY2Q2Mzk2MzNjZDM3ODY5MjQwZGJhN2E4NzU1YmU0MTQwYmJmMjdmNzQyOGJhOTUyYSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a9d97b8a6d99492680e8484c801ba473",
+      "statement": "The progression of the score: starting 0.558 -> stopping RemoteOK tag trust 0.575 -> removing guaranteed minimum 0.679 -> fixed typo references 0.751 -> missing comma fix 0.812, then control-based: generic word tie-break 0.765->0.780, description frequency plus no truncation 0.76->0.82.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L354-L368",
+          "version": "repo-lines-v1:sha256:4ab83e75271ec0d593ac85ae20a2006c4c7a9d74110dcd99926930aa26dd9f17:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI0ZmFkNWViODE4YjVjODVjNWQ0ZjY4NDY0Njg3YTI2ODczZjdjOTI5NWE5ODJlZTczOTQ0NWI4MGE1NjQ2OTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3NDA4M2Q2MWQ2ZmM3MWI5NTA2Njc4NTA1ODFmMmFiZjBmNDM3OTRmYWEzMTNlZjMwMmFjMDFmYmYzOTFjYmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZmZjQ4NTgwM2IxYjcxZDFiN2RjZTAzNWNmM2NlYTM4NzJmMTEwOTZlZGE0MTVkNjQzMzM2MDFhOTU0MjczZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5NGUyNDA5MWNmMDA0NWZjMTlmYzc4ZWJlY2QzYzA2MDAwYzkzODdlYzM0OGI1MjY1NmI2MTUwOTFhNzhhODQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_acbe66ddb7764d3bb7829a4c6d9de39b",
+      "statement": "One title match admits a listing, pulling in false positives for ambiguous words (data->Data Analysts, wordpress->WordPress Support); requiring two matches was tried and rejected because specific terms like sql, aws, and pytorch appear in 0% of returned job titles, so there is only ever one word to match on.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L398-L400",
+          "version": "repo-lines-v1:sha256:82ebd41020f79f2fb64b1d795a3d42ba827bcb0257baea0f26c39a436d903df0:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTEyZDcxYzYwYWYyNjUzNjkwZGE4ZTJkNWQzOTkwMDhlYjA4MWZjMDU0NWE1ZDc2ODRlM2JlZmYxYTEwZTcwNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjMxZjMyYWYxZjMyNzYxYjkxZTNjNmYzODMwODFiOWJjMzlkZjI4NGNhOGY3YWUyNzZlMDkwN2NmYTg4YTEyNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDhiZWMzNGRjMzlkY2FmZTdmOTg0OTQ3YmY2ZjlhYTQzNjljNDFlZDg5Yjg0MzBjOTc2MmQ2MTkwODQ1NmI0ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTczYzcwMzg0YzQ0NWI5MTJiMjg1ZGY1YzUwNTdmM2NkNDFlNDkzNmU2OTUyY2Q1ZGFmZjk3NmMzOGM4MDYzYSJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-10-01T12:03:35.670Z"
+  }
+}

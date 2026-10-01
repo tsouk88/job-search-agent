@@ -3,6 +3,17 @@ type: Runbook
 title: Operations / Runbook
 description: Operational runbook — local startup, all environment variables, runtime dependencies, LangSmith observability config, Render/Vercel deployment, endpoint behavior, CORS gotchas, cold-start handling, and troubleshooting.
 tags: [operations, runbook, deployment, troubleshooting, config, render, vercel]
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-10-01T12:03:35.670Z
+sources:
+  - id: openwiki-source-833e692518af9eeaf8564cc6
+    resource: repo://main.py
+  - id: openwiki-source-51016da779816d3057e112d7
+    resource: repo://n8n_workflow.json
+  - id: openwiki-source-f70156010a8eb5325870bfc6
+    resource: repo://render.yaml
+generated: { by: "openwiki/0.6.1", at: "2026-10-01T12:03:35.670Z" }
 ---
 
 # Operations / runbook
@@ -92,8 +103,7 @@ Deploy via Render → New → Blueprint.
 
 ### Cold-start behavior
 
-<!-- openwiki: broken internal link [n8n-automation.md] file "n8n-automation.md" does not exist. Fix the href or restore the target, then delete this comment. -->
-The free Render instance sleeps after 15 minutes of inactivity. The first search takes about a minute (~50s to wake, then 15s to query four job APIs). Every search after that is instant. The [n8n workflow](n8n-automation.md) handles this with a wake node and 60s wait.
+The free Render instance sleeps after 15 minutes of inactivity. The first search takes about a minute (~50s to wake, then 15s to query four job APIs). Every search after that is instant. The [n8n workflow](operations/n8n-automation.md) handles this with a wake node (`GET /docs`, On Error: Continue) and a 60-second wait before calling `POST /ask`.
 
 ## Endpoint behavior
 
@@ -139,6 +149,18 @@ All endpoints: 10 requests/minute per IP via `slowapi`.
 ## Git-history failure modes
 
 Recent commits show the most common operational issues were:
+- Streaming buffering (commit `4524397`)
+- Remote API rate limits (429s handled in all fetchers)
+- Oversized prompts to tracing systems (description truncation)
+- Data quality from unreliable sources (Arbeitnow removed)
+- Event loop blocking (fixed with `asyncio.to_thread`, commit `cd1f884`)
+
+## Source references
+
+- `main.py`, `render.yaml`, `.env.example`, `requirements.txt`
+- `.github/workflows/eval.yml`, `.github/workflows/openwiki-update.yml`
+- Commits `c995ad7` (Render deploy), `6ef4e7c` (port fix), `cd1f884` (async), `fee390c` (demo deployment)
+ues were:
 - Streaming buffering (commit `4524397`)
 - Remote API rate limits (429s handled in all fetchers)
 - Oversized prompts to tracing systems (description truncation)

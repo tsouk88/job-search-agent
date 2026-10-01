@@ -1,0 +1,174 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:8f1dbc5cd8e1ad05abc59f7e467cafd75647ca87d080a76aad9bc1c2507b219c",
+  "claims": [
+    {
+      "id": "claim_bcb9ceb27e074559b7f2fc33134c8c41",
+      "statement": "The graph fans out to five job-source fetchers concurrently and collect_results merges, deduplicates by company|title, filters by country and recency, scores, and caps at MAX_RESULTS=12.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L521-L553",
+          "version": "repo-lines-v1:sha256:0eb014b93ed1efb07188b7cdb7a17e8d11529bbc5985536d08becf73a285525b:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MmM4YjRhYTRjYjRjZDA1MDQ4NDBiODdhZjY2NDAyMGI1ODFmMWNiZjFmZjc1NmE2MTE1NzNmNDZjYjA0YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzZjVkMjA2YTQ4MDgzYjJkOTU0Y2ZhNTE2OGE0OTg3ZDVlMWM1MjFjYWM2Mzg5YWE5MTBhMmI3ZjVjMTA0NWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzY2JlYWEwOTVlNTYwYzg4OTJlMGMzOWY3ZjAyNjE1NGIzZTlhNzAxOTMyNzEyM2Y5NzJkNWU5MDA5MDMwMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNkNWZiN2NiNGE3ZDRlZWJmMDIxZmQ0MjM2MTg3MDhkNDhmN2RkMzc2YWQwMDRlMzg1NzNjNjg4NjE0NWRmYzcifQ"
+        },
+        {
+          "resource": "repo://agent.py#L558-L566",
+          "version": "repo-lines-v1:sha256:5c92f4ff9f48dc2b771bdfb7f5c8416069ba0cd7606ea9c82b8f24f713077afb:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M3OTM5NmQzYWEzZmFjOTBhNmMxNzQ3NzFiOWI5M2QwMjVkMjZlM2U4MjFkNDAyYzBkMzg0OGFjOTc5YWRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWRkMjQ0NTgyYjZmYjAzZDIzYjg0MTVhYmVjZDM0NmIwYzlmNDY2YjZmNzUyYjA2ODE4OWNlN2U5YTJkYzM1MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRmMTkyMWM5YmM0ZjkwYjg3NDA1OGQ0ZDkxMWYyMDE1ZDUzNThlZTA4NGU0NmE0MDBhYTAxMzliNzM0N2E5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTdmZWUyOWE1M2E1MTY4YmIwZWQzYTdlODkzMDcxZjJhNmZhMDJjYzA5MjE3YmRiN2I4NmIxOTExNWE1MThhMSJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_fe932a3c339c4aed9c75982074f5230b",
+      "statement": "RemoteOK tries distinctive_tokens one tag at a time, deduplicating by URL/id, stopping at ENOUGH=50 results, then re-checks every listing against the title; uses User-Agent Mozilla/5.0, 30s timeout, RequestException returns empty list.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L279-L307",
+          "version": "repo-lines-v1:sha256:b61c8bc78c889ebc91db4418521ba03d8538ce80c9c835488b6d36e9a6b2033a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5YTZkNjZmZjEwODNiNTQ5MzA5YTI4NDE2ZDJkN2NiYTIxZGE4OTgyMDBmZDg3M2IwZTg5OWVkYmE0OTFjZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NmI4YWJlODA4NDFmMWQxMDRmZTllZTM4YjNkNzdlMmIzZGI1YWI3MDRiZTRmN2UwYWQwNGNiOGFlNTUyYWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY5MDdjNmY1ZDRjMjg0ODBmZDQ2YThjYzE3NTJjYzU0ZGNmNjhkMDVjZTgzNDMxZjMxOWJhZWI2MTRjNWNiN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3ODAzYTJkY2JmYjgwNDg0ZGQ1NzY0ZDBmZDcxYWFkZWNhYmY2MmFlNThlOGFjNTgxMWQ2YTkzYzA3MjA5MWIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_076d083bc50041b094eeca0b8f4f162a",
+      "statement": "Jobicy uses distinctive_tokens plus a geo=country parameter; an unknown country returns HTTP 400 so it retries without geo and lets location_ok filter later; ENOUGH=50 early exit; falls back to an unfiltered feed if no token yields results.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L479-L519",
+          "version": "repo-lines-v1:sha256:ecbc2bc73c3e383c9c3206d99e3ef83985700720e2ea159b95aff1440357b9fc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxM2VhZjdhZWE3ODVmZTA0ZWIxMWMzZDAzNDZmMmNjMTNmNDEwNjEzNTQ3ODI4ZGQzZmQyYjEzMGViZjIyZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMjRlOTdhZDA5ZDIwMTc0ZDM1NzcyYjdlZWM3NTc3MDY1MDUyNWJhNTZiY2FjYjBjNTlmY2FkOTRlMWUyMjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzMTE0NTZjNmYxMTFhNDlhM2Q4NjBkZGU3ODk0NmVmNDcxNTMyNjQ1YzkxYzc2ZjQxNTU1NTMxN2UzYjQ2ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1Yzg0M2NlNjMxZTJlMDA3MGQ0NGZiMWMzNTU1ZTRlZTcwYTEzNTUyYjczOTFiYTY3Y2MxMjM5ZTAyZDg2ZTMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d9b9969d32394bc0b8d6e91351106777",
+      "statement": "Himalayas sends the full URL-encoded query with worldwide=true and sort=recent; a 429 returns an empty list rather than retrying; 30s timeout, RequestException returns empty list.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L309-L322",
+          "version": "repo-lines-v1:sha256:c7b90b1685a08e6a50732f3d1eb76af6d2e84910533babd870108e4b5ef00fb9:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM3NmEyZTVjN2MwZDRkNzM2NWI0MTcxY2I5Yzc5YmJjMzEyNmE1NTNmMDRhZGQ1ZGRhMWVkYzNlNWJjNmEwZjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIyZTczNzgzYTQ0NzBiYWYyMmJjZDViYjMwZjA5NjhmYTM0M2ZkMGYyMjU4MTY4Y2RiMmZkNDc5YzQ2OWJjNjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU0OWU4NjZjN2I0ZjY1ZDJkNDU1NWZiM2Y2NWEzYmU4MjcwYzg4YzEwMzNlZDY1ODYxODNiNTkwNWFmNGU4NmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2MWQ0OGRhMzk4NTQ1MWI4MmY2MjdiNmQyMjU1NDRiMDRhY2MwYzdmOTBjYmU2ZWJmMjE2ODJkYWYyNThkMWQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9474ca1c85af41319cd47771ac9ab83b",
+      "statement": "Remotive is a single cached feed, not a search: the edge cache does not vary on the query string. remotive_feed holds the list in the _REMOTIVE dict, refreshes after REMOTIVE_TTL=6h, and keeps the previous list on a failed refresh.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L324-L348",
+          "version": "repo-lines-v1:sha256:1516378cd7b8a14e79eff0d5a658f85caebd431e5e8d12c27a81f20b236b15d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3ZWM3OGJhNmYyNTFmMmUzOWZiZDVjNjcxMDMwYmU1YmMyYzU5ZGY5OTRkNmFhM2QzMTNmMDQ0OWMxMmYzNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkYzE4ZWVkOGNjMTBjMzUxNmU4NWUxYjIyNTNlYTRmMzNkYjE4NTMzNTVmZWQ3MTk5YzM4NGYyN2I4ODhlOTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1YzIzMTg3ZTQ4NzhlOTNlODM2ZDg1NGVhZTYxODU1ZTNlMTZiZWQxMjlkYTQxOWVhNjlmNjEyZWYwYzNlOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmYjA2MGUyYmMyNDU3NmVmODAwZDg0MTA3M2QzYjkyMTllNmY3MjM5YWFmZDMzNjFhOTZjN2Y5ODBkZGVhNjkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_729e23d8b55146c99d7bc958b6c9f3a1",
+      "statement": "Workable uses the path-form URL https://jobs.workable.com/search/{country}/remote-{token}-jobs (robots.txt allows /search/*), reads the schema.org ItemList LD+JSON for up to twenty links (unknown country retried worldwide), then opens at most WORKABLE_DETAILS=6 postings parsing the JobPosting LD+JSON; the title filter runs before opening postings.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L355-L385",
+          "version": "repo-lines-v1:sha256:1d8f6abcef36318aa0c33774ebe23741ff6876818a3aedf67b6af9357b698ee6:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4Nzk1NWY0ZmVkYmY2MzMyMjU2M2I2N2ZjZWFjZDdiYjc1MzQ1M2M2MTM3OTNlMmMxMjczYjkwMDM4M2I5MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZiMWJmOTJmNWMwNDFkN2FkNzcxNGUwMDM5ZGI5NzBjMmU4ZDViY2ZmZjFmN2RiMTIwY2YzNDkzODJmNWNlY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiM2MwYzU3YTA4Y2VjMDllNmQ2NTYzZTcyYWY2YWExZmVlNTBiYzBhZGQ3YWFhMDFkNGNlNjk5YWQ2MGY0OWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImIyZTEyMDVlMThjNTE2NDM2YmI0YzVjOTQxNDYyN2U3YzkzZWM4YjljZjFmM2NiMDZlZTY0ZWMzYWMwMWYwYzYifQ"
+        },
+        {
+          "resource": "repo://agent.py#L410-L453",
+          "version": "repo-lines-v1:sha256:546ba657d5e34089960fe3562716c2e4c9986ae70e07c1a9d2e85c8a5a12df29:eyJzZWxlY3RlZExpbmVDb3VudCI6NDQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhjMjhiMzEzMjU3ZjQxYjgzNmRjYTk4NjM5MDJkZjA1NDYwNTU0N2YyYzdkM2Q1ZmI3NDlhNDQxMWU2MzFlMjYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlOWNmZjZiMmIzOTAwZjEzMTI2NGIwMWQ3Yjg2NjU0OWJhMTNkNDlmMTNhMDI1MzI2Njg0MTBjZDdiMjBiODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImExOWVlMmQyNjYyZDI2ZDkwMDAxZTM1OTE2ZTA5MDNiOTgyNDkzNTVmM2RjYWFhMWU3Zjk5MjBiZDJkZGJlMjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyYjM3NGI0OTdiNTM1ZWM3MGQ3MDQwMzMyNDkwOGI2OWY1ZGJmYmU4YjAyYTk4NDkyMTVhOGI1MDYxNzNiYTkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3b86b9cd637c41c0bc393577eecf4ef4",
+      "statement": "The MCP tool docstring and server instructions name only four sources (RemoteOK, Himalayas, Remotive, Jobicy), but fan_out actually dispatches five fetchers including Workable (fetch_wjobs).",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L558-L566",
+          "version": "repo-lines-v1:sha256:5c92f4ff9f48dc2b771bdfb7f5c8416069ba0cd7606ea9c82b8f24f713077afb:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M3OTM5NmQzYWEzZmFjOTBhNmMxNzQ3NzFiOWI5M2QwMjVkMjZlM2U4MjFkNDAyYzBkMzg0OGFjOTc5YWRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWRkMjQ0NTgyYjZmYjAzZDIzYjg0MTVhYmVjZDM0NmIwYzlmNDY2YjZmNzUyYjA2ODE4OWNlN2U5YTJkYzM1MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRmMTkyMWM5YmM0ZjkwYjg3NDA1OGQ0ZDkxMWYyMDE1ZDUzNThlZTA4NGU0NmE0MDBhYTAxMzliNzM0N2E5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTdmZWUyOWE1M2E1MTY4YmIwZWQzYTdlODkzMDcxZjJhNmZhMDJjYzA5MjE3YmRiN2I4NmIxOTExNWE1MThhMSJ9"
+        },
+        {
+          "resource": "repo://mcp_server.py#L31-L40",
+          "version": "repo-lines-v1:sha256:505fccc07d9af4815535b4e7bbbb51ce7f883b547328082662a51ba76db8d27d:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxODUwOWRlYTJjYWI0NjQ5YmZiMzM1ZTYwOGE4NDhiNmRjYTg4MTMzMjljMzNmMzY2M2YzN2E3MDg3ZTNjYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2YTcxNTI1NzJlZTg0ZjEwOTA2Yzc0YjlmMmE5MjQzNGRkYWIwZTNjNDI4MTNiMDRlNTk3ZWZjZWM5NTFiMjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRjMDk1NzBmY2Y1YWUxMjdiNGEwOWMyNDYxZjFiZGI0MWI5NGM5MDRjNWE4MTkwYjNlNGQwNTBjOThkZmZlNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImE4YTcwNTlmMDI1NWFmNjZlNDUzODc3OTExZmRmYjU4YWIwZDM5ZGRjNmQzYzg1NjU4ODc3MWI2NGI3MzMyZDAifQ"
+        },
+        {
+          "resource": "repo://mcp_server.py#L8-L12",
+          "version": "repo-lines-v1:sha256:965763f723674052b90da9eabb3f4bf5c5a37119b9b912a0e646c7bd2b7fdb47:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDQ0MmZkOWM1NGQ1ZGE3MTBhYWVjNzdiZDI1OGJmYzg1ZmU4ZWY3NzY1YjUxNTQ2N2EzYjc5ZTYxZDBjYThiYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmFmYmEwNTI3YzM5NTNjNGI2ZTBlNWI1NzM5YmE4MzYxMmY4MDUzYmNkYzk0NjY3MzAxOTNjZDFkNTkwYjQwOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjNmMDk3OTJjNWIwNjYzNzA1Yjg4MWQ5ZTM3OGRiMjRlNDYwYTJiNWRjMjliZDg0OTA5NzgyMTQyZDAyMmQ4NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZmNkNGQ5YmUzNjQyYjY4Zjk5OTMzOTgwMmJmZjM3NGU3NTJlY2ViNDE4MjRmNjcwOTM3MTc3MTE5Mjg5Njg2NiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b9d74ad5430c43489df215f361895ea5",
+      "statement": "The /evaluate prompt includes a prompt-injection guard instructing the model to ignore any instructions embedded within job posting content and treat it strictly as data to evaluate.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L121-L136",
+          "version": "repo-lines-v1:sha256:6c98e1138164d4c75a8350de6bf19a60534c3bf524cb4bf95f18a550e9db44d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3MWI1MzE1NWI3OWVmY2MwZDg2MjUwNDY1YTA4OGEzODI0OTZkZTdhZGFhNjZhZTc1NDE1YjZkNWI3MjU2OTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxYTRlOWFhMGI4YzNkY2EzMWU0MDY2NmZlYzViYzc3NzlkMjNkZTBkMjU5ODkwYjAyOGJmODM2ZTc2MGVkY2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNhMDJlZjk5MTU0ZDMxNzFlMTZhYzFiZDU5NDc5OWE2ZmIxZmYzZmFiMGQyYzI5YmYxNzhlYWFjMjA1MzljZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkYjViNzBmNDVhODg1NzEwNzA4NmI5ZGJmYThiNGUwYTM0N2E1YmFmN2JlMmQ1ODBlMTI5Yjg1NmRmMzBhMjUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_718dde05e85e473ba56ee0825a1aba49",
+      "statement": "The /ask endpoint accepts {user_input, thread_id, country} and /upload accepts FormData with file, thread_id, country; both are rate-limited at 10/minute.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L142-L170",
+          "version": "repo-lines-v1:sha256:8a5a9b37b168b268b89a942a99c89725016c4a5abdebdc59e0ed627e281c99fd:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxNGY0ZTNhNmU5ODk4NmMyMjJiMjU1ZGI1NzdhMGFkNGZmN2M3MzdmNGIwYjY0NGQ0YmVhMTI3NjIyZWMwMzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU2OTczNGI2ZjBkMmE4NTk4M2MwMmM5ODJiYjliOTZjNjQ1YWFlY2I2ZGRhNzA0MjVkMzM3MGY0ZGE1M2VmN2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZjE5MjFjOWJjNGY5MGI4NzQwNThkNGQ5MTFmMjAxNWQ1MzU4ZWUwODRlNDZhNDAwYWEwMTM5YjczNDdhOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA0NmFmOGE0ZmE3Y2E3NTZlM2IzMDBkMzViODliMTdkYzFiOTljZjAzMzcyZjEzNDYwYTFiN2JlNzdhODg2OTEifQ"
+        },
+        {
+          "resource": "repo://main.py#L65-L68",
+          "version": "repo-lines-v1:sha256:33a98d41d6e4165647ab55b823d29bb034d16c7e6efcb8cc4d72844efaebbe74:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjMjE1NTg4MjY3YzVmYjZmMWJiNTExM2Y2ZGQzOTQzMGNhMzcxNDAwZTRhNDdmOTE3MjJhZDljYmI3MzNjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWZhMDFmYWQyZjE1ZDc1YzNiYmQ3YTUzY2Y2MjMzMzJjYjZlYTBmMGUyMDIyMmQyMzY3N2FlYTM5N2IxOTc0ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGEzMTk3NmZjZTAyMGQzMDYwMDU0YTdlMDQzZGE2MzZhNTdlYTYzODkzYWVhYzViZWFkNzNmZDUzMjNlNzMyNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDY3MzRmMjdiM2ZhMjQ4ZjQyZDI4NTYyOWNiYTAwN2JlMWU3YmNmNjVlNWEyOWFlYWYyNWE1ZGJhYmNmYTg3OCJ9"
+        },
+        {
+          "resource": "repo://main.py#L90-L108",
+          "version": "repo-lines-v1:sha256:84359bfc1daf95baefb88f60503a9e70c5efc7c2389b5c1f9e422f76fc198ed5:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyMTNmNjg5MzM4NGZiYjYxNWE1ODY3OTNkMDU4NDUxOTA3Yjg1M2MxZDc1MWFkNmNlYTk0YmQ2NmEzYmI4NDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNjMxNzQyZGQ5ZDc0MGE3NGQyNDE5YTEzZGU4ZWRkY2QwMGExNjgxMDYwMThiYmI4NzNlNDk1ZGYzZDI5ZmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE0MDMxZGMwMGY2YTllN2MxNTIyNmRiODY1ODM2ZmQ1NGE4MDhhZTNjOTBjNDI2Mjk4OGMxYWM4OGZhZWMxNGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4NDRhYWNhN2MyOWJmZGNjNjUyZTc1Mzk1NWIwODI2ZTUyZjM4OTFmZDhjYmJiMmM3MzY1Njc4M2NiZTZmMzkifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d59f1bf5cc574476a3a18a6492caac6c",
+      "statement": "render.yaml declares GEMINI_API_KEY, DATABASE_URL, ALLOWED_ORIGINS, LANGSMITH_API_KEY, LANGSMITH_PROJECT, LANGSMITH_TRACING (true) and LANGSMITH_ENDPOINT (EU), but EVALUATE_TOKEN is not among them and must be set manually if /evaluate is needed.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L111-L119",
+          "version": "repo-lines-v1:sha256:90ae113cd380c1a2067928446f91462ceed168d5f666f8c9abe97fc1660dcea3:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODZjMTE1ZTkzMzRhYjliOThkNWRmOTczMDY5N2E5MjFiNzgxMDAyNjQ3OTU1MWE0NzMxNzdjY2ZlMjkyODJiNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmJmNTMyZGNmZmZjNmI1ZDgyNjlhOWYzZjBiYjI0Mzc2ZDc4MmJkYzEwMzk1MGE1YjM4NWM1YTYwYTMzZDc5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTdiMjQ0MTEwZTViMzRjOWQwYzFkNjRkNjEwMWNkMjA4NzRiODIwMWYwY2NjMmVjMzE4NmY0NjIzYTZhYjVlNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODRmY2NkYjQzYWNkZjM4N2VlM2FiMDkzMzQzOTUyMDk3NWYwNzU2NTY3MjViMWZjYzg5YzExMDRkYzgzNThlMSJ9"
+        },
+        {
+          "resource": "repo://render.yaml#L1-L24",
+          "version": "repo-lines-v1:sha256:1560a3eeabaf3587f10349d09e8b4d88dceaba87d030abe361b407957ecf7e82:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImZhNzNmY2NkYzk5ZWE4MzU5NjdjN2RlZTdlZmJlZDFmM2NhODcyNjBkOTI5MzE4NTBmZGQ2NmRhOGNiMTJmMWQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1NjMxZjRmMTI1NzZiMmEyZDMxNjMwNjM0MmJiNjZkYmJlYWE5NGJlNTQyYTc4MTBkYWIyYjJjN2Q4OGUwZDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f4dde37884974b788862a45834faffb9",
+      "statement": "The voice agent stack uses Deepgram (STT), ElevenLabs (TTS, Premade voice via ELEVENLABS_VOICE_ID), Gemini (LLM keyword extraction), and Daily (WebRTC transport), configured by env vars DEEPGRAM_API_KEY, ELEVENLABS_API_KEY, ELEVENLABS_VOICE_ID, GOOGLE_API_KEY, DAILY_API_KEY.",
+      "evidence": [
+        {
+          "resource": "repo://voice/README.md#L42-L50",
+          "version": "repo-lines-v1:sha256:434926d72b3fd316bc48f5861c623e2ebcf416f4ce1b460a23b3a6e2080981dc:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOGZlNGZkYjg3OWY4OTNhMmEyZmYyNTAzMTA1NDg1MDQyMWViMDVjNGIzNTZjZmZhYWZmOTU5YWQxMGQ0MzRkZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdjMDZjNTYxZDVjMzI3MzQzNjg1MjY4YTQ2YjMzOTFmMzk5OGVlZTg5MGQyYmU1MWYwZDIxY2M0YTUzYWU2ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjFlNTYwYzFjYmZhMTBiNDZjMzdiZjMxNWU2MWEwMDVjZmVhOTA1ZjRjZTY1OTFkNDVhODQyNzk2MTYyOTc5ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDMxNzViYWFlMmY3MTVhYTFjMGFhNjdiZTA4ZDZhNzdmM2I3Yjg0NTVmNDgyOWE0M2ViOGM1Y2M3YWMyZWRmYSJ9"
+        },
+        {
+          "resource": "repo://voice/server/bot.py#L39-L73",
+          "version": "repo-lines-v1:sha256:57a17fcf18c976134d805eb263e2220e0cf8ea536c639cc78914b044ad85ad66:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmYzI0Njg5ZGY0ZTZiNGU1OTUzNmUxM2RlNTA4NDJmZjFmZWFhMmMzZGE4MGYyMGJmMGY1NmNlZDhiMmM1NmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQwODZlMGFkODM3ZDM2MTNlMjk4N2Y1OGQ4Nzg5OGNhMTJmOWM4MzdhOTY4ZDU0YjFhNzE1MzU4NjM5MzE0MmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijc4YjIzNjYzOTYwOTg5MGZmYjM2NmZmZGM2NjZjNGY0OWUyZjA3NWJkZTYyN2ZlYmU1ZTIwMmZjMDRjMDVlZTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI1MjNhMTdiZDdlZjM0NzY1YjFjODBlNWVlODQ1ZGQxMTIxOGQ0ZDRlMzI2MGIyMzdhYWM0NjQ0YjNmYzc0YzgifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_efd2328b7ae0451cbd7aac7b4b19f28e",
+      "statement": "Fetchers no longer truncate to 10 raw listings: RemoteOK/Jobicy early-exit at ENOUGH=50, Workable caps at WORKABLE_DETAILS=6 per-posting fetches, and collect_results caps the final scored set at MAX_RESULTS=12.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L141-L141",
+          "version": "repo-lines-v1:sha256:bc21a4fcd19ff161e4069f97682d07d8dcf1d8d99879224ada5c39c7c6fe3902:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmMyMWE0ZmNkMTlmZjE2MWU0MDY5Zjk3NjgyZDA3ZDhkY2YxZDhkOTk4NzkyMjRhZGE1YzM5YzdjNmZlMzkwMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmMyMWE0ZmNkMTlmZjE2MWU0MDY5Zjk3NjgyZDA3ZDhkY2YxZDhkOTk4NzkyMjRhZGE1YzM5YzdjNmZlMzkwMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiN2NmNmIyMmM3NzcxZjdhMmE2NmM4MDY2ZDkxYzBiOWJjOWE1Mzk0MWE1OTM0NjU3MGI1ZWM0NjU0OTY1N2Y5OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDUxNjc4MTEzNjQxYTc2ZWY1MWVhYzFiODIxOWYxZDFmYTQwMzYxNjQ4M2JlZDkwNTI0NjZhOTM0NGJhZDg2NyJ9"
+        },
+        {
+          "resource": "repo://agent.py#L22-L22",
+          "version": "repo-lines-v1:sha256:a578a099baede83376a86e945ba1b3609892d11ab9dfe89b9c2c8d2800ae8fac:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU3OGEwOTliYWVkZTgzMzc2YTg2ZTk0NWJhMWIzNjA5ODkyZDExYWI5ZGZlODliOWMyYzhkMjgwMGFlOGZhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU3OGEwOTliYWVkZTgzMzc2YTg2ZTk0NWJhMWIzNjA5ODkyZDExYWI5ZGZlODliOWMyYzhkMjgwMGFlOGZhYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGFhYmU4NTk1NDkwYTUzZjFjNmRjMmMwNDJkYTA3ODk0MTNhMTNmMjVmOWNhZTNjZWEyOTNhZWMxZjMyZjUxOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGRiNzljZDU5NTQzY2I2ZThkMzdlMzI2OGU4ODQ4MmZlZmIzZjEyMzBlYmRkOTc5YTZlMzgwYTlmN2FiZTkxMSJ9"
+        },
+        {
+          "resource": "repo://agent.py#L351-L351",
+          "version": "repo-lines-v1:sha256:23f0cce4ff1cad09d2bf17a4c2c5177cb3a128d96036a331f1778f8b41647df8:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjNmMGNjZTRmZjFjYWQwOWQyYmYxN2E0YzJjNTE3N2NiM2ExMjhkOTYwMzZhMzMxZjE3NzhmOGI0MTY0N2RmOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjNmMGNjZTRmZjFjYWQwOWQyYmYxN2E0YzJjNTE3N2NiM2ExMjhkOTYwMzZhMzMxZjE3NzhmOGI0MTY0N2RmOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmY4N2ViYTI0YTQ0ZDgzODhmMmY1ZjcwM2VjMjdmYWZjNGQ3ZTQyOTU1NzAyNmQzNmFmZjM4MWZhMzJhZjU1YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2IzYzBjNTdhMDhjZWMwOWU2ZDY1NjNlNzJhZjZhYTFmZWU1MGJjMGFkZDdhYWEwMWQ0Y2U2OTlhZDYwZjQ5YiJ9"
+        },
+        {
+          "resource": "repo://agent.py#L452-L452",
+          "version": "repo-lines-v1:sha256:53b4a53cb41fa7709c5cb307b99c5b35b874475907e37feca2fd357ed86fec9a:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTNiNGE1M2NiNDFmYTc3MDljNWNiMzA3Yjk5YzViMzViODc0NDc1OTA3ZTM3ZmVjYTJmZDM1N2VkODZmZWM5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTNiNGE1M2NiNDFmYTc3MDljNWNiMzA3Yjk5YzViMzViODc0NDc1OTA3ZTM3ZmVjYTJmZDM1N2VkODZmZWM5YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWZiNmVlYTc2ZjEwOTFjZWNjZTU5ZmZjY2Y3NTk1MTUxOTEwOWE3YWVjYTMzMWNhNzQ5YTBiMjBjNjA2NmU0OCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMWM3MDkwZDU0NDJhN2Q0MDkzODAxNzlmNjg0Y2Y1ODRiN2M5NGM3YWRhNjg3Y2NhZmFhZGE0ZjU2MDQzYTVkYiJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-10-01T12:03:35.670Z"
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:0c2a6c5d54816f7fb74489dc7aab87f02b03d3c511634d33ac85fdc637b84eb2",
+  "claims": [
+    {
+      "id": "claim_6cd6982141bc4315a5044d9b2fd060c5",
+      "statement": "The repository has no classic unit-test suite; the deterministic Harbor eval and the manual LangSmith eval are the entire quality gate.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L326-L328",
+          "version": "repo-lines-v1:sha256:910f078084a0bcdec088e408bb4667c73e7eae5ab8b8356f6e1df0d988f30b88:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWE0NzQwNzY2YjgzODBhZGU1ZDYxN2Y4ZGE5ZmM3MjNkZmEwY2IyZTkzNzFlYmVmN2FjZTlmYjE3NTMwODcyMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGJlMzE0Y2EzODI0M2Y5MmU4MTgyNmU5MDM1NzIxMGUzNmRjODY1Nzg2Mzg2ZmVhOGU5MDk2MmU4ODYxNDk1MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjM5MTc1Zjk5ODA4YmYzMjc1ZDQ2NGNiZWI4YWZhNjlkYzZlOWE3MjJhMjUzNjUwM2E3N2VmNGZmN2UwOGRjNyJ9"
+        },
+        {
+          "resource": "repo://eval_runner.py#L90-L91",
+          "version": "repo-lines-v1:sha256:4b2b6facc079f11d92fbb41dc6fe3ed9fe2413a42d584d1ba273f2d072f633d6:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGEwZjg1MGRlZDJkZjcxMTBlMzU5NDY2ZWZmYzEwMGM0ZWQyNDRkNDhiZDVhN2MwZTQwMTQ0Nzc2N2M4MDZhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGMwOTU3MGZjZjVhZTEyN2I0YTA5YzI0NjFmMWJkYjQxYjk0YzkwNGM1YTgxOTBiM2U0ZDA1MGM5OGRmZmU0ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzEzNTE1MjRkZWI4MjI1NzE4MTQxNjhlNzk1MGE4ZjNlOTRiYmJjOTY2Y2Y3MDk0YjkzZjU3OGM4MTk2YTZhYyJ9"
+        },
+        {
+          "resource": "repo://evals/check_reward.py#L1-L9",
+          "version": "repo-lines-v1:sha256:aca012f1d4c476f0715f663b152aef24a2062e0c78ed00d34743c8d190933b2f:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWY4NzIyNTUyZDBiZDZiNmEyMTYwOWZmZTQ0NTJiYTlkMDcwZGRkY2VhMTAzNjVhOWQzNDJkODZmZDhiYWM0YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTMwM2VjZGQ0YTRkMTBmMTljNzNmZDQyZmQxMjQzN2ZkMzM1NGE4MjY4MTYwNWRhNTI1NWE5N2EzOTA2OGRiYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTJjMzcwNGEwMjU0MTAyMDQxM2IyNDE1MzhmOTQ4Zjg0YWMzNGViNmUyMzk3OTA3OGVlNjAzNDZlZmQwZmY1MyJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_aa891aa0e1d244c9899cb623b0de2fb6",
+      "statement": ".github/workflows/eval.yml (Filtering eval) triggers on pull_request and push to main when paths include agent.py, mcp_server.py, evals/**, or eval.yml; it installs Harbor, runs the filter-exclusion-senior task, then converts the job to a verdict with check_reward.py and uploads run evidence as an artifact.",
+      "evidence": [
+        {
+          "resource": "repo://.github/workflows/eval.yml#L1-L58",
+          "version": "repo-lines-v1:sha256:6246632c39183ff6e0b41d54e7decf50aa5d696a3c99e7bdddd5fd7a280cbd0f:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMzZjg4ODU4YzdkZDNjNWJiYjg5YTJlYzRkMGQ4MTIzMDFlNTdkMWM3MTgzZTNiMzFiM2U2MDExNDNjN2E0ZTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2NmQwNGZhNzkyMDQxYWEwNGMxY2ZmYjZkN2IxNWFkYTc1N2UxZGU4OTFlNDY2MzFmYmZmYzU2YTFhZThmNjkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_6adb720043cf488daffaf63cb3198f23",
+      "statement": "check_reward.py maps a Harbor job to three CI outcomes by exit code: 0 pass, 1 eval failed (a reward was not 1.0, meaning the filter changed behavior), 2 infrastructure error (errored/cancelled/incomplete trials or missing result.json); Harbor itself always exits 0 regardless of pass/fail.",
+      "evidence": [
+        {
+          "resource": "repo://evals/check_reward.py#L1-L47",
+          "version": "repo-lines-v1:sha256:506f81084e5dc47627622cf566213f676453b1a3aee9c615ee84a5ea604343dc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmODcyMjU1MmQwYmQ2YjZhMjE2MDlmZmU0NDUyYmE5ZDA3MGRkZGNlYTEwMzY1YTlkMzQyZDg2ZmQ4YmFjNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiMjZjMjZlYTUwYWNjMzJlZTkyMTQwNWNjZjMwMzVlNjNkZmRlNTRmNWZlNDU1OWM5NjYxNzY2MTFlYTQ5YTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_7d1032ec6a5545adbcd56baac66fc126",
+      "statement": "The Harbor eval freezes five job sources (RemoteOK, Himalayas, Remotive, Jobicy as JSON, plus Workable as reduced schema.org HTML); the frozen environment is enforced with network_mode: none and a frozen_apis.py stub that routes known hosts to fixtures and raises on any live network call.",
+      "evidence": [
+        {
+          "resource": "repo://evals/configs/no-network.yaml#L1-L2",
+          "version": "repo-lines-v1:sha256:42cd299e0ef6fc7d5d9af7821a4284ea7bd707f5c5a6954a9d342dea3f590b72:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmE3M2ZjY2RjOTllYTgzNTk2N2M3ZGVlN2VmYmVkMWYzY2E4NzI2MGQ5MjkzMTg1MGZkZDY2ZGE4Y2IxMmYxZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2JjNDQyNmJhMmEwNGRjODRhNjg0OTUyZWMzYmEwZGU5MGIxNjI5Nzg1ZjJjODkxY2M1ZWNjYTdiNjJhNTM1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDQwNjFlNDZiODdiMWJkOWMzNjE3ZTUyZDcyMTFmZTQ5NjM5YTQ1ODcxOGRjZmQ2Y2U3ODM4MDBhODI5NzQzYSJ9"
+        },
+        {
+          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L9-L65",
+          "version": "repo-lines-v1:sha256:82f7a1496e75c780d18e7b14de18b19ee785e0e77a18d33c32011626fbe246dd:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwY2JiMGVhMmUxNGNkZDNkZWJiYmNjOWNhMTkwODY1MTBlYWRmMGI4MWI0YWVjYTczMTI1ZjQ3YmJjNDhiMjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2MTY1NDMwMGM2OTQ2MDY0YzAyNWI3MGJlYWRkNzI5NGQyOTRlY2JmMDgzYTc5MDJkZGQ3MTI5MjhiMzNlM2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhMDgwNTBhNWE0ZjRiNmEyYjEwOGEyZGI5YmYxYmIzODNkZGU4ZWVkOTY0NjE3MGYzMjVmZTAzODFiNmU3MGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmMmY4ZGQ3YzMxYWY4MDBjYzhiN2NmYzkwNDlhYmE3YjA0Y2EyZGVlMTc5ZDNmMzdkNGQxOWNjYWM3OGNmODEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b508da0da1c340348d1a4a94c39848d0",
+      "statement": "Adding Workable turned the Harbor eval red before shipping because the frozen environment knew four hosts and the fan-out had changed; the expected set was rewritten by hand from the new fixtures (three Workable listings kept, its senior listing dropped, a Jobicy listing leaving both).",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L440-L442",
+          "version": "repo-lines-v1:sha256:2bc34733afbc729a21d3383178117c751549dca9539e13068f560743ece3261d:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2I2MjlhYzAyZTM4ZTNmNzM5MjFmOWY0YmVjOTQ2MzkyZWEwYTY2MzM1YTE4ZTVhYTU1NTliNmE5Mjk4MTJhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDZlMWE5ZjM5YzU3NWJiYTFkOTNlMjgxMzdmNWIxMzRlMzY2MWY1NjBlODEzYWI2NjgwMDZjYzE5MmUwNGY5NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGU3NTM1NjNjZWMyMjllNWMwNjNlZmE2NTE5ZjBkNGY3MmUxN2JjY2E1Mzk1MzQxMTM5MGViZjgzYThkMTJmNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjZlMzcyZTJhYmVhOTA3MTFlODg4ZGU1Mjg1NmVkZGI4YWRiZTUzNjFhOGE0ZmE2YjBiZjc3MWQ3MzhiM2UwNyJ9"
+        },
+        {
+          "resource": "repo://evals/filter-exclusion-senior/tests/expected.json#L1-L18",
+          "version": "repo-lines-v1:sha256:7999ec870b7c5b558dd57ada207b645f0b4be5ae91dcf1ade3050ab109532a88:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c2ce84d03ab2401da92ee20885c3239b",
+      "statement": "The Harbor entry under test is mcp_server.search_remote_jobs(query, exclude_keywords); the pass condition is that the set of apply_url values in output.json exactly equals the hand-written keep set in expected.json (7 kept, 5 dropped), and the verifier never calls filter_jobs to avoid grading the code against itself.",
+      "evidence": [
+        {
+          "resource": "repo://evals/filter-exclusion-senior/tests/expected.json#L1-L18",
+          "version": "repo-lines-v1:sha256:7999ec870b7c5b558dd57ada207b645f0b4be5ae91dcf1ade3050ab109532a88:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://evals/filter-exclusion-senior/tests/test_outputs.py#L53-L79",
+          "version": "repo-lines-v1:sha256:8df478ad8b39b73871b8e5e9f6739f3e03570facc32570022e467d5fdb369848:eyJzZWxlY3RlZExpbmVDb3VudCI6MjcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjMTRjNDQwNTNmYzc1M2YwMDU2ZDEwMWIzYzNhMGU4M2FhMmIxOWYyOWRhNzMxOTVmNjhkNWU0Yjg1NTk1OWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEyMGM5MjIxZGU1N2E5MDAwNjQyNzNmMzIyNmYzMjg3OWFiZTdkNWQ5ZjNmYjBhYzc0N2QxNGYxYmE0ZjZlMjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU1ZjQ4MWQ5MTBiMzcxZjZhY2I1MDY5NmE4YTBiNmIzNGE2ODJmNGMyNzZkMzM2OTNjMGY5ODlkNjE1ZjE0ZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://evals/harbor_agents/run_pipeline.py#L12-L34",
+          "version": "repo-lines-v1:sha256:5d3793be1a516d4bb404b267f5a7d672047b95e9213076ef14a19e80a3396c39:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzNTJlOTJhMTBiYzc3YjZkNzQ5Y2Y3MjFhOGNhMTU5NDhmZWJlMzE2OWFkZTgwZGM0ODEzN2YzODNhMWYyM2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUwMTJjYWEzMDlmNmU4NTkwYzEyZWY1N2ViOTY3ZWU4YjJhN2FjNjAzNTBlODgwOTg0MDk0ZDVlNTJkZjlkMTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMyZWIxYmRkNTJlNTBlYzYzYzViOGM4N2YwYjdiMzYwMDg1ZGZkZWRjZjk2ZThjYjZhOTdkNTk2ZWNlYmFjY2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoyLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc4MmJmN2RjYzVmODMzMWJjMzEyZDU3NGRkZmUxY2RjNjA1NmU2MGU2ZDFhYzE5NmNlNWUxYTdhZDA0NjZlNzIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_12f37b22c6d0478db51d5e8a1dde32f5",
+      "statement": "The LangSmith eval posts 24 queries from the job-search-eval dataset to localhost:8002/ask and scores relevant/total with a Gemini 2.5 Flash structured-output judge; the current baseline is ~0.90 across 24 cases (16 August).",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L330-L334",
+          "version": "repo-lines-v1:sha256:782fa43eacf47047e73596d5f27345b4047be258c81bc52f9b3f7a00158285c6:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTI0N2IwNjQ2MGRhNzI3ODk3ODM5MTM4ZmJjMThkMGM1YmQyMThhYTc1ZmE4MTNkMWRjMTI5OTY1NTVlODNjZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmI2MGU4ZDgyYmM3NjkxMTAzOWU2MDE0Nzg0M2QzOGUzMzRmZTczZWFhNDViZjE2ZGNhZGViZmQ3YzhiYjNjNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzZmODRmNzRiZWZlMjQzZTA2MTc5NDU4ZDE1MTE1NTE2ODQ2NTM1N2RhNzZhNWQ0OTBhYWRiNGU4NDYzYzY3MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGVjNjE0OTk0ZDEzMTMxYWY0ZGU1NjFkMjY5NzA3MTA3ZjY3Mjc0OGM3OTU2NTM2YzcyNDZiZjIxY2QwODVhYyJ9"
+        },
+        {
+          "resource": "repo://eval_runner.py#L13-L91",
+          "version": "repo-lines-v1:sha256:351e14ae19d56c1dd6c91c91d2116429f3ddc8e5082f2ed3414d6f0b5ca4f088:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4M2I1YTg3MzdhZWQ5YmMwZjU4ZDhlMzIzNmFjNzQyNDE2ZDVjMDQ3YmJmN2E5NjE5NzBiZDc1OTZhZTRkY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkMTA1NmU1Y2E2ZGY4ZmVmNmIwY2Y0NTlhYTAwMWI3MTAzYTI0ZWUwMDlmODQ1ODA4MWJiODg0MTAyZWI1MzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxMzUxNTI0ZGViODIyNTcxODE0MTY4ZTc5NTBhOGYzZTk0YmJiYzk2NmNmNzA5NGI5M2Y1NzhjODE5NmE2YWMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_8df650f978b84c518cac48e47b2f3087",
+      "statement": "The LangSmith judge was rewritten for repeatability: an empty_ok flag short-circuits queries whose correct answer is nothing to 1.0 before the judge is called, the grading prompt states that a rejected listing only subtracts one and silent criteria count in a listing's favor, and reference criteria were rewritten to be decidable.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L384-L394",
+          "version": "repo-lines-v1:sha256:804d33483843c8e40dcddb317dfe972908f7bdae43c340e1bdf98560b7d225fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmZDNjMzQyODc2YTliYTViYTdkNWQ3ZmMzMDVjOGE2OWJhMjgxZjQ4MzkyNzg2YmRkMmI4ODNiMGI4NTNlNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzNGUxMWExNWY2NzBmMzUyNzFjN2ZiNjdkYzBiN2Q5MWQ5OTVkMjQwMDU2OTRjYmI4YzBhNjZkNDVkZDg3NTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhMWUzYjZiZGMyOWUyYjAyY2JkODI3YTE0ODNiZjU1ZmJjM2IxZGRlNzljZWM5MGFlZmZjNzZmNWY4NGM0MjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4YmVjMzRkYzM5ZGNhZmU3Zjk4NDk0N2JmNmY5YWE0MzY5YzQxZWQ4OWI4NDMwYzk3NjJkNjE5MDg0NTZiNGQifQ"
+        },
+        {
+          "resource": "repo://eval_runner.py#L41-L85",
+          "version": "repo-lines-v1:sha256:eb13c57d462f060df8d6c9c4f941afa82500cd21d1e928dc0eaeff5a0c7b982e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1MTUwODU4NDMyOTliZDMxZmM2MWI3MmYwOWI5ZTIwMTdjYTg4YmE4ODJkMzcxOGJjN2YzN2UwZDE4MjBlMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZDJmY2YyZDAzNDg1MDBkNDQ5MWVjMGExOTQyODNlYmYxYjE3ZThiZGExZTY0MmU4MGRjMmY2MzBiODY5YWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkZDk2M2Y2YmIzYWRkNWY4Njg1MjE0NmViZTEwNDQ5ZDlmZWM3OTA2MjM3MmFmZWE1NmE5YjU5MzBhZjIyZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjODk5MGZkYzhiZWZjNThlNzFmNzg4ZThlNzhlYjQ4OWJhNjJmOTA3M2I1MDJkYjRiMGU3MzEyMDlmOTQzYTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_1bc127c7cc6345b48dd55d653a8b03d9",
+      "statement": "LangSmith changes are judged against a control run of the unchanged code on the same day, not a stored baseline, because live job boards shift (the same unchanged code scored 0.765 five days later) and individual cases wobble; the aggregate is the signal.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L336-L341",
+          "version": "repo-lines-v1:sha256:82772c8de944e6fd9b24d1769764fa356b1f23ac3c2868435130623e73079590:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDdmODg5OWM3ZmVmYjgyY2FlOWJkNGU2NzQ0NjY0NDU2MGE1MjdkNjQ5ZDRmN2U5NmE0OTkxNTc3ZDQ5M2U3NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjZkODNmYTE2YzlmNWQxOGYzZDU3ZjI2M2ZmMzE1ZDhlNTU3NWEzYTM3YTU0MjczOTg1NTUyNGVmMjI2NTk3OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2JiMDMzM2RhZWNlMTQwZmQwMmU5ZmIxNWIyOTA0OWFhMGE4NTFkYzk4Y2E3MDQxY2VmMjJiOTljZTUyNWRiZCJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_b55699a6888e4a8692dfa438f2689884",
+      "statement": "Local Harbor runs use PYTHONPATH=$(pwd) harbor run ... --job-name local followed by python evals/check_reward.py evals/jobs/local; the LangSmith eval uses python eval_runner.py with the backend on port 8002, requiring LANGSMITH_API_KEY and GEMINI_API_KEY.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L346-L348",
+          "version": "repo-lines-v1:sha256:975d4e3f8e8066b81afa4a9dd0146a40951d139fc642c8d51974ef20c36df632:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRlMmY1MzI4ZWU2ZTgwNTBlOGFhZmQ4ZGM4NjlhMDY5Y2Q5NTg0ZWRhYWY1NGZlNTg5ZDczYzNiN2RjZDc5OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdjMDZjNTYxZDVjMzI3MzQzNjg1MjY4YTQ2YjMzOTFmMzk5OGVlZTg5MGQyYmU1MWYwZDIxY2M0YTUzYWU2ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjI4MmZhYTA5ZDAyZDYxMDA3YWMwYTE5NmRmZjI3MzViMzAwZTAwZjdiMGE0NjM5MDBmNTQ3MTU0OGRlMmE3NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2RjMTJjMDI4YmFhY2IxNjU1ZDI4NjFhYTM3ZjEzMTFiMWYyOGU5OTUxZjk4OTA5YjE0N2NiMTAxMDY0YzZlZSJ9"
+        },
+        {
+          "resource": "repo://README.md#L421-L434",
+          "version": "repo-lines-v1:sha256:03ad332f79109d89507a0478a0150fbe780951cf4d9d2eea5f5e38225f479b2f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxMDljZGQ5MWY3MWFjMWIxNmNmNDE0M2Y3YjMwMTc5NjU0ZmRiYTAyMGIxNGYzZmM5NDBjM2E2NmU5YTU0OTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyMTYyNzE0MDZkOTM0OGM0ODYzMWZkOTM4NjYxZGQzY2ZkNzMzNWU5Y2QzODdkM2I5OGRkNTAxYzI3ZjYyYWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlNzhjNGY5NjRjZjY3NDVhZGRmZDU2NTZlMjE0ZDY3MGJhODQ5Mzc5YWQzOTk2NDVmZmNiNDk3NDE1OTY1NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4Njk5MzgzY2JhYWIzOTQ3OGUyNmM0YjdiNDhjN2FlZTA2MjZlMGUwMGVjMGY5Y2Y4YzNmOTVjM2M2YTY0MjQifQ"
+        },
+        {
+          "resource": "repo://eval_runner.py#L30-L38",
+          "version": "repo-lines-v1:sha256:0aa38be5d88a2325a06bcb739a3a55fba02eb711e4d0a8f2a588e3610b0e8ad3:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWFkMzc2YzRmZTYzNmM5OThhNDA5OGRiZDU1MTIxMzEwNDQyNWE1NmE3OTRhMDBjNjUzMTBiYzc1NWQ4MjEwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDE2NDg4MDkxOTMxZGVlZmMwM2VmNzg3ZmI5MDhhZDgxOWI4Y2VjMDdlODViZGE5YjliMWJhZjE3ZTZjMmY3NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmEzY2Y1MTkyMzU0ZjcxNjE1YWM1MTAzNGIzZTk3YzIwZWRhOTk2NDNmY2FmNWJiZTZkNDFhZDU5YmQxMjE2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWQyOWJmMDdmZmQ2MzcyNDE5OTdiODViODZiYjk0MGUzZDI1NWY4MWI2ZDM4MzY3ZjZjYWVmYWExZWM0OWE4NyJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-10-01T12:03:35.670Z"
+  }
+}

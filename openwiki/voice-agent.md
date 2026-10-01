@@ -3,11 +3,26 @@ type: Subsystem
 title: Voice Agent
 description: Voice interface using Pipecat with Deepgram STT, ElevenLabs TTS, and Daily WebRTC transport. Shares the same agent.py graph as REST but uses in-memory MemorySaver, caches last_jobs for local re-filtering, and routes commands by first word.
 tags: [voice, pipecat, deepgram, elevenlabs, daily, webrtc, langgraph, voice-agent]
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-10-01T12:03:35.670Z
+sources:
+  - id: openwiki-source-eca60e2ced68ba99bd0ac710
+    resource: repo://agent.py
+  - id: openwiki-source-3a30c14a947fb74b6b9d65b7
+    resource: repo://voice_agent.py
+  - id: openwiki-source-e7dddbd4e6eed740150e85d4
+    resource: repo://voice/server/bot.py
+  - id: openwiki-source-751ee1fc8ed82a7ecfa9c52f
+    resource: repo://voice/server/langgraph_processor.py
+generated: { by: "openwiki/0.6.1", at: "2026-10-01T12:03:35.670Z" }
 ---
 
 # Voice Agent
 
 A voice interface that lets users talk to the same LangGraph job search agent powering the [REST API](architecture/backend-api.md). Built with [Pipecat](https://pipecat.ai). Runs as a local single-user demo server.
+
+`voice_agent.py` imports `graph` directly from `agent.py` and compiles it with its own checkpointer — it is the same five-source fan-out graph (RemoteOK, Himalayas, Remotive, Jobicy, Workable via `fetch_wjobs`) used by REST and MCP, not a copy. See [Agent Graph](architecture/agent-graph.md) for the shared graph topology and [Integrations](integrations.md) for the five job sources.
 
 ## Architecture
 
@@ -26,6 +41,22 @@ flowchart LR
 *The Pipecat pipeline: audio in via Daily → Deepgram STT → LangGraphProcessor routes the command → VoiceSession runs the graph → ElevenLabs TTS → audio out via Daily.*
 
 Key design: voice sessions are **stateless and short-lived**, using an in-memory `MemorySaver` checkpointer instead of the PostgreSQL `PostgresSaver` the text agent uses. Each call gets a fresh `VoiceSession` with its own `thread_id`. The session tracks `memory` (exclusion list), `last_query`, and `last_jobs` (cached search results for local re-filtering).
+
+### VoiceSession lifecycle
+
+`voice_agent.py` compiles the shared `graph` once at import time with a module-level `MemorySaver` (`compiled_agent = graph.compile(checkpointer=checkpointer)`) and a Gemini-2.5-flash extraction `chain` (`init_chat_model` → `StrOutputParser`). Each `VoiceSession` then holds:
+
+- `memory: list[str]` — accumulated comma-separated exclusion keywords appended on each `resume`
+- `thread_id` — a fresh `uuid4` per session, passed as the `configurable` LangGraph config so the checkpointer scopes graph state to this call
+- `last_jobs` — the normalized result of the last `run`, reused by `resume` and `reset`
+
+| Method | Action | Re-runs graph? |
+|---|---|---|
+| `run(user_input)` | Invokes `compiled_agent` with `{"user_input", "fetched_jobs": []}`; normalizes `clean_jobs` into `last_jobs`; returns `filter_jobs(last_jobs, memory)` | Yes — a fresh five-source fan-out |
+| `resume(feedback)` | Runs the Gemini `extraction_prompt` to pull avoidance keywords, appends them to `memory`, re-filters `last_jobs` locally | No — local `filter_jobs` over the cache |
+| `reset()` | Clears `memory` to `[]` and re-filters `last_jobs` against the now-empty exclusion list | No — local re-filter |
+
+`run` and `resume` both return `{"type": "jobs", "data": [...]}`; `reset` returns the same shape with the unfiltered cache. Because `memory` is a plain in-process list, all three are safe to call from `asyncio.to_thread` without holding the audio pipeline's event loop.
 
 ## Pipeline assembly (bot.py)
 
@@ -48,7 +79,7 @@ flowchart LR
 The text agent's `/feedback` → `/ask` flow re-filters cached results because conversations persist across days and queries may change. In a voice call the query almost never changes mid-conversation, so the voice agent:
 
 1. **Caches the last search results** in `VoiceSession.last_jobs`
-2. Extracts avoidance keywords from user feedback via a Gemini call
+2. Extracts avoidance keywords from user feedback via a Gemini call (`VoiceSession.resume`)
 3. **Filters the cached results locally** — no repeated API calls, no re-running the graph
 
 The text agent works the same way (feedback re-filters what is already cached). The difference is only in where preferences live: the text agent persists them in Postgres across days, a voice session keeps them in memory and forgets them when the call ends.
@@ -70,7 +101,7 @@ flowchart TD
     Search --> TTS
 ```
 
-*Voice command routing: the first word decides the action. Detail requests use ordinal or company/role name matching. Feedback and search both produce job lists.*
+*Voice command routing: detail prefixes are checked first, then the first word decides the action. Detail requests use ordinal or company/role name matching. Feedback and search both produce job lists.*
 
 ### Routing constants
 
@@ -139,7 +170,7 @@ Starts a local server at `http://localhost:7860` with the Pipecat Playground UI.
 ## Source references
 
 - `voice_agent.py` — the entire file (51 lines)
-- `voice/server/bot.py` — Pipecat pipeline (137 lines)
+- `voice/server/bot.py` — Pipecat pipeline (138 lines)
 - `voice/server/langgraph_processor.py` — command routing (135 lines)
 - `voice/README.md` — setup and limitations
 - Commit `64f458d` (voice interface), `2834675` (rewire for interrupt-free graph)

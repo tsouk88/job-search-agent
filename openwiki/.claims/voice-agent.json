@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:8154db5904dad0eb4329d20cff7abec7d0c5691e694368533e08e4d1788f3fcb",
+  "claims": [
+    {
+      "id": "claim_0f1fbcb8816d4e15bb908ef79a13055d",
+      "statement": "voice_agent.py imports the graph directly from agent.py and compiles it with an in-memory MemorySaver; it runs the same five-source fan-out (RemoteOK, Himalayas, Remotive, Jobicy, Workable via fetch_wjobs) used by REST and MCP, not a separate agent.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L558-L565",
+          "version": "repo-lines-v1:sha256:b143d02db64d9f5443ac4a43f1cb723d0b6fff1591d382ed9e603dc11fb9bdfc:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M3OTM5NmQzYWEzZmFjOTBhNmMxNzQ3NzFiOWI5M2QwMjVkMjZlM2U4MjFkNDAyYzBkMzg0OGFjOTc5YWRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODliZTM1NWU3MTZjZWVjOTM0YzlhYTBmOTk3ZGIwMGNkMWE4OTdlODczODRiZGU3OWRhYzJkZWI1MjUyMjJkNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRmMTkyMWM5YmM0ZjkwYjg3NDA1OGQ0ZDkxMWYyMDE1ZDUzNThlZTA4NGU0NmE0MDBhYTAxMzliNzM0N2E5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWE4MmViZTllZDQwN2MzYTZiYTRiMDAzNDI5MmJhYTUyYzExY2U1YWUyODYxMDc0MDJkZTQ3OTJlZWVjYWNmYyJ9"
+        },
+        {
+          "resource": "repo://voice_agent.py#L1-L16",
+          "version": "repo-lines-v1:sha256:ac83bbc75340ed217df912b8880df0ea15019d0526131aac32dd29fe92da9b11:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiMjcwZTM0ZGUzOGQ5OWYwMzY0MDQzY2ExODA4OTgzZjQ5OGE5ZTM5NDMxMzMwNzE5MzE2NTczNDBiNWJjOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5OTgwMmZjNDFjNjNmZTU2YmY4ZGZjM2I5MzMxNzNmZGNmMGQ4MDQ2NGFkYTZiZDkyODQyNjYxMDRhNjNlNDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExMjhlZjM1YmI3OTJiY2YwZWMzNTVhZTdiOTMxNjJjZWJhZTBkZGVkMTQ0YWI3MDliYWQ1NDg0ODM1MDBkMzAifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f22e641b30ed40db98d6561d6841adea",
+      "statement": "Each VoiceSession holds an in-memory memory list of exclusion keywords, a fresh uuid4 thread_id passed as the configurable LangGraph config, and a last_jobs cache of the last run's normalized results; run invokes the compiled graph and re-caches, while resume and reset only re-filter the cache locally without re-running the graph.",
+      "evidence": [
+        {
+          "resource": "repo://voice_agent.py#L18-L50",
+          "version": "repo-lines-v1:sha256:8478d21099a684d2c51756d873a140df47ca6df93a4981dc4e590004e4d20c8e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1NjQ1NjNhZmRhZmZiNDNhZWUwOWI4NDk5OTBiYjFmMTQ5NDQ0NzdhMTFlNTQ1ZTY0Mzc3MmYzODEyZmZkYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmOGFjM2Y3OGUzNjQ4YmU3OGY4N2VjNzVlNjU0NzJmMjE2ZDVhMTQ2NzdjZWQ0MjFhYTA0ZDVmZDAyZjkyZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmZDAzZDg2YTRhMDFjNDk0NjcwYjk5OWNmMDk1MWNlMjQ4N2YzNzYyZjE4MmQ1Yjg2Yjc1YzUyMjc0NDVmYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiNmZhMDEzMTNjZTUxYWZjMDllNjEwZjgxOTI1MGRhNTAxNzc4YWQzNjNjYmE0ZjllMzEyYTZlYzgyM2Q0MmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_b2155efc755a4178874e8f5a18a96b0e",
+      "statement": "VoiceSession.resume runs a Gemini extraction prompt to pull avoidance keywords, appends them to memory, and re-filters the cached last_jobs locally via filter_jobs rather than re-invoking the graph or re-hitting the job APIs.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L29-L51",
+          "version": "repo-lines-v1:sha256:4db8d4e8c3adf3710f34575ef561e56f9e7fcaa2cd54fa42f6230df238cb0161:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkN2NkZmE0MjczNmJhNDE3Y2JlMTkwMmI1MzRhNjYwMjg5OGU0MDc3ODFmOTBlNzZiNDdlOTMwYjNjZjJmNDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5OTQ5YjAxZjUzYTNmZmJiODBlOTk1ZDlmZWNiOTllZmM5OGRmMTYwNjZmNjIzMzRlZmJkNTYyN2NhZjc5YzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzZDRiZGNiNTMyOWYzYjVkZGNmYzM5ODBmZmNmOTlhZDUxZDBhMmQyNjJmZTk2NWZkZDM2NWYwMGJmZGNhOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkMmYwZjM4MDg3NjdhMTFhMGI4ZjU1MjVjYTI1ZmEwYmE1NGQzOTUyMzY5N2FkZWIyYjhhZDVkYTExNDczMjYifQ"
+        },
+        {
+          "resource": "repo://voice_agent.py#L40-L50",
+          "version": "repo-lines-v1:sha256:6a6bc23073bd5281d3630602bf4dce7d94549550aab72ac5954eab7466af2f0c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyNjQ3NTM3ZjQ5MTM2MDUxYjVlNmZkY2MzNzI1NzhlN2I1MzEzODI4ZTkwN2NiYjAxZDdmMTEwODU0MTViMjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmOGFjM2Y3OGUzNjQ4YmU3OGY4N2VjNzVlNjU0NzJmMjE2ZDVhMTQ2NzdjZWQ0MjFhYTA0ZDVmZDAyZjkyZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmOGQ0NDI1YTJhMDI1ODM4ZTI4MjY3MzAzNmNkMTA1OGU3Mjk1MDRlYTg0YzA5ZTdjY2NiNDE3NzY2MTc2NTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiNmZhMDEzMTNjZTUxYWZjMDllNjEwZjgxOTI1MGRhNTAxNzc4YWQzNjNjYmE0ZjllMzEyYTZlYzgyM2Q0MmEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_9338b409d638477b9ddd308206a290f3",
+      "statement": "LangGraphProcessor.process_frame routes by checking DETAIL_PREFIXES first (tell me more, more about, details, what about) via _describe, then dispatches on the first word: reset clears memory, FEEDBACK_WORDS (no/skip/without/not/exclude) call resume, and anything else calls run; all blocking calls run via asyncio.to_thread and a _last_processed_message guard deduplicates repeated frames.",
+      "evidence": [
+        {
+          "resource": "repo://voice/server/langgraph_processor.py#L84-L115",
+          "version": "repo-lines-v1:sha256:7ba5d0574fba182a0f6cb86bd37a76ff696e8b73721ec19cd87589394b4ef814:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2YWQ4NjU3YTE0YmI3YTMxY2JkZjJkOWE4OGZlNWU5M2RlMjJiYjVmNDcxNDY4YTYwMjY4YWI5M2NiMGIyZjIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI2Nzc4NjAwMTVhYzU0MWI3Y2E3YTRkZDk2NDBkMjFjODljOTk3MDkyN2IwMDk5NzM2MmQxYzllOGMyNjkzZjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ1YmZmOWFlNjA5ZWQ1OTM5NDg3MGMwNzhlNDJjY2E1ZTg3Nzk1MzNiMDdlMWIxYmIzMmJkNGIxYTBlMjEzYTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjgyMTJlM2QxODNlMzk3N2FkNDQzNzg5MmU3MDE3ZjVkYjM3ZTJhMDZjZjI4YjRmNmY3ZTg0ODk3NmIwN2Q3NjYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_31915aa92b364be486c4a621b69f77ad",
+      "statement": "bot.py assembles a Pipecat cascade pipeline of transport.input(), DeepgramSTTService, an LLMContextAggregatorPair user aggregator with SileroVADAnalyzer, LangGraphProcessor, ElevenLabsTTSService, transport.output(), and the assistant aggregator; the Daily transport enables both audio_in and audio_out, on_client_disconnected cancels the worker, and the entry point is pipecat.runner.run.main() via WorkerRunner.",
+      "evidence": [
+        {
+          "resource": "repo://voice/server/bot.py#L120-L138",
+          "version": "repo-lines-v1:sha256:db4cd81e5a50edc30c0e358a63944574ae3d2a6db63563ebb881b8ebb8898d0b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyNjc0MjVlMTM4MjMxMzE1MmMyOGQxMjI0Yzk5MjA4MjM0ZjkxMGRmOGM3NDhlY2NmZGFiMjZmODkwNGE2N2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE4ZTk5MjMyY2QzYTMwOWY1MGNiZDZmNjYyMTI3ZWVhYWZjZTFmNzM2MjkyZGVmYjExM2Q5ODFhMjBjN2Q4NTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjIxNTRmNGVjYTYwNGEzYTljYWIwZmMyYWMzM2ZlOTUzMDhhNjgzYzk5MWI3M2ZiNmY1M2VhNDI4NjRmNWQ5NjgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://voice/server/bot.py#L49-L117",
+          "version": "repo-lines-v1:sha256:bb1dd3dd0e4b219c16232561ca45c204856e7bd4fecec21d5a5fbb2a36c51cd8:eyJzZWxlY3RlZExpbmVDb3VudCI6NjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlhOTBjYjljZDk3OTcwM2Y3ZTA0NTA0NjEzM2M4YjU4ZjQzZjNhNzJiYjUzMTAxMTAyZWE1OWRkYmVlNzdhYzUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3ZjFlY2UwZjViNDk5ZmU4OGYzMjZiM2E3ZDZkYzA4ZTA3MzU3NjE5ZTQ4N2UyNWU3ZGY4MThiNDU4ZjQ4NzUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZhM2NmNTE5MjM1NGY3MTYxNWFjNTEwMzRiM2U5N2MyMGVkYTk5NjQzZmNhZjViYmU2ZDQxYWQ1OWJkMTIxNjciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4NWVjYjRjYTJlMzI4NzNkMzZiZjRkMmE3YTYwMzExMTg0MDE0MGQ2ZGUyZGE4OTYxNjlmOTM2ZWM5M2UzODMifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_f1fdd868ed1541489033b96f9c8200c1",
+      "statement": "Voice sessions are stateless and short-lived: voice_agent.py uses a module-level MemorySaver checkpointer (no PostgresSaver), so conversation memory does not persist across calls and each call starts with a fresh VoiceSession and thread_id.",
+      "evidence": [
+        {
+          "resource": "repo://voice_agent.py#L1-L23",
+          "version": "repo-lines-v1:sha256:7d4ccd62456543e8867c8a8a374aca32cc639f25c8f5d95bf2daee5eee72dd38:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiMjcwZTM0ZGUzOGQ5OWYwMzY0MDQzY2ExODA4OTgzZjQ5OGE5ZTM5NDMxMzMwNzE5MzE2NTczNDBiNWJjOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwODU3MmIzMzEzZmFiZjdkMTY1MmU4ZmVjZDhkZTIzYmFhMjJjNmExMTQzNDkwZTBlMzM3MzhlY2UyOWJmMGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxNWMwYjFhNjc3OWZlNDNmMTU4YmNlYWE1MGU2M2I1MTI1Yzg5NWMxNGEyODA5NmZhY2ZhYzY3YTA1ZWJhMTQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_3befa2cdd47b43e1a01ec13f19876d0f",
+      "statement": "_speakable strips a trailing ellipsis and cuts a truncated job description back to the last finished sentence (only if the sentence break is past position 40), otherwise drops the dangling last word and appends a period, so TTS does not sound cut off.",
+      "evidence": [
+        {
+          "resource": "repo://voice/server/langgraph_processor.py#L24-L36",
+          "version": "repo-lines-v1:sha256:823cba5bb90461071d22df41cffa500ca73447eadb9e8e12cdbdb50b7bf2745c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzN2U3YTIzMGMzYzRiZmYxMGFmZGU4OWJiNDEyZDdjZGI3MmRiNmZkOTg3NzVlNDdjMGNmNGI3YjNmZTUyODciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjljZDczMzMxYTkwYTAyMjljOWM1MDk2YjU0NmZhMTU4Y2YzZWQyNDdjYTZkMmU2NzE5OWFjOWRhY2I4ZTgxYjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA5ZjkzMDgzYzE5NzEyMWI5ODI3MDBiYThhZmFiZDE3MjJjZjFkM2U3NDA0NTA5ZTgwZWZhMjcyNDdmNjJmMDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY3MGQ1MjQ2YTk5YzFmOWQwZjhlYzhmY2ZkNWRjNjgwZGQ1Y2QyMmE2M2E2ZThhMjE1MTQwMzgwM2Y4ZjBmNTIifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_bfd34a8baa10476e95812b5f62c48b1a",
+      "statement": "_describe resolves a job from shown_jobs by first matching an ORDINALS word in the message, then falling back to matching a company or position name the user said against shown_jobs, and returns a spoken detail line plus the terminal apply-link number.",
+      "evidence": [
+        {
+          "resource": "repo://voice/server/langgraph_processor.py#L54-L82",
+          "version": "repo-lines-v1:sha256:1df507cae7deed1304f8a780a4c7f0368883a1d49c0d52d50a3c28e18f832e8d:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdjNTE5MTI4M2Y1YzY5NWMwM2E0ZjFkYmI0NTI5Zjk3N2M3NWFhYjcyMWI5ZjNkYjRhMDBiZjE3MWIxNjUwYTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ2Yzc1ZTRmOTZiZWQ5NWIwZThmNTM5ZDBjYWZhNDczYWEwNmJjZmUwZGE1OWUwZmNjYmI1MDA2ZmE1YmRhZmIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAzN2MxODlhNjI4MTk2Njk5OTYzYTA0NzgyZjA4Y2E5OWVlNDk5NjQwYjI0ODA3NTk2Mzk5YmM4YmU2NjAxMTYifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a5774f227ac640d9b981394c513891bc",
+      "statement": "LangGraphProcessor splits output: _print_jobs writes the full list with apply URLs to the terminal (a URL is useless spoken aloud) while the spoken TTSSpeakFrame is a short summary of the count and top two roles, or a no-match message inviting reset.",
+      "evidence": [
+        {
+          "resource": "repo://voice/server/langgraph_processor.py#L119-L135",
+          "version": "repo-lines-v1:sha256:b4eb81307468512df2623486de608b4223074be7500206c2c6eefe01c61e6f89:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2NTJmMTAwZWIyZTQ3MmUzOTkzYzI2ZTg4ZjAzOWVkOWU2NTdjYThmOWEzYTRhZDgwY2ZkMDk5YTZhMzQxYmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJjNzUzYTFjODE5MWNlOWUxMmYxZDNjMDE5ZWIyNjI4ODk5NTMxNWMxYzdkOWY2ZjBjMmIyYTM2N2Q1YTI0NjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjgyMTJlM2QxODNlMzk3N2FkNDQzNzg5MmU3MDE3ZjVkYjM3ZTJhMDZjZjI4YjRmNmY3ZTg0ODk3NmIwN2Q3NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://voice/server/langgraph_processor.py#L46-L52",
+          "version": "repo-lines-v1:sha256:8519df73db958b9339ee58116834815928b016c63d564974cadd74b9509973a4:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGRkMDllZDUwNGRkNDNmN2IzNDNhMThkMzhiMzNmODA3ZGRhMmQwNzAwZmE3MzdjZTNiYmZkYjk5NWEzNzdjNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTJmMzYyNjAyYzA3YWNjNzg2OTFjM2IyYTZkY2Q2MWFjODU1YmVjZGE0MTE3YTY0NzU0MzQ5ODBiZmNmNGQyNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmVmOTIwZDY2MGM2ZjFiMDg4YTRmMDQ0ZWMzYmRlOGM3MTYzZjY3NWJjOGI3N2FlZGJlOWY3N2Y1MGRkM2RmYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2FiODZmNjNhZTQ1MzVmYmFhYTJhNjk4Nzg1OTQ0ODJjNTI3ZjI4MWUzMjFiOTg2MDBkOWMwMTA4ODg4NzkxMiJ9"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-10-01T12:03:35.670Z"
+  }
+}
