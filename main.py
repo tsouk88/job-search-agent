@@ -86,10 +86,7 @@ llm = init_chat_model(
 parser = StrOutputParser()
 chain = llm|parser
 
-
-@app.post("/ask")
-@limiter.limit("10/minute")
-def askAI(request: Request, input:SearchInput):
+def searchhelper(input:SearchInput):
     config = {"configurable": {"thread_id": input.thread_id}}
     state = agent.get_state(config)
     last_known_fetch = state.values.get("last_fetch_time", "")
@@ -105,7 +102,14 @@ def askAI(request: Request, input:SearchInput):
         searched_country = current_country
     clean_jobs = normalize_jobs(query)
     filtered_jobs = filter_jobs(clean_jobs , memory)
-    return PlainTextResponse(format_jobs_markdown(filtered_jobs, memory, searched_country))
+    return filtered_jobs , memory , searched_country
+
+
+@app.post("/ask")
+@limiter.limit("10/minute")
+def askAI(request: Request, input:SearchInput):
+    filtered , mem , country = searchhelper(input)
+    return PlainTextResponse(format_jobs_markdown(filtered , mem , country))
 
 
 @app.post ("/evaluate")
@@ -258,6 +262,21 @@ def format_jobs_markdown(jobs: list, memory: list | None = None, country: str = 
         form_jobs.append(formatted)
     format_str = "\n\n".join(form_jobs)
     return f"{format_str}\n\n{SOURCES}{filters}"
+
+@app.post("/askeval")
+@limiter.limit("10/minute")
+def evaltest(request: Request , input:SearchInput , x_api_key: str = Header(None)):
+    key = os.getenv("EVALS")
+    if not key or not x_api_key:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    check = secrets.compare_digest(key , x_api_key)
+    if not check: 
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    filtered , mem , country = searchhelper(input)
+    md = format_jobs_markdown(filtered , mem , country)
+    return { "jobs" : filtered  , "md" : md}
+
+
 
 
     
