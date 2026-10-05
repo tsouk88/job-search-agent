@@ -238,14 +238,14 @@ def normalize_jobs(jobs):
     for j in jobs:
         company = j.get("company") or j.get("companyName") or j.get("company_name") or "Unknown"
         position = j.get("title") or j.get("position", "") or j.get("jobTitle" , "") or "Unknown"
-        low = j.get('salary_min', '') or j.get("minSalary", '')
-        high= j.get('salary_max', '') or j.get("maxSalary", '')
+        low = j.get('salary_min', '') or j.get("minSalary", '') or ''
+        high= j.get('salary_max', '') or j.get("maxSalary", '') or ''
         if j.get("salary"):
             salary=j.get("salary")
-        elif low:
+        elif low and high:
             salary = f"{low} - {high}"
         else:
-            salary = high
+            salary = low or high
         clean_salary = re.sub(r'[\s\-0]', '', f"{salary}")
         if not clean_salary:
             salary = "Salary not listed"
