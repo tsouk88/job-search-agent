@@ -241,6 +241,9 @@ LANGSMITH_PROJECT=
 LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com  # if outside US
 DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/jobsearch_memory
 ALLOWED_ORIGINS=http://localhost:3000  # comma-separated list of browser origins allowed to call the API
+EVALUATE_TOKEN=      # x-api-key for /evaluate (the n8n workflow)
+EVALS=               # x-api-key for /askeval, used by eval_runner.py
+OPENROUTER_API_KEY=  # only for the Jev judge in eval_runner.py
 ```
 
 For Voice AI environment variables, see [`voice/README.md`](./voice/README.md).
@@ -478,7 +481,7 @@ job-search-agent/
 ├── voice_agent.py     # VoiceSession — stateless wrapper around the same graph
 ├── mcp_server.py      # MCP server (stdio) — same graph, one read-only tool
 ├── main.py            # FastAPI backend + all endpoints
-├── eval_runner.py     # LangSmith evaluation pipeline
+├── eval_runner.py     # LangSmith evals — whole-response Gemini judge + per-listing Jev and Gemini judges
 ├── requirements.txt
 ├── .env.example
 ├── n8n_workflow.json  # n8n automation workflow
@@ -487,6 +490,7 @@ job-search-agent/
 │   ├── harbor_agents/             # adapter that runs the pipeline as the agent
 │   ├── specs/                     # design notes: harness, environment, task
 │   └── check_reward.py            # turns a Harbor job into a build verdict
+├── laya/              # Dockerfile for the local Laya judge (tried and rejected, see Evals)
 ├── frontend/          # Next.js 15 frontend
 └── voice/             # Voice AI interface (Pipecat) — see voice/README.md
     └── server/
