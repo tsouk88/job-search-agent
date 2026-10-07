@@ -185,7 +185,7 @@ Use absolute paths to the virtualenv's interpreter — the client starts the pro
 | Backend | FastAPI |
 | Frontend | Next.js 15 + ReactMarkdown + remark-gfm |
 | Job sources | RemoteOK, Himalayas, Remotive (cached feed), Jobicy, Workable (public board) |
-| Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) — 0.90 across 24 cases |
+| Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) — 0.90 across 24 cases; per-listing judges (Jev via OpenRouter, Gemini) beside it |
 
 ---
 
@@ -344,7 +344,7 @@ The setup is a LangSmith dataset where each query carries a written description 
 The queries include narrow niches (`rust`, `blockchain solidity`), vague ones (`remote job`), one where the right answer is probably nothing at all (`COBOL mainframe developer`), and misspellings. Typos are not corrected on purpose. Search for `pyton developer` and you get nothing back; the reference answer says that is correct.
 
 ```bash
-python eval_runner.py   # posts to localhost:8002/ask, change the port if your backend runs elsewhere
+python eval_runner.py   # posts to localhost:8002/askeval with EVALS as x-api-key; Jev needs OPENROUTER_API_KEY
 ```
 
 #### How it got there
@@ -392,6 +392,20 @@ Scoring the same listings twice and getting 0.889 and 0.222 makes every comparis
 Two consecutive runs then agreed on eighteen of the nineteen cases whose criteria had not changed. The one that still moved — `django backend developer` — turned out to be another silent spec: nothing said what to do with a "Backend Engineer" listing that never names a language. The fix was to decide, and write it down.
 
 The number moved from 0.82 to roughly 0.85 along the way. That is not the agent improving; it is the criteria finally saying what was always meant, and it makes every earlier number incomparable.
+
+#### A second judge, and what it found about the first
+
+One judge cannot tell you when it is wrong, so two more were put beside it — not instead of it. Both judge one listing at a time and answer yes or no, where the Gemini judge reads the whole response and counts.
+
+**Jev** (TypeSafe's classifier, through OpenRouter) returns a probability per listing; 0.5 is the cut. **Laya**, an open-source classifier, ran locally in a Docker container and was rejected. Its multilingual model posted the *highest* mean of the three, 0.899, by accepting 203 of 225 listings — including a Freight Broker at 1.00 for `LangChain agent developer`. A judge that accepts everything scores 1.0. The mean rewards leniency; only reading the listings one by one catches it.
+
+Jev scored 0.887 against Gemini's 0.855 on the same listings. Of the eight listings where they disagreed with confidence, Jev was right on seven — and the reason was not the model. Gemini read the response as the user sees it, where each description is shortened to 150 characters, which is usually the company's introduction. A `django backend developer` listing written in Go, Java or PHP says so further down. Given the same 2000 characters Jev was given, Gemini agreed with Jev on six of the seven. Its mean stayed at 0.855 while nine of the 24 cases changed underneath it.
+
+Gemini was then also asked one listing at a time, with the same input as Jev. They agreed on 216 of 225, and every disagreement went the same way: Jev yes, Gemini no. Gemini made five errors from two habits. It read "must not contain mobile roles" as "must not mention mobile", and rejected a data engineering role because the company sells a mobile app. And it read "backend-focused" as "backend only", and rejected full-stack roles that name React in the title. One sentence for each fixed all five without undoing a single correct rejection. Run twice with the same prompt, it still changed its mind on 7 of 225 listings, five of them ones where Jev sat between 0.52 and 0.66: borderline listings, where neither judge is sure.
+
+On a fresh run Jev's mistakes were the same ones: a Java role titled "Python Developer" at 0.78, a role that uses AI only as a coding assistant at 0.84 for `Full stack developer with AI experience`, and two "General Application" placeholders at 0.71 and 0.80. A cheap judge that is wrong with confidence is wrong the same way every time.
+
+The obvious design is to let Jev decide when it is sure and hand the rest to Gemini. It was measured and not built: catching every disagreement meant sending almost half the listings onward, and at 225 listings a run the expensive judge costs too little to be worth routing around. What stays in the eval is Gemini's whole-response score as the headline, and Jev and Gemini per listing beside it, for where they disagree.
 
 #### Known limitation
 
