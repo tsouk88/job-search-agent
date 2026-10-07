@@ -399,6 +399,15 @@ One judge cannot tell you when it is wrong, so two more were put beside it — n
 
 **Jev** (TypeSafe's classifier, through OpenRouter) returns a probability per listing; 0.5 is the cut. **Laya**, an open-source classifier, ran locally in a Docker container and was rejected. Its multilingual model posted the *highest* mean of the three, 0.899, by accepting 203 of 225 listings — including a Freight Broker at 1.00 for `LangChain agent developer`. A judge that accepts everything scores 1.0. The mean rewards leniency; only reading the listings one by one catches it.
 
+To reproduce it, the container is in [`laya/`](./laya). The folder holds only the Dockerfile, so nothing else is sent to the build — no `.env`. The port is bound to localhost and the model weights go to a named volume, so they download once:
+
+```bash
+docker build -t laya laya
+docker run --name laya -p 127.0.0.1:8000:8000 -v laya-hf:/root/.cache/huggingface laya
+```
+
+It preloads the English model; `eval_runner.py` asks for `multilingual`, which loads into the same volume on the first request.
+
 Jev scored 0.887 against Gemini's 0.855 on the same listings. Of the eight listings where they disagreed with confidence, Jev was right on seven — and the reason was not the model. Gemini read the response as the user sees it, where each description is shortened to 150 characters, which is usually the company's introduction. A `django backend developer` listing written in Go, Java or PHP says so further down. Given the same 2000 characters Jev was given, Gemini agreed with Jev on six of the seven. Its mean stayed at 0.855 while nine of the 24 cases changed underneath it.
 
 Gemini was then also asked one listing at a time, with the same input as Jev. They agreed on 216 of 225, and every disagreement went the same way: Jev yes, Gemini no. Gemini made five errors from two habits. It read "must not contain mobile roles" as "must not mention mobile", and rejected a data engineering role because the company sells a mobile app. And it read "backend-focused" as "backend only", and rejected full-stack roles that name React in the title. One sentence for each fixed all five without undoing a single correct rejection. Run twice with the same prompt, it still changed its mind on 7 of 225 listings, five of them ones where Jev sat between 0.52 and 0.66: borderline listings, where neither judge is sure.
