@@ -545,7 +545,7 @@ def collect_results(state: State):
     correct_jobs = []
     for _, job in matched:
         description = job.get("jobDescription", "") or job.get("description", "")
-        job["description"] = strip_html(description)[:500]
+        job["description"] = strip_html(description)[:2000]
         correct_jobs.append(job)
     if len(correct_jobs) == 0:
         return {"clean_jobs": correct_jobs, "fetched_jobs": None }
