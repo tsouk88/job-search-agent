@@ -127,6 +127,155 @@ The agent reads everything the five sources return and shows the top 12 after ra
 
 ---
 
+## Evals
+
+There are two, and they answer different questions. The LangSmith eval asks *how relevant are the results in a live market*, and a model judges the answer. The [Harbor](https://www.harborframework.com) eval asks *does the filter still do exactly what I think it does*, and nothing judges anything — the listings are frozen and the output is asserted.
+
+### Relevance — LangSmith, ~0.9
+
+The agent scores **0.90 across 24 test cases**, measured 16 August. Two of those cases are not mine: they are real queries typed by strangers into the live demo — `Remote React jobs` and `Fullstack react remote jobs` — added after the logs showed both returning almost nothing. Both now score 1.0, which is its own finding: the metric is precision, so a response of two correct listings scores perfectly while the person who typed it went away and tried again. What they hit is the [known limitation](#known-limitation) below, and this eval cannot see it.
+
+Before those two were added the figure was roughly 0.85, and before the judge was fixed it was **0.82 across 22 test cases**, measured 6 August against a control run of the previous code the same morning, which scored 0.76.
+
+Treat that as a range, not a reading. The same code scored **0.765** five days later without a line changing — the job boards had moved. A single case can swing half a point on its own: `rust` went from 1.0 to 0.5 across those five days, and the query has no moving parts in the code at all.
+
+So changes here are judged against a **control run of the unchanged code on the same day**, never against a number from last week. Comparing a new run to a stored baseline measures the market as much as the change, and the market is louder.
+
+The market was not the only thing moving. Two runs an hour apart returned the **same nine listings** for `Python developer` and scored them 0.889 and 0.222; `react developer` returned the same eight and scored 1.0 and 0.625. The aggregate barely moved — 0.82 both times — because the disagreements cancelled out, which is worse than an obviously unstable number. Chasing it down is written up under [Making the judge repeatable](#making-the-judge-repeatable).
+
+The setup is a LangSmith dataset where each query carries a written description of what a good answer looks like, plus a Gemini 2.5 Flash judge that counts how many returned listings meet it. Score is relevant divided by returned, so padding a response with weak matches costs you.
+
+The queries include narrow niches (`rust`, `blockchain solidity`), vague ones (`remote job`), one where the right answer is probably nothing at all (`COBOL mainframe developer`), and misspellings. Typos are not corrected on purpose. Search for `pyton developer` and you get nothing back; the reference answer says that is correct.
+
+```bash
+python eval_runner.py   # posts to localhost:8002/askeval with EVALS as x-api-key; Jev needs OPENROUTER_API_KEY
+```
+
+#### How it got there
+
+Most of the gain came from taking things out. Every step below was measured against the same 22 cases:
+
+| Change | Score |
+|---|---|
+| Starting point | 0.558 |
+| Stopped trusting RemoteOK's tags, matched on titles | 0.575 |
+| Removed the guaranteed minimum of 8 results | 0.679 |
+| Treated `developer` and `engineer` as meaningful words | 0.584, reverted |
+| Fixed the reference answers for the typo queries | 0.751 |
+| Fixed a missing comma in the generic-word list | 0.812 |
+
+Five days later the same code scored 0.765, so everything after that point is quoted against a control run of the unchanged code on the same morning:
+
+| Change | Control | Score |
+|---|---|---|
+| Let the query's generic word break ties in the title | 0.765 | 0.780 |
+| Scored descriptions on how often a word appears, and stopped truncating each source to ten | 0.76 | **0.82** |
+
+The big jump came from deleting a rule that guaranteed at least 8 results. On a query like `rust` the agent would find one genuine match and then pad the list with seven listings that happened to mention the word somewhere in their body text. Three good results beat twelve mediocre ones.
+
+The missing comma is worth a mention because Python never complained about it. Two adjacent string literals in a set silently became one, which quietly dropped `engineer` and `remote` from the generic-word list. It only surfaced because a nonsense query started returning listings with "Remote" in the title.
+
+#### What the number doesn't cover
+
+It measures the first response only. Users narrow results by talking to the agent ("no support roles", "no senior"), and none of the 22 cases exercise that path, so day-to-day use is better than the number suggests.
+
+That path is no longer untravelled. The scheduled digest reuses one thread, so its stored exclusions are applied twice a day against whatever the boards are advertising, and the MCP tool takes exclusions as an argument on every call. It now has a number too, though not from here — see below.
+
+It also moves. The agent queries live job boards, so two runs an hour apart see different listings and individual cases wobble by a lot. The aggregate is the signal, not any single row.
+
+#### Making the judge repeatable
+
+Scoring the same listings twice and getting 0.889 and 0.222 makes every comparison meaningless, so the run was treated as the thing under test rather than the agent. Three changes, in order of how much they bought:
+
+**Stop asking the model questions that have one answer.** Five queries are ones where returning nothing is acceptable — the two deliberate misspellings, and niches like `COBOL mainframe developer` that the boards may simply not be advertising. Those examples now carry an `empty_ok` flag, and an empty response short-circuits to 1.0 before the judge is called. Four of the five already said so in their reference text; the model had the instruction and applied it unevenly. A rule you can state in one sentence does not need a model.
+
+**Say what the grader is grading.** The instructions asked it to "count how many of the given jobs match the reference criteria" without ever saying whether a bad listing costs one point or voids the response. Both readings were live, which is exactly the 0.889/0.222 split. The prompt now states that grading covers only what was returned, that a rejected listing subtracts one and nothing more, and that criteria which are silent about a listing count in its favour.
+
+**Write reference criteria that can be decided.** `Python developer` said "mid-level or senior, no Junior or Entry-level" and left "Senior General QA (Python)" undecidable. `remote job` said any "legitimate remote software role" for a query that names no field at all. Ten of the twenty-two were rewritten as "a listing is relevant when… and is not relevant when…", resolved against the listings the agent actually returns.
+
+Two consecutive runs then agreed on eighteen of the nineteen cases whose criteria had not changed. The one that still moved — `django backend developer` — turned out to be another silent spec: nothing said what to do with a "Backend Engineer" listing that never names a language. The fix was to decide, and write it down.
+
+The number moved from 0.82 to roughly 0.85 along the way. That is not the agent improving; it is the criteria finally saying what was always meant, and it makes every earlier number incomparable.
+
+#### A second judge, and what it found about the first
+
+One judge cannot tell you when it is wrong, so two more were put beside it — not instead of it. Both judge one listing at a time and answer yes or no, where the Gemini judge reads the whole response and counts.
+
+**Jev** (TypeSafe's classifier, through OpenRouter) returns a probability per listing; 0.5 is the cut. **Laya**, an open-source classifier, ran locally in a Docker container and was rejected. Its multilingual model posted the *highest* mean of the three, 0.899, by accepting 203 of 225 listings — including a Freight Broker at 1.00 for `LangChain agent developer`. A judge that accepts everything scores 1.0. The mean rewards leniency; only reading the listings one by one catches it.
+
+To reproduce it, the container is in [`laya/`](./laya). The folder holds only the Dockerfile, so nothing else is sent to the build — no `.env`. The port is bound to localhost and the model weights go to a named volume, so they download once:
+
+```bash
+docker build -t laya laya
+docker run --name laya -p 127.0.0.1:8000:8000 -v laya-hf:/root/.cache/huggingface laya
+```
+
+It preloads the English model; `eval_runner.py` asks for `multilingual`, which loads into the same volume on the first request.
+
+Jev scored 0.887 against Gemini's 0.855 on the same listings. Of the eight listings where they disagreed with confidence, Jev was right on seven — and the reason was not the model. Gemini read the response as the user sees it, where each description is shortened to 150 characters, which is usually the company's introduction. A `django backend developer` listing written in Go, Java or PHP says so further down. Given the same 2000 characters Jev was given, Gemini agreed with Jev on six of the seven. Its mean stayed at 0.855 while nine of the 24 cases changed underneath it.
+
+Gemini was then also asked one listing at a time, with the same input as Jev. They agreed on 216 of 225, and every disagreement went the same way: Jev yes, Gemini no. Gemini made five errors from two habits. It read "must not contain mobile roles" as "must not mention mobile", and rejected a data engineering role because the company sells a mobile app. And it read "backend-focused" as "backend only", and rejected full-stack roles that name React in the title. One sentence for each fixed all five without undoing a single correct rejection. Run twice with the same prompt, it still changed its mind on 7 of 225 listings, five of them ones where Jev sat between 0.52 and 0.66: borderline listings, where neither judge is sure.
+
+On a fresh run Jev's mistakes were the same ones: a Java role titled "Python Developer" at 0.78, a role that uses AI only as a coding assistant at 0.84 for `Full stack developer with AI experience`, and two "General Application" placeholders at 0.71 and 0.80. A cheap judge that is wrong with confidence is wrong the same way every time.
+
+The obvious design is to let Jev decide when it is sure and hand the rest to Gemini. It was measured and not built: catching every disagreement meant sending almost half the listings onward, and at 225 listings a run the expensive judge costs too little to be worth routing around. What stays in the eval is Gemini's whole-response score as the headline, and Jev and Gemini per listing beside it, for where they disagree.
+
+#### Known limitation
+
+One title match is enough to admit a listing. That is fine when the distinctive word in a query is unambiguous, and it falls apart when it isn't: `data` pulls in Data Analysts, `wordpress` pulls in WordPress Support Specialists.
+
+The obvious fix, requiring two matching words, was tried and rejected because it threw away correct results like `Software Engineer (Go, Python, TS)`. Measurement showed why it could never have worked. Specific terms like `sql`, `aws` and `pytorch` appear in **0%** of returned job titles, because titles say "DevOps Engineer", not "DevOps Kubernetes AWS Engineer". There is only ever one word to match on.
+
+Half of it has since been chased down, from the other end. Dropping the generic word does not only fail to admit the right listings — it makes the ones already admitted indistinguishable. Search `AI engineer` and the query becomes `ai`, so an AI Engineer and an AI Sales Executive score identically; measured on 47 listings, 18 of 19 that passed the gate scored the same, and the cap then cut them by the order the four APIs happen to sit in `fan_out`. A generic word now adds a point when it appears in the title, which cannot admit anything on its own but does separate the role from the industry. Same-day control: 0.765 to 0.780, three cases up and none down.
+
+The other half was the description, and it needed two changes that each look worthless alone. Relevance to the body text was scored by asking *whether* a word appeared, never *how often*, so a listing naming Python once ranked level with one naming it forty times: across 32 listings for `AI engineer`, that produced exactly one distinct score. Counting occurrences produces sixteen. On its own, that changed one case out of 22 — the other 21 came back identical, because a better order cannot help when there is nothing spare to order. Each source was also truncated to ten listings before anything read them, a leftover from when an LLM read the results and every listing cost money; for that same query Jobicy returned 100, of which 32 were relevant, and eight of the twelve best-scoring were never reachable. Removing the truncation alone had been tried the day before and scored as noise, for the mirror-image reason. Together, against a same-day control: 0.76 to 0.82, five cases up and none down.
+
+The description's contribution is capped below the weight of a title match, so it can only reorder listings, never admit one — the same discipline as the generic-word point.
+
+The admission rule itself is untouched: one title match still admits a listing, and a Support Specialist can still get in on the strength of the word alone. It just no longer outranks a real match by accident.
+
+`WordPress developer` is the one case in the set that none of this moved, and checking why was more useful than fixing it would have been. On the morning of 6 August the four boards returned **no listing at all** with "wordpress" in its title, so the agent correctly returned nothing — and scored 0.0 for it. That is the same failure as `COBOL mainframe developer`: the judge is unreliable when the right answer is an empty list, which is why the next eval here is a deterministic check rather than another query.
+
+The old 0.90 baseline is gone. It was measured against LLM-based filtering on a different dataset and was never comparable to this one.
+
+### Filtering — Harbor, asserted
+
+Both problems above share a root: the number moves for reasons that have nothing to do with the code. Live listings shift hourly, and the same input scored 0.333 and then 0.167 because a model was doing the scoring.
+
+So the filter is measured somewhere else. One capture of every source is frozen into the repository (the four JSON APIs, plus Workable's search and listing pages reduced to the schema.org blocks the parser reads), the container runs with its network disabled, and the expected result is written out by hand. Same input, same number, every time.
+
+```bash
+uv tool install harbor
+
+PYTHONPATH=$(pwd) harbor run -p evals -i "*filter-exclusion-senior*" \
+  -a evals.harbor_agents.pipeline_agent:PipelineAgent \
+  -e docker -o evals/jobs \
+  --extra-docker-compose evals/configs/no-network.yaml \
+  --job-name local -y
+
+python evals/check_reward.py evals/jobs/local
+```
+
+Docker is the only requirement. No API key, because nothing in this path calls a model — the harness is the repository's own MCP tool, running unmodified against fixture files instead of the internet. That is also why it can sit on every pull request: it costs a runner minute and no tokens.
+
+The query is `python developer`, excluding `senior`, `game` and `canonical`. Three terms rather than one, so that both halves of the filter are exercised: `senior` through the title-only seniority rule, `canonical` through the full-text rule, where the word appears in descriptions and in no title at all. Seven listings survive, five don't. Leaving one in and dropping one too many both score zero.
+
+The expected set is written by hand, which is the whole point. A verifier that recomputed it by calling `filter_jobs` would be comparing the code against itself and would pass forever.
+
+It bites: collapsing the filter so every keyword is matched against titles only takes the score from 1.0 to 0.0, and the failing test names the two listings that leaked through. Notably, deleting `senior` from the seniority list does **not** — the word would still match the same title as an ordinary keyword. Controls that fail to fail are worth knowing about.
+
+It also caught a change it was never written for. Adding Workable turned it red before anything shipped: the frozen environment knew four hosts and refused the fifth, because the fan-out had changed and every assertion after it would have been measuring something else. The expected set was rewritten by hand from the new fixtures. Three Workable listings joined the kept set and its senior one the dropped set, and a Jobicy listing left both, because twelve places are still twelve and a fifth source competes for them.
+
+What it does not cover: one query, one moment in the market, and no listing in the capture carries "senior" in its description alone — so the rule that seniority is judged on titles only is never tested in the one shape that separates it from ordinary matching. The fixtures are real captured data and were not edited to manufacture that case.
+
+Design notes and the full reasoning live in [`evals/specs/`](./evals/specs).
+
+### Next
+
+Relevance is the remaining defect, and it now has somewhere to be measured. The scaffolding above is reusable as-is: freeze a capture, label which listings genuinely answer the query, assert. Whatever the fix turns out to be, it has to lean on descriptions — the measurement above shows there is rarely a second title word to ask for.
+
+---
+
 ## 🎙️ Voice AI
 
 Talk to the agent instead of typing. Same LangGraph brain (`agent.py`, unmodified) — a new interface built with [Pipecat](https://pipecat.ai): Deepgram (STT), ElevenLabs (TTS), Daily (real-time transport).
@@ -325,153 +474,6 @@ Every endpoint is rate limited to 10 requests per minute per IP.
 **On the LLM surface.** Search costs nothing: since the scoring became deterministic, `/ask` and `/reset` make no model calls at all. Three endpoints still do, and they are constrained differently. `/evaluate` accepts arbitrary text and is therefore closed — set `EVALUATE_TOKEN` in `.env` and send the same value as `x-api-key`; the exported workflow carries a `YOUR_EVALUATE_TOKEN` placeholder, and without it the endpoint answers 401. `/feedback` and `/upload` stay open because the public demo needs them, so they are bounded by size instead: 100 characters of feedback, 5MB and 5 pages of PDF. Bounded is not the same as free — if you deploy this somewhere that matters, put a budget alert on the API key.
 
 ---
-
-## Evals
-
-There are two, and they answer different questions. The LangSmith eval asks *how relevant are the results in a live market*, and a model judges the answer. The [Harbor](https://www.harborframework.com) eval asks *does the filter still do exactly what I think it does*, and nothing judges anything — the listings are frozen and the output is asserted.
-
-### Relevance — LangSmith, ~0.9
-
-The agent scores **0.90 across 24 test cases**, measured 16 August. Two of those cases are not mine: they are real queries typed by strangers into the live demo — `Remote React jobs` and `Fullstack react remote jobs` — added after the logs showed both returning almost nothing. Both now score 1.0, which is its own finding: the metric is precision, so a response of two correct listings scores perfectly while the person who typed it went away and tried again. What they hit is the [known limitation](#known-limitation) below, and this eval cannot see it.
-
-Before those two were added the figure was roughly 0.85, and before the judge was fixed it was **0.82 across 22 test cases**, measured 6 August against a control run of the previous code the same morning, which scored 0.76.
-
-Treat that as a range, not a reading. The same code scored **0.765** five days later without a line changing — the job boards had moved. A single case can swing half a point on its own: `rust` went from 1.0 to 0.5 across those five days, and the query has no moving parts in the code at all.
-
-So changes here are judged against a **control run of the unchanged code on the same day**, never against a number from last week. Comparing a new run to a stored baseline measures the market as much as the change, and the market is louder.
-
-The market was not the only thing moving. Two runs an hour apart returned the **same nine listings** for `Python developer` and scored them 0.889 and 0.222; `react developer` returned the same eight and scored 1.0 and 0.625. The aggregate barely moved — 0.82 both times — because the disagreements cancelled out, which is worse than an obviously unstable number. Chasing it down is written up under [Making the judge repeatable](#making-the-judge-repeatable).
-
-The setup is a LangSmith dataset where each query carries a written description of what a good answer looks like, plus a Gemini 2.5 Flash judge that counts how many returned listings meet it. Score is relevant divided by returned, so padding a response with weak matches costs you.
-
-The queries include narrow niches (`rust`, `blockchain solidity`), vague ones (`remote job`), one where the right answer is probably nothing at all (`COBOL mainframe developer`), and misspellings. Typos are not corrected on purpose. Search for `pyton developer` and you get nothing back; the reference answer says that is correct.
-
-```bash
-python eval_runner.py   # posts to localhost:8002/askeval with EVALS as x-api-key; Jev needs OPENROUTER_API_KEY
-```
-
-#### How it got there
-
-Most of the gain came from taking things out. Every step below was measured against the same 22 cases:
-
-| Change | Score |
-|---|---|
-| Starting point | 0.558 |
-| Stopped trusting RemoteOK's tags, matched on titles | 0.575 |
-| Removed the guaranteed minimum of 8 results | 0.679 |
-| Treated `developer` and `engineer` as meaningful words | 0.584, reverted |
-| Fixed the reference answers for the typo queries | 0.751 |
-| Fixed a missing comma in the generic-word list | 0.812 |
-
-Five days later the same code scored 0.765, so everything after that point is quoted against a control run of the unchanged code on the same morning:
-
-| Change | Control | Score |
-|---|---|---|
-| Let the query's generic word break ties in the title | 0.765 | 0.780 |
-| Scored descriptions on how often a word appears, and stopped truncating each source to ten | 0.76 | **0.82** |
-
-The big jump came from deleting a rule that guaranteed at least 8 results. On a query like `rust` the agent would find one genuine match and then pad the list with seven listings that happened to mention the word somewhere in their body text. Three good results beat twelve mediocre ones.
-
-The missing comma is worth a mention because Python never complained about it. Two adjacent string literals in a set silently became one, which quietly dropped `engineer` and `remote` from the generic-word list. It only surfaced because a nonsense query started returning listings with "Remote" in the title.
-
-#### What the number doesn't cover
-
-It measures the first response only. Users narrow results by talking to the agent ("no support roles", "no senior"), and none of the 22 cases exercise that path, so day-to-day use is better than the number suggests.
-
-That path is no longer untravelled. The scheduled digest reuses one thread, so its stored exclusions are applied twice a day against whatever the boards are advertising, and the MCP tool takes exclusions as an argument on every call. It now has a number too, though not from here — see below.
-
-It also moves. The agent queries live job boards, so two runs an hour apart see different listings and individual cases wobble by a lot. The aggregate is the signal, not any single row.
-
-#### Making the judge repeatable
-
-Scoring the same listings twice and getting 0.889 and 0.222 makes every comparison meaningless, so the run was treated as the thing under test rather than the agent. Three changes, in order of how much they bought:
-
-**Stop asking the model questions that have one answer.** Five queries are ones where returning nothing is acceptable — the two deliberate misspellings, and niches like `COBOL mainframe developer` that the boards may simply not be advertising. Those examples now carry an `empty_ok` flag, and an empty response short-circuits to 1.0 before the judge is called. Four of the five already said so in their reference text; the model had the instruction and applied it unevenly. A rule you can state in one sentence does not need a model.
-
-**Say what the grader is grading.** The instructions asked it to "count how many of the given jobs match the reference criteria" without ever saying whether a bad listing costs one point or voids the response. Both readings were live, which is exactly the 0.889/0.222 split. The prompt now states that grading covers only what was returned, that a rejected listing subtracts one and nothing more, and that criteria which are silent about a listing count in its favour.
-
-**Write reference criteria that can be decided.** `Python developer` said "mid-level or senior, no Junior or Entry-level" and left "Senior General QA (Python)" undecidable. `remote job` said any "legitimate remote software role" for a query that names no field at all. Ten of the twenty-two were rewritten as "a listing is relevant when… and is not relevant when…", resolved against the listings the agent actually returns.
-
-Two consecutive runs then agreed on eighteen of the nineteen cases whose criteria had not changed. The one that still moved — `django backend developer` — turned out to be another silent spec: nothing said what to do with a "Backend Engineer" listing that never names a language. The fix was to decide, and write it down.
-
-The number moved from 0.82 to roughly 0.85 along the way. That is not the agent improving; it is the criteria finally saying what was always meant, and it makes every earlier number incomparable.
-
-#### A second judge, and what it found about the first
-
-One judge cannot tell you when it is wrong, so two more were put beside it — not instead of it. Both judge one listing at a time and answer yes or no, where the Gemini judge reads the whole response and counts.
-
-**Jev** (TypeSafe's classifier, through OpenRouter) returns a probability per listing; 0.5 is the cut. **Laya**, an open-source classifier, ran locally in a Docker container and was rejected. Its multilingual model posted the *highest* mean of the three, 0.899, by accepting 203 of 225 listings — including a Freight Broker at 1.00 for `LangChain agent developer`. A judge that accepts everything scores 1.0. The mean rewards leniency; only reading the listings one by one catches it.
-
-To reproduce it, the container is in [`laya/`](./laya). The folder holds only the Dockerfile, so nothing else is sent to the build — no `.env`. The port is bound to localhost and the model weights go to a named volume, so they download once:
-
-```bash
-docker build -t laya laya
-docker run --name laya -p 127.0.0.1:8000:8000 -v laya-hf:/root/.cache/huggingface laya
-```
-
-It preloads the English model; `eval_runner.py` asks for `multilingual`, which loads into the same volume on the first request.
-
-Jev scored 0.887 against Gemini's 0.855 on the same listings. Of the eight listings where they disagreed with confidence, Jev was right on seven — and the reason was not the model. Gemini read the response as the user sees it, where each description is shortened to 150 characters, which is usually the company's introduction. A `django backend developer` listing written in Go, Java or PHP says so further down. Given the same 2000 characters Jev was given, Gemini agreed with Jev on six of the seven. Its mean stayed at 0.855 while nine of the 24 cases changed underneath it.
-
-Gemini was then also asked one listing at a time, with the same input as Jev. They agreed on 216 of 225, and every disagreement went the same way: Jev yes, Gemini no. Gemini made five errors from two habits. It read "must not contain mobile roles" as "must not mention mobile", and rejected a data engineering role because the company sells a mobile app. And it read "backend-focused" as "backend only", and rejected full-stack roles that name React in the title. One sentence for each fixed all five without undoing a single correct rejection. Run twice with the same prompt, it still changed its mind on 7 of 225 listings, five of them ones where Jev sat between 0.52 and 0.66: borderline listings, where neither judge is sure.
-
-On a fresh run Jev's mistakes were the same ones: a Java role titled "Python Developer" at 0.78, a role that uses AI only as a coding assistant at 0.84 for `Full stack developer with AI experience`, and two "General Application" placeholders at 0.71 and 0.80. A cheap judge that is wrong with confidence is wrong the same way every time.
-
-The obvious design is to let Jev decide when it is sure and hand the rest to Gemini. It was measured and not built: catching every disagreement meant sending almost half the listings onward, and at 225 listings a run the expensive judge costs too little to be worth routing around. What stays in the eval is Gemini's whole-response score as the headline, and Jev and Gemini per listing beside it, for where they disagree.
-
-#### Known limitation
-
-One title match is enough to admit a listing. That is fine when the distinctive word in a query is unambiguous, and it falls apart when it isn't: `data` pulls in Data Analysts, `wordpress` pulls in WordPress Support Specialists.
-
-The obvious fix, requiring two matching words, was tried and rejected because it threw away correct results like `Software Engineer (Go, Python, TS)`. Measurement showed why it could never have worked. Specific terms like `sql`, `aws` and `pytorch` appear in **0%** of returned job titles, because titles say "DevOps Engineer", not "DevOps Kubernetes AWS Engineer". There is only ever one word to match on.
-
-Half of it has since been chased down, from the other end. Dropping the generic word does not only fail to admit the right listings — it makes the ones already admitted indistinguishable. Search `AI engineer` and the query becomes `ai`, so an AI Engineer and an AI Sales Executive score identically; measured on 47 listings, 18 of 19 that passed the gate scored the same, and the cap then cut them by the order the four APIs happen to sit in `fan_out`. A generic word now adds a point when it appears in the title, which cannot admit anything on its own but does separate the role from the industry. Same-day control: 0.765 to 0.780, three cases up and none down.
-
-The other half was the description, and it needed two changes that each look worthless alone. Relevance to the body text was scored by asking *whether* a word appeared, never *how often*, so a listing naming Python once ranked level with one naming it forty times: across 32 listings for `AI engineer`, that produced exactly one distinct score. Counting occurrences produces sixteen. On its own, that changed one case out of 22 — the other 21 came back identical, because a better order cannot help when there is nothing spare to order. Each source was also truncated to ten listings before anything read them, a leftover from when an LLM read the results and every listing cost money; for that same query Jobicy returned 100, of which 32 were relevant, and eight of the twelve best-scoring were never reachable. Removing the truncation alone had been tried the day before and scored as noise, for the mirror-image reason. Together, against a same-day control: 0.76 to 0.82, five cases up and none down.
-
-The description's contribution is capped below the weight of a title match, so it can only reorder listings, never admit one — the same discipline as the generic-word point.
-
-The admission rule itself is untouched: one title match still admits a listing, and a Support Specialist can still get in on the strength of the word alone. It just no longer outranks a real match by accident.
-
-`WordPress developer` is the one case in the set that none of this moved, and checking why was more useful than fixing it would have been. On the morning of 6 August the four boards returned **no listing at all** with "wordpress" in its title, so the agent correctly returned nothing — and scored 0.0 for it. That is the same failure as `COBOL mainframe developer`: the judge is unreliable when the right answer is an empty list, which is why the next eval here is a deterministic check rather than another query.
-
-The old 0.90 baseline is gone. It was measured against LLM-based filtering on a different dataset and was never comparable to this one.
-
-### Filtering — Harbor, asserted
-
-Both problems above share a root: the number moves for reasons that have nothing to do with the code. Live listings shift hourly, and the same input scored 0.333 and then 0.167 because a model was doing the scoring.
-
-So the filter is measured somewhere else. One capture of every source is frozen into the repository (the four JSON APIs, plus Workable's search and listing pages reduced to the schema.org blocks the parser reads), the container runs with its network disabled, and the expected result is written out by hand. Same input, same number, every time.
-
-```bash
-uv tool install harbor
-
-PYTHONPATH=$(pwd) harbor run -p evals -i "*filter-exclusion-senior*" \
-  -a evals.harbor_agents.pipeline_agent:PipelineAgent \
-  -e docker -o evals/jobs \
-  --extra-docker-compose evals/configs/no-network.yaml \
-  --job-name local -y
-
-python evals/check_reward.py evals/jobs/local
-```
-
-Docker is the only requirement. No API key, because nothing in this path calls a model — the harness is the repository's own MCP tool, running unmodified against fixture files instead of the internet. That is also why it can sit on every pull request: it costs a runner minute and no tokens.
-
-The query is `python developer`, excluding `senior`, `game` and `canonical`. Three terms rather than one, so that both halves of the filter are exercised: `senior` through the title-only seniority rule, `canonical` through the full-text rule, where the word appears in descriptions and in no title at all. Seven listings survive, five don't. Leaving one in and dropping one too many both score zero.
-
-The expected set is written by hand, which is the whole point. A verifier that recomputed it by calling `filter_jobs` would be comparing the code against itself and would pass forever.
-
-It bites: collapsing the filter so every keyword is matched against titles only takes the score from 1.0 to 0.0, and the failing test names the two listings that leaked through. Notably, deleting `senior` from the seniority list does **not** — the word would still match the same title as an ordinary keyword. Controls that fail to fail are worth knowing about.
-
-It also caught a change it was never written for. Adding Workable turned it red before anything shipped: the frozen environment knew four hosts and refused the fifth, because the fan-out had changed and every assertion after it would have been measuring something else. The expected set was rewritten by hand from the new fixtures. Three Workable listings joined the kept set and its senior one the dropped set, and a Jobicy listing left both, because twelve places are still twelve and a fifth source competes for them.
-
-What it does not cover: one query, one moment in the market, and no listing in the capture carries "senior" in its description alone — so the rule that seniority is judged on titles only is never tested in the one shape that separates it from ordinary matching. The fixtures are real captured data and were not edited to manufacture that case.
-
-Design notes and the full reasoning live in [`evals/specs/`](./evals/specs).
-
-### Next
-
-Relevance is the remaining defect, and it now has somewhere to be measured. The scaffolding above is reusable as-is: freeze a capture, label which listings genuinely answer the query, assert. Whatever the fix turns out to be, it has to lean on descriptions — the measurement above shows there is rarely a second title word to ask for.
 
 ## Project Structure
 
