@@ -50,7 +50,12 @@ app.add_middleware(
     allow_credentials=True,
     allow_headers=["*"],
 ) 
-limiter = Limiter(key_func=get_remote_address)
+
+def my_key(request: Request) -> str:
+    ip = request.headers.get("CF-Connecting-IP",get_remote_address(request))
+    return ip
+
+limiter = Limiter(key_func=my_key)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
@@ -109,7 +114,6 @@ def searchhelper(input:SearchInput):
 @app.post("/ask")
 @limiter.limit("10/minute")
 def askAI(request: Request, input:SearchInput):
-    print(f" IPCHECK : {request.client.host } ,{request.headers.get("x-forwarded-for")} , REAL_IP: { request.headers.get("CF-Connecting-IP")}" , flush=True) 
     filtered , mem , country = searchhelper(input)
     return PlainTextResponse(format_jobs_markdown(filtered , mem , country))
 
