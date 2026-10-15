@@ -65,3 +65,4 @@ websockets==15.0.1
 wrapt==2.2.1
 xxhash==3.7.0
 zstandard==0.25.0
+redis==8.1.0

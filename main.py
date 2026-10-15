@@ -20,6 +20,7 @@ import io
 import secrets
 import textwrap
 from uuid import UUID
+import redis
 
 
 
@@ -67,6 +68,19 @@ def run_agent(user_input: str, thread_id: str, country: str = ""):
     )
     return result["clean_jobs"], result.get("memory", []) , result.get("last_fetch_time", "")
 
+r = redis.Redis.from_url(os.getenv("REDIS_URL"))
+SITE_LIMIT = 10
+def check_gemini_budget(name , limit):
+    now=datetime.now()
+    date = f"{now.year}-{now.month}-{now.day}"
+    key = f"gemini_calls:{name}:{date}"
+    n=r.incr(key)
+    if n==1 :
+        r.expire(key , 86400)
+    if n > limit:
+        raise HTTPException(status_code=429, detail="Gemini calls are out")
+    return n
+    
 
 class SearchInput(BaseModel):
     user_input: str = Field(min_length=1 , max_length = 200)
@@ -144,6 +158,7 @@ def evaluaten8n(request: Request , jobs : EvaluateInput ,  x_api_key: str = Head
             Keep only the matches. 
             Return them as a simple list: Job Title - Company - one sentence why it fits and then add the link on a new row
             """
+    check_gemini_budget("eval" , 5)
     response=chain.invoke(prompt)
     return response
 
@@ -170,6 +185,7 @@ async def uploadfile(request: Request , file: UploadFile, thread_id: UUID = Form
                         about the candidate"""
     # this endpoint must stay async — it awaits the upload — so the blocking
     # calls go to a thread rather than stalling the event loop
+    await asyncio.to_thread(check_gemini_budget , "site" , SITE_LIMIT)
     response = await asyncio.to_thread(chain.invoke, prompt)
     config = {"configurable": {"thread_id": thread_id}}
     state = agent.get_state(config)
@@ -194,6 +210,7 @@ def human_review(request: Request , feedback: FeedbackInput):
             Do not include terms like "AI engineer", "python developer" etc.
             Example: "no stack" → "full stack, MERN, MEAN, frontend"
             Feedback: {feedback.feedback}"""
+    check_gemini_budget("site" , SITE_LIMIT)
     keywords = chain.invoke(extraction_prompt)
     agent.update_state(config, {"memory": [keywords]})
     updated_memory = memory + [keywords]
