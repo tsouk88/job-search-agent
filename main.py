@@ -19,6 +19,7 @@ import pdfplumber
 import io
 import secrets
 import textwrap
+from uuid import UUID
 
 
 
@@ -63,8 +64,8 @@ def run_agent(user_input: str, thread_id: str, country: str = ""):
 
 
 class SearchInput(BaseModel):
-    user_input: str
-    thread_id: str
+    user_input: str = Field(min_length=1 , max_length = 200)
+    thread_id: UUID
     country: str = ""
 
 class FeedbackInput(BaseModel):
@@ -145,7 +146,7 @@ def evaluaten8n(request: Request , jobs : EvaluateInput ,  x_api_key: str = Head
 
 @app.post ("/upload")
 @limiter.limit("10/minute")
-async def uploadfile(request: Request , file: UploadFile, thread_id: str = Form(...), country: str = Form("")):
+async def uploadfile(request: Request , file: UploadFile, thread_id: UUID = Form(...), country: str = Form("")):
     max_size =  5 * 1024 * 1024
     if not file.size or file.size > max_size:
         raise HTTPException(status_code=413, detail="File too large, max 5MB")
