@@ -69,7 +69,7 @@ def run_agent(user_input: str, thread_id: str, country: str = ""):
     return result["clean_jobs"], result.get("memory", []) , result.get("last_fetch_time", "")
 
 r = redis.Redis.from_url(os.getenv("REDIS_URL"))
-SITE_LIMIT = 10
+SITE_LIMIT = 100
 def check_gemini_budget(name , limit):
     now=datetime.now()
     date = f"{now.year}-{now.month}-{now.day}"
