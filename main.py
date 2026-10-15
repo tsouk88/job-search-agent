@@ -109,7 +109,7 @@ def searchhelper(input:SearchInput):
 @app.post("/ask")
 @limiter.limit("10/minute")
 def askAI(request: Request, input:SearchInput):
-    print(f" IPCHECK : {request.client.host } ,{request.headers.get("x-forwarded-for")}" , flush=True) 
+    print(f" IPCHECK : {request.client.host } ,{request.headers.get("x-forwarded-for")} , REAL_IP: { request.headers.get("CF-Connecting-IP")}" , flush=True) 
     filtered , mem , country = searchhelper(input)
     return PlainTextResponse(format_jobs_markdown(filtered , mem , country))
 
