@@ -56,7 +56,7 @@ def my_key(request: Request) -> str:
     ip = request.headers.get("CF-Connecting-IP",get_remote_address(request))
     return ip
 
-limiter = Limiter(key_func=my_key)
+limiter = Limiter(key_func=my_key , storage_uri=os.getenv("REDIS_URL") , in_memory_fallback_enabled=True)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
