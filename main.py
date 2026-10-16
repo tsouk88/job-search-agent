@@ -16,6 +16,7 @@ from slowapi.errors import RateLimitExceeded
 from urllib.parse import urlparse
 import asyncio
 import pdfplumber
+import logging
 import io
 import secrets
 import textwrap
@@ -81,6 +82,14 @@ def check_gemini_budget(name , limit):
         raise HTTPException(status_code=429, detail="Gemini calls are out")
     return n
     
+
+class HealthCheckFilter(logging.Filter):
+    def filter(self, record):
+        if  "GET /health " not in record.getMessage():
+            return True
+
+logging.getLogger("uvicorn.access").addFilter(HealthCheckFilter())
+        
 
 class SearchInput(BaseModel):
     user_input: str = Field(min_length=1 , max_length = 200)
@@ -228,6 +237,9 @@ def reset_search(request: Request , input:SearchInput):
     filtered = filter_jobs(clean_jobs, [])
     return PlainTextResponse(format_jobs_markdown(filtered, None, state.values.get("country", "")))
 
+@app.get("/health")
+def checkhealth():
+    return {"status" : "ok"}
 
 SOURCES = "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app | Jobicy.com | jobs.workable.com"
 
