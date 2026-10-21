@@ -7,9 +7,8 @@ from langgraph.checkpoint.postgres import PostgresSaver
 
 load_dotenv()
 REDIS_URL=os.getenv("REDIS_URL")
-REDIS=f"{REDIS_URL}?ssl_cert_reqs=CERT_REQUIRED"
-BROKER_URL = REDIS
-CELERY_RESULT_BACKEND = REDIS
+BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = REDIS_URL
 
 
 celery_app = Celery(broker=BROKER_URL , backend=CELERY_RESULT_BACKEND)
