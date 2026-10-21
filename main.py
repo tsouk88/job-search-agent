@@ -2,27 +2,25 @@ from fastapi import FastAPI , UploadFile , Form , Request , Header , HTTPExcepti
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from agent import graph  , normalize_jobs , filter_jobs  
+from helper import llmchain , run_agent , format_jobs_markdown
 from fastapi.responses import PlainTextResponse
 from langgraph.checkpoint.postgres import PostgresSaver
 from contextlib import asynccontextmanager
 from datetime import datetime
 import os
-from langchain.chat_models import init_chat_model
-from langchain_core.output_parsers import StrOutputParser
 from fastapi.middleware.cors import CORSMiddleware
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-from urllib.parse import urlparse
+from celery.result import AsyncResult
+from tasks import filework , celery_app
 import asyncio
 import pdfplumber
 import logging
 import io
 import secrets
-import textwrap
 from uuid import UUID
 import redis
-
 
 
 
@@ -61,14 +59,6 @@ limiter = Limiter(key_func=my_key , storage_uri=os.getenv("REDIS_URL") , in_memo
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-def run_agent(user_input: str, thread_id: str, country: str = ""):
-    config = {"configurable": {"thread_id": thread_id}}
-    result = agent.invoke(
-        {"user_input": user_input, "country": country, "fetched_jobs": []}, 
-        config=config
-    )
-    return result["clean_jobs"], result.get("memory", []) , result.get("last_fetch_time", "")
-
 r = redis.Redis.from_url(os.getenv("REDIS_URL"))
 SITE_LIMIT = 100
 def check_gemini_budget(name , limit):
@@ -106,14 +96,8 @@ class Input(BaseModel):
 class EvaluateInput(BaseModel):
     jobs: str  
 
-llm = init_chat_model(
-    model="google_genai:gemini-2.5-flash",
-    api_key=os.getenv("GEMINI_API_KEY"),
-    temperature=0.1,
-    max_retries=10
-)
-parser = StrOutputParser()
-chain = llm|parser
+
+chain= llmchain(os.getenv("GEMINI_API_KEY"))
 
 def searchhelper(input:SearchInput):
     config = {"configurable": {"thread_id": input.thread_id}}
@@ -123,7 +107,7 @@ def searchhelper(input:SearchInput):
     current_query=state.values.get("user_input" , "")  
     current_country=state.values.get("country" , "")
     if not last_known_fetch or current_query != input.user_input or current_country != input.country or (datetime.now() - datetime.fromisoformat(last_known_fetch)).total_seconds() > 14400 :
-        query, _ , last_fetch = run_agent(input.user_input, input.thread_id, input.country)
+        query, _ , last_fetch = run_agent(agent ,input.user_input, input.thread_id, input.country)
         searched_country = input.country
     else:
         query = state.values.get("clean_jobs" , [])
@@ -190,19 +174,29 @@ async def uploadfile(request: Request , file: UploadFile, thread_id: UUID = Form
     except Exception as e:
         print(e)
         raise HTTPException(status_code=415, detail="Only PDF files are accepted")
-    prompt = f"""You are a job recruiter evaluating candidates , you read their CV through {text} extracting one sentence with all the keywords max 20 words
-                        about the candidate"""
     # this endpoint must stay async — it awaits the upload — so the blocking
     # calls go to a thread rather than stalling the event loop
     await asyncio.to_thread(check_gemini_budget , "site" , SITE_LIMIT)
-    response = await asyncio.to_thread(chain.invoke, prompt)
-    config = {"configurable": {"thread_id": thread_id}}
-    state = agent.get_state(config)
-    memory = state.values.get("memory", [])
-    query, _ , last_fetch = await asyncio.to_thread(run_agent, response, thread_id, country)
-    clean_jobs = normalize_jobs(query)
-    jobs = filter_jobs(clean_jobs , memory)
-    return PlainTextResponse(format_jobs_markdown(jobs, memory, country))
+    job = await asyncio.to_thread(filework.delay , text, thread_id, country)
+    return {"job_id": job.id}
+
+@app.get("/jobs/{job_id}")
+@limiter.limit("60/minute")
+def getstatus(request: Request , job_id:UUID):
+    res = AsyncResult(str(job_id), app=celery_app)
+    if res.status == "SUCCESS":
+        return {"status" : "done", "result": res.result}
+    elif res.status == "FAILURE":
+        print(res.result)
+        return {"status" : "failed", "detail": "Something went wrong, please try again"}
+    else:
+        return {"status" : "pending"}
+       
+    
+    
+
+
+
     
 
 @app.post("/feedback")
@@ -241,62 +235,6 @@ def reset_search(request: Request , input:SearchInput):
 def checkhealth():
     return {"status" : "ok"}
 
-SOURCES = "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app | Jobicy.com | jobs.workable.com"
-
-NO_RESULTS = ("No jobs matched your search and active filters.\n\n"
-              "Try a different search, or say \"reset filters\" to clear what you excluded.")
-
-def active_filters_line(memory: list | None, country: str = "") -> str:
-    """Footer: where these listings were searched, and what was excluded.
-
-    The country belongs here because feedback re-filters the last search rather
-    than running a new one - it is meant to be instant, not five more API calls.
-    So changing the dropdown and asking to exclude something shows the previous
-    country's listings, and this line is what tells the reader so."""
-    parts = [f"Showing: {country.replace('-', ' ').title() if country else 'Worldwide'}"]
-    seen = []
-    for entry in memory or []:
-        for keyword in entry.split(","):
-            keyword = keyword.strip()
-            if keyword and keyword.lower() not in [s.lower() for s in seen]:
-                seen.append(keyword)
-    if seen:
-        parts.append(f"Active filters: {', '.join(seen)} — say \"reset filters\" to clear")
-    return "\n\n" + " · ".join(parts)
-
-# The boards spell their own names, and the domain does not always carry them:
-# jobs.workable.com reads as "Jobs" and remoteOK.com as "Remoteok".
-SITE_NAMES = {
-    "workable": "Workable",
-    "remoteok": "RemoteOK",
-    "himalayas": "Himalayas",
-    "jobicy": "Jobicy",
-    "remotive": "Remotive",
-}
-
-
-def site_of(apply_url: str) -> str:
-    """The board a listing came from, named the way the board names itself."""
-    labels = urlparse(apply_url).netloc.lower().split(".")
-    domain = labels[-2] if len(labels) > 1 else (labels[0] if labels else "")
-    return SITE_NAMES.get(domain, domain.capitalize())
-
-
-def format_jobs_markdown(jobs: list, memory: list | None = None, country: str = "") -> str:
-    filters = active_filters_line(memory, country)
-    if not jobs:
-        return NO_RESULTS + filters
-    form_jobs = []
-    for job in jobs:
-        site_name = site_of(job.get("apply_url", ""))
-        loc = job.get("location" , "")
-        description = job.get("description" , "")
-        if not loc:
-            loc = "Location not specified"
-        formatted = f'**- {job.get("position", "")}** at **{job.get("company", "")}** | {loc} | {job.get("salary" , "")}  \n {textwrap.shorten(description, width=150, placeholder="...")} \n Apply: [{site_name}]({job.get("apply_url", "")})'
-        form_jobs.append(formatted)
-    format_str = "\n\n".join(form_jobs)
-    return f"{format_str}\n\n{SOURCES}{filters}"
 
 @app.post("/askeval")
 @limiter.limit("10/minute")

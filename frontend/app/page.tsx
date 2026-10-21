@@ -97,6 +97,26 @@ function saveCountry(value: string) {
   countryListeners.forEach((listener) => listener());
 }
 
+const POLL_EVERY_MS = 2000;
+const POLL_TIMEOUT_MS = 120000;
+
+async function waitForJob(jobId: string): Promise<string> {
+  const deadline = Date.now() + POLL_TIMEOUT_MS;
+  while (Date.now() < deadline) {
+    await new Promise(resolve => setTimeout(resolve, POLL_EVERY_MS));
+    try {
+      const res = await fetch(`${API_BASE}/jobs/${jobId}`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.status === 'done') return data.result;
+      if (data.status === 'failed') return `❌ ${data.detail}`;
+    } catch {
+      continue;
+    }
+  }
+  return '❌ This is taking longer than expected. Please try again.';
+}
+
 export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -213,29 +233,23 @@ export default function Home() {
 
     setMessages(prev => [...prev, { role: 'user', content: `📄 Uploaded: ${file.name}` }]);
 
+    let reply = '❌ Failed to upload CV. Please try again.';
     try {
       const res = await fetch(`${API_BASE}/upload`, {
         method: 'POST',
         body: formData,
       });
-      const reader = res.body?.getReader();
-      const decoder = new TextDecoder();
-      setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
-
-      while (true) {
-        const { done, value } = await reader!.read();
-        if (done) break;
-        const chunk = decoder.decode(value, { stream: true });
-        setMessages(prev => {
-          const updated = [...prev];
-          updated[updated.length - 1].content += chunk;
-          return updated;
-        });
+      const data = await res.json();
+      if (!res.ok) {
+        if (typeof data.detail === 'string') reply = `❌ ${data.detail}`;
+      } else {
+        reply = await waitForJob(data.job_id);
       }
     } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: '❌ Failed to upload CV. Please try again.' }]);
+      // network failure or a non-JSON error page: keep the generic reply
     }
 
+    setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
     setLoading(false);
     e.target.value = '';
   }

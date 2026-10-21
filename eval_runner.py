@@ -2,7 +2,7 @@ from langsmith import Client
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
 from pydantic import BaseModel , Field, ValidationError
-from main import NO_RESULTS, site_of
+from helper import NO_RESULTS, site_of
 import os
 import requests
 import uuid
