@@ -38,7 +38,7 @@ apikey=os.getenv("OPENROUTER_API_KEY")
 def run_agent(inputs: dict) -> dict:
     response=requests.post("http://localhost:8002/askeval" , json={
                         "user_input": inputs["input"],
-                        "thread_id": f"eval-{uuid.uuid4()}" 
+                        "thread_id": str(uuid.uuid4()) 
                     },  headers = {"x-api-key":key} , timeout=180)
     response.raise_for_status()
     responsecleared=response.json()

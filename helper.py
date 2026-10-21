@@ -31,8 +31,10 @@ def llmchain(given_api_key: str | None , for_upload: bool = False) -> Runnable:
     chain = llm|parser
     return chain
 
-def run_agent(agent: Runnable ,user_input: str, thread_id: str, country: str = ""):
-    config = {"configurable": {"thread_id": thread_id}}
+def run_agent(agent: Runnable ,user_input: str, thread_id: str, country: str = "" , metadata: dict | None=None):
+    if metadata is None :
+        metadata={}
+    config = {"configurable": {"thread_id": thread_id} , "metadata": metadata } 
     result = agent.invoke(
         {"user_input": user_input, "country": country, "fetched_jobs": []}, 
         config=config

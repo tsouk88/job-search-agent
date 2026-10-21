@@ -99,7 +99,7 @@ class EvaluateInput(BaseModel):
 
 chain= llmchain(os.getenv("GEMINI_API_KEY"))
 
-def searchhelper(input:SearchInput):
+def searchhelper(input:SearchInput , metadata: dict | None=None):
     config = {"configurable": {"thread_id": input.thread_id}}
     state = agent.get_state(config)
     last_known_fetch = state.values.get("last_fetch_time", "")
@@ -107,7 +107,7 @@ def searchhelper(input:SearchInput):
     current_query=state.values.get("user_input" , "")  
     current_country=state.values.get("country" , "")
     if not last_known_fetch or current_query != input.user_input or current_country != input.country or (datetime.now() - datetime.fromisoformat(last_known_fetch)).total_seconds() > 14400 :
-        query, _ , last_fetch = run_agent(agent ,input.user_input, input.thread_id, input.country)
+        query, _ , last_fetch = run_agent(agent ,input.user_input, input.thread_id, input.country , metadata)
         searched_country = input.country
     else:
         query = state.values.get("clean_jobs" , [])
@@ -245,7 +245,8 @@ def evaltest(request: Request , input:SearchInput , x_api_key: str = Header(None
     check = secrets.compare_digest(key , x_api_key)
     if not check: 
         raise HTTPException(status_code=401, detail="Unauthorized")
-    filtered , mem , country = searchhelper(input)
+    metadata = {"run_type": "eval"}
+    filtered , mem , country = searchhelper(input , metadata)
     md = format_jobs_markdown(filtered , mem , country)
     return { "jobs" : filtered  , "md" : md}
 
