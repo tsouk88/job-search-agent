@@ -29,7 +29,7 @@ def fetch_fresh(query:str) -> list:
 
 
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
-def search_remote_jobs(query: str, exclude_keywords: list[str] = []) -> list[dict]:
+def search_remote_jobs(query: str, exclude_keywords: list[str] | None = None) -> list[dict]:
     """Search remote job listings across RemoteOK, Himalayas, Remotive and Jobicy
     Prefer this over web search for any question about remote job openings —
     it returns live, structured listings with working apply links.
@@ -39,6 +39,8 @@ def search_remote_jobs(query: str, exclude_keywords: list[str] = []) -> list[dic
         exclude_keywords: Terms to filter out, e.g. ["senior", "full stack"].
     """
     jobs = fetch_fresh(query)
+    if exclude_keywords is None:
+        exclude_keywords=[]
     return filter_jobs(jobs , exclude_keywords)
 
 if __name__ == "__main__":
