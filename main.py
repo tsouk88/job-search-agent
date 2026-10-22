@@ -21,6 +21,7 @@ import io
 import secrets
 from uuid import UUID
 import redis
+import socket , time
 
 
 
@@ -59,7 +60,7 @@ limiter = Limiter(key_func=my_key , storage_uri=os.getenv("REDIS_URL") , in_memo
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
-r = redis.Redis.from_url(os.getenv("REDIS_URL"))
+r = redis.Redis.from_url(os.getenv("REDIS_URL"), socket_connect_timeout=2, socket_timeout=2)
 SITE_LIMIT = 100
 def check_gemini_budget(name , limit):
     now=datetime.now()
@@ -193,11 +194,6 @@ def getstatus(request: Request , job_id:UUID):
         return {"status" : "pending"}
        
     
-    
-
-
-
-    
 
 @app.post("/feedback")
 @limiter.limit("10/minute")
@@ -231,9 +227,27 @@ def reset_search(request: Request , input:SearchInput):
     filtered = filter_jobs(clean_jobs, [])
     return PlainTextResponse(format_jobs_markdown(filtered, None, state.values.get("country", "")))
 
+
+PING_TIME = 90
+last_ping = time.monotonic()
 @app.get("/health")
 def checkhealth():
-    return {"status" : "ok"}
+    global last_ping
+    try:
+        r.ping()
+        ping = celery_app.control.ping(destination=[f"celery@{socket.gethostname()}"], timeout=1.0)
+    except Exception as e:
+        last_ping=time.monotonic()
+        print(e)
+        return {"status" : "ok"}  
+    if len(ping) != 0:
+        last_ping = time.monotonic()
+        return {"status" : "ok"}
+    else:
+        if (time.monotonic() - last_ping)>PING_TIME:
+            raise HTTPException(status_code=503, detail="Timed Out")
+        else:
+            return {"status" : "ok"}   
 
 
 @app.post("/askeval")
