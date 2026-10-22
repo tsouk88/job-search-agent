@@ -153,7 +153,6 @@ ALIASES = {
     "front-end": "frontend",
     "front end": "frontend",
     "postgresql": "postgres",
-    "kubernetes": "k8s",
     "javascript": "js",
 }
 
