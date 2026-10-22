@@ -92,7 +92,7 @@ class SearchInput(BaseModel):
     country: str = ""
 
 class FeedbackInput(BaseModel):
-    thread_id: str
+    thread_id: UUID
     feedback: str = Field(min_length=1 , max_length = 100)
 
 class Input(BaseModel):
