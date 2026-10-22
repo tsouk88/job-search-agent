@@ -5,6 +5,7 @@ from agent import graph  , normalize_jobs , filter_jobs
 from helper import llmchain , run_agent , format_jobs_markdown
 from fastapi.responses import PlainTextResponse
 from langgraph.checkpoint.postgres import PostgresSaver
+from langgraph.checkpoint.memory import InMemorySaver
 from contextlib import asynccontextmanager
 from datetime import datetime
 import os
@@ -28,13 +29,16 @@ import socket , time
 load_dotenv()
 checkpointer_cm = None
 agent = None
+eval_agent = None
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    global agent
+    global agent , eval_agent
     with PostgresSaver.from_conn_string(os.getenv("DATABASE_URL")) as checkpointer:
         checkpointer.setup()
+        evalsaver = InMemorySaver()
         agent = graph.compile(checkpointer=checkpointer)
+        eval_agent= graph.compile(checkpointer=evalsaver)
         yield
 
 allowed_origins = [
@@ -100,15 +104,15 @@ class EvaluateInput(BaseModel):
 
 chain= llmchain(os.getenv("GEMINI_API_KEY"))
 
-def searchhelper(input:SearchInput , metadata: dict | None=None):
+def searchhelper(input:SearchInput , search_agent , metadata: dict | None=None):
     config = {"configurable": {"thread_id": input.thread_id}}
-    state = agent.get_state(config)
+    state = search_agent.get_state(config)
     last_known_fetch = state.values.get("last_fetch_time", "")
     memory = state.values.get("memory", [])
     current_query=state.values.get("user_input" , "")  
     current_country=state.values.get("country" , "")
     if not last_known_fetch or current_query != input.user_input or current_country != input.country or (datetime.now() - datetime.fromisoformat(last_known_fetch)).total_seconds() > 14400 :
-        query, _ , last_fetch = run_agent(agent ,input.user_input, input.thread_id, input.country , metadata)
+        query, _ , last_fetch = run_agent(search_agent,input.user_input, input.thread_id, input.country , metadata)
         searched_country = input.country
     else:
         query = state.values.get("clean_jobs" , [])
@@ -122,7 +126,7 @@ def searchhelper(input:SearchInput , metadata: dict | None=None):
 @app.post("/ask")
 @limiter.limit("10/minute")
 def askAI(request: Request, input:SearchInput):
-    filtered , mem , country = searchhelper(input)
+    filtered , mem , country = searchhelper(input , agent)
     return PlainTextResponse(format_jobs_markdown(filtered , mem , country))
 
 
@@ -260,7 +264,7 @@ def evaltest(request: Request , input:SearchInput , x_api_key: str = Header(None
     if not check: 
         raise HTTPException(status_code=401, detail="Unauthorized")
     metadata = {"run_type": "eval"}
-    filtered , mem , country = searchhelper(input , metadata)
+    filtered , mem , country = searchhelper(input , eval_agent , metadata)
     md = format_jobs_markdown(filtered , mem , country)
     return { "jobs" : filtered  , "md" : md}
 
