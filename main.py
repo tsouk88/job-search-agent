@@ -22,7 +22,7 @@ import io
 import secrets
 from uuid import UUID
 import redis
-import socket , time
+import socket , time , httpx
 
 
 
@@ -193,6 +193,8 @@ def getstatus(request: Request , job_id:UUID):
         return {"status" : "done", "result": res.result}
     elif res.status == "FAILURE":
         print(res.result)
+        if isinstance(res.result, httpx.TimeoutException):
+            return {"status" : "failed", "detail": "The CV reader is slow right now, please try again in a minute"}
         return {"status" : "failed", "detail": "Something went wrong, please try again"}
     else:
         return {"status" : "pending"}
