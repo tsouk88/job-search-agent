@@ -233,6 +233,6 @@ def laya_correctness(run, example):
 
 
 
-client.evaluate(run_agent,data="job-search-eval" , evaluators=[gemini_full_correctness,jev_correctness,gemini_listing_correctness],experiment_prefix="geminijevfullrun")
+client.evaluate(run_agent,data="job-search-eval" , evaluators=[jev_correctness,gemini_listing_correctness],experiment_prefix="geminijevperjob")
 
                   
