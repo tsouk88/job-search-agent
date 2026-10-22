@@ -22,7 +22,8 @@ def llmchain(given_api_key: str | None , for_upload: bool = False) -> Runnable:
             model="google_genai:gemini-2.5-flash",
             api_key=given_api_key,
             temperature=0.1,
-            max_retries=10
+            max_retries=2,
+            timeout=10
         )
     parser = StrOutputParser()
     if for_upload :
