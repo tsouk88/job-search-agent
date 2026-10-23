@@ -175,7 +175,7 @@ def distinctive_tokens(query: str) -> list[str]:
     one request. Empty means no word narrows anything, and the caller should ask
     without a tag instead."""
     seen = []
-    for token in re.findall(r'\w+', canon(query)):
+    for token in re.findall(r'\w+', query.lower()):
         if token not in GENERIC and token not in seen:
             seen.append(token)
     return seen[:TAG_LIMIT]
@@ -202,8 +202,8 @@ def score_job(job: dict, query: str) -> float:
     """How well a job matches the query. A title hit outweighs any number of
     description hits, so >= TITLE_WEIGHT means "matched in the title"."""
     title = job_title(job)
-    description = (job.get("description") or job.get("jobDescription", "")
-                   or job.get("excerpt", "") or job.get("jobExcerpt", "") or "").lower()
+    description = canon(job.get("description") or job.get("jobDescription", "")
+                   or job.get("excerpt", "") or job.get("jobExcerpt", "") or "")
     signal = signal_tokens(query)
     words = re.findall(r'\w+', canon(query).lower())
     gen= [w for w in words if w in GENERIC]
