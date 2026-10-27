@@ -102,6 +102,8 @@ class Input(BaseModel):
 class EvaluateInput(BaseModel):
     jobs: str  
 
+class SentLinks(BaseModel):
+    links : list[str]
 
 chain= llmchain(os.getenv("GEMINI_API_KEY"))
 
@@ -126,31 +128,46 @@ def searchhelper(input:SearchInput , search_agent , metadata: dict | None=None):
 
 @app.post("/ask")
 @limiter.limit("10/minute")
-def askAI(request: Request, input:SearchInput , n8nkey: str = Header(None)):
-    n8ndigest = False
-    key = os.getenv("N8N_DEDUPE")
-    if n8nkey:
-        if not key:
-            raise HTTPException(status_code=401, detail="Unauthorized")
-        if (secrets.compare_digest(key , n8nkey)):
-            n8ndigest = True
-        else :
-            raise HTTPException(status_code=401, detail="Unauthorized")
+def askAI(request: Request, input:SearchInput):
     filtered , mem , country = searchhelper(input , agent)
-    if n8ndigest:
-        dedupedjobs=[]
-        with psycopg.connect(os.getenv("DATABASE_URL")) as conn:
-            rows = conn.execute("select joblink from n8njobs").fetchall()
-            sent = {row[0] for row in rows}
-            for job in filtered:
-                if job["apply_url"] is not None:
-                    if job["apply_url"] not in sent:
-                        dedupedjobs.append(job)
-                        conn.execute("insert into n8njobs (joblink) values (%s)", (job["apply_url"],))
-                        sent.add(job["apply_url"])
-        filtered=dedupedjobs
     return PlainTextResponse(format_jobs_markdown(filtered , mem , country))
 
+@app.post("/digest")
+@limiter.limit("10/minute")
+def n8ndigest (request: Request ,input:SearchInput, n8nkey: str = Header(None)):
+    key = os.getenv("N8N_DEDUPE")
+    if not key or not n8nkey:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    check = secrets.compare_digest(key , n8nkey)
+    if not check: 
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    filtered , mem , country = searchhelper(input , agent)
+    dedupedjobs=[]
+    with psycopg.connect(os.getenv("DATABASE_URL")) as conn:
+        rows = conn.execute("select joblink from n8njobs").fetchall()
+        sent = {row[0] for row in rows}
+        for job in filtered:
+            if job["apply_url"] is not None:
+                if job["apply_url"] not in sent:
+                    dedupedjobs.append(job)
+                    sent.add(job["apply_url"])
+    md=format_jobs_markdown(dedupedjobs , mem , country)
+    links = [job["apply_url"] for job in dedupedjobs]
+    return { "md" : md  , "links" : links }
+
+@app.post("/digest/sent")
+@limiter.limit("10/minute")
+def digestwrite(request: Request , links: SentLinks , n8nkey:str = Header(None)):
+    key = os.getenv("N8N_DEDUPE")
+    if not key or not n8nkey:
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    check = secrets.compare_digest(key , n8nkey)
+    if not check: 
+        raise HTTPException(status_code=401, detail="Unauthorized")
+    with psycopg.connect(os.getenv("DATABASE_URL")) as conn:
+        for link in links.links:
+            conn.execute("insert into n8njobs (joblink) values (%s) on conflict (joblink) do nothing", (link,))
+    return {"status" : "Insertion completed"}    
 
 @app.post ("/evaluate")
 @limiter.limit("10/minute")
