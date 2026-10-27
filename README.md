@@ -392,6 +392,7 @@ DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/jobsearch_memory
 ALLOWED_ORIGINS=http://localhost:3000  # comma-separated list of browser origins allowed to call the API
 EVALUATE_TOKEN=      # x-api-key for /evaluate (the n8n workflow)
 EVALS=               # x-api-key for /askeval, used by eval_runner.py
+N8N_DEDUPE=          # n8nkey header for /digest and /digest/sent (the n8n digest)
 OPENROUTER_API_KEY=  # only for the Jev judge in eval_runner.py
 ```
 
@@ -432,18 +433,24 @@ serves `/ask`.
 The included `n8n_workflow.json` adds automated job alerts every 12 hours — no manual searches needed.
 
 ### What the workflow does
-![n8n Workflow](assets/n8n_workflow.png)
+![n8n Workflow](assets/n8n_workflow.jpg)
 ```
 Schedule (every 12h)
   → Search Settings   (query + thread_id — the only node you edit)
   → Wake node         (GET /docs; expected to fail on a sleeping instance)
-  → Wait 60s
-  → POST /ask         (returns the formatted digest)
+  → Wait 120s
+  → Digest            (POST /digest — only listings not mailed before)
+  → If                (stops here when `links` is empty)
   → Send digest email via Gmail
+  → Mark Sent         (POST /digest/sent — records the links that went out)
 ```
 ![Email Digest](assets/email_digest.png)
 
 The workflow holds **no filtering logic of its own**. Earlier versions duplicated the keyword matching across five JavaScript Code nodes, which meant every fix to the Python scoring had to be made twice — and never was. Now n8n only schedules, calls the API and mails the result, so the digest gets the same deduplication, mojibake repair and relevance ranking as every other interface.
+
+**Why two calls instead of one.** A listing stays on the boards for weeks, so an alert that asks for "the best jobs today" sends the same ones every run. The backend remembers what was mailed in a Postgres table (`n8njobs`). `/digest` only reads it and returns the new listings as `{md, links}`; the links are written by `/digest/sent`, which n8n calls only after Gmail succeeds. Writing them earlier would lose a run for good whenever the email failed after the search. The insert ignores links that are already there, so a retried call does no harm. The worst case is now a repeated email, not a missing one.
+
+n8n's own workflow static data was tried first and dropped: it never persisted between scheduled runs on this instance.
 
 ### Setup
 
@@ -451,9 +458,11 @@ The workflow holds **no filtering logic of its own**. Earlier versions duplicate
 2. Configure your Gmail credentials in the Gmail node and set your address in `Send a message`
 3. In **Search Settings**, set `query` to whatever you are looking for
 4. In **Search Settings**, replace `YOUR_UNIQUE_THREAD_ID` with a value only you know — `python -c "import uuid;print(uuid.uuid4())"`. Anyone who learns this value can change that thread's filters, so do not publish it
-5. Point both HTTP nodes at your own backend (`http://host.docker.internal:8002` from Docker, `http://localhost:8002` without it)
+5. Point the three HTTP nodes at your own backend (`http://host.docker.internal:8002` from Docker, `http://localhost:8002` without it)
+6. Create the table once in your Postgres: `create table n8njobs (joblink text primary key, added_at timestamptz not null default now());`
+7. Set `N8N_DEDUPE` in the backend's `.env`, and in n8n create a **Header Auth** credential with name `n8nkey` and the same value. Digest and Mark Sent both use it; without it `/digest` answers 401
 
-**Why the wake node and the 60-second wait.** On a sleeping free-tier instance the first request is answered with an immediate `503`, not a slow response — so a longer timeout does not help, and n8n's retry ceiling (5 tries, 5s apart) covers only ~25s of a ~50s cold start. The wake node exists purely to trigger the boot and is set to `On Error: Continue`, since failing is its normal outcome. Drop both nodes if your backend is always on.
+**Why the wake node and the 120-second wait.** On a sleeping free-tier instance the first request is answered with an immediate `503`, not a slow response — so a longer timeout does not help, and n8n's retry ceiling (5 tries, 5s apart) covers only ~25s of a cold start. With the Celery worker sharing the same instance, the boot takes 70-80s. The wake node exists purely to trigger the boot and is set to `On Error: Continue`, since failing is its normal outcome. Drop both nodes if your backend is always on.
 
 **Optional — persistent filters.** The thread outlives the workflow, so exclusions only need to be set once: call `POST /feedback` with the same `thread_id` and something like `no senior, no staff`. Every later run reuses them. The response footer lists the filters that were actually stored, which is worth reading — the extraction is done by an LLM and may generalise more than you intended.
 
@@ -468,6 +477,8 @@ The workflow holds **no filtering logic of its own**. Earlier versions duplicate
 | `/feedback` | POST | yes | Turn feedback ("no MERN", "no senior") into filter keywords. Input capped at 100 characters |
 | `/upload` | POST | yes | Upload PDF resume — agent extracts skills and finds matching jobs. Max 5MB, first 5 pages |
 | `/evaluate` | POST | yes | AI scoring of job listings. Requires the `x-api-key` header |
+| `/digest` | POST | no | Search, minus the listings already mailed. Returns `{md, links}`. Requires the `n8nkey` header |
+| `/digest/sent` | POST | no | Record `links` as mailed. Requires the `n8nkey` header |
 
 Every endpoint is rate limited to 10 requests per minute per IP.
 

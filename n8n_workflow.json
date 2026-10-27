@@ -6,22 +6,22 @@
         "sendTo": "your@gmail.com",
         "subject": "Daily Job Alert",
         "emailType": "text",
-        "message": "={{ $json.data }}",
+        "message": "={{ $json.md }}",
         "options": {}
       },
       "type": "n8n-nodes-base.gmail",
       "typeVersion": 2.2,
       "position": [
-        192,
-        160
+        1072,
+        0
       ],
-      "id": "60ad6bac-9ace-4854-a191-a55565d04837",
+      "id": "66ad8bb0-fa87-4bb7-8481-92a6b578950f",
       "name": "Send a message",
       "webhookId": "9726743a-6d0f-4fcd-8657-4ce26505b536",
       "executeOnce": true,
       "credentials": {
         "gmailOAuth2": {
-          "id": "7JfjfANcHg52QYaN",
+          "id": "EMVUEkZT71bUjDKI",
           "name": "Gmail account"
         }
       }
@@ -40,39 +40,11 @@
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1.3,
       "position": [
-        -656,
-        160
+        0,
+        0
       ],
-      "id": "fafb5862-a5e0-4f92-9287-e0bba352122f",
+      "id": "bb40f646-27c7-4056-bee1-d7ab992b10f3",
       "name": "Schedule Trigger"
-    },
-    {
-      "parameters": {
-        "method": "POST",
-        "url": "http://localhost:8002/ask",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={\n  \"user_input\": \"{{ $('Search Settings').item.json.query }}\",\n  \"thread_id\": \"{{ $('Search Settings').item.json.thread_id }}\"\n}",
-        "options": {
-          "response": {
-            "response": {
-              "responseFormat": "text"
-            }
-          },
-          "timeout": 90000
-        }
-      },
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.4,
-      "position": [
-        32,
-        160
-      ],
-      "id": "66b2f4e5-9d04-400f-9c67-baeb8d3aa7c9",
-      "name": "HTTP Request",
-      "retryOnFail": true,
-      "maxTries": 5,
-      "waitBetweenTries": 5000
     },
     {
       "parameters": {
@@ -97,10 +69,10 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.4,
       "position": [
-        -448,
-        160
+        208,
+        0
       ],
-      "id": "b6471745-b461-466c-b57e-473ec88fa766",
+      "id": "c06b9d66-ccab-4bff-b603-62eb145b2cb2",
       "name": "Search Settings"
     },
     {
@@ -111,27 +83,126 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 4.4,
       "position": [
-        -272,
-        160
+        384,
+        0
       ],
-      "id": "e5bd5bef-04ab-4129-9225-a2a6d1a8e38c",
+      "id": "4f8363d8-42d0-481b-986a-6f156bb719aa",
       "name": "Wake node",
-      "retryOnFail": false,
+      "retryOnFail": true,
+      "maxTries": 2,
+      "waitBetweenTries": 5000,
       "onError": "continueRegularOutput"
     },
     {
       "parameters": {
-        "amount": 60
+        "amount": 120
       },
       "type": "n8n-nodes-base.wait",
       "typeVersion": 1.1,
       "position": [
-        -112,
-        160
+        544,
+        0
       ],
-      "id": "280b619c-91de-4944-8b3a-4a1c066af962",
+      "id": "f207d56a-2a61-402f-8a8b-7e01101056f6",
       "name": "Wait",
       "webhookId": "82f3e244-f815-46c5-870b-fd132288bcbc"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 3
+          },
+          "conditions": [
+            {
+              "id": "09bdb688-3c33-433e-8842-086eca6eaa98",
+              "leftValue": "={{ $json.links }}",
+              "rightValue": "No jobs matched",
+              "operator": {
+                "type": "array",
+                "operation": "notEmpty",
+                "singleValue": true
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.3,
+      "position": [
+        864,
+        32
+      ],
+      "id": "505dedee-0864-4e55-aa96-c3f504d42aa2",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8002/digest",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"user_input\": \"{{ $('Search Settings').item.json.query }}\",\n  \"thread_id\": \"{{ $('Search Settings').item.json.thread_id }}\"\n}",
+        "options": {
+          "response": {
+            "response": {
+              "responseFormat": "json"
+            }
+          },
+          "timeout": 90000
+        }
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.4,
+      "position": [
+        688,
+        0
+      ],
+      "id": "67375731-1bf3-4fbc-aa02-7d8ea67fd11c",
+      "name": "Digest",
+      "retryOnFail": true,
+      "maxTries": 5,
+      "waitBetweenTries": 5000,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "tfElb5UmxnshtLFV",
+          "name": "Header Auth account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:8002/digest/sent",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={ \"links\": {{ JSON.stringify($('Digest').item.json.links) }} }",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.5,
+      "position": [
+        1248,
+        -16
+      ],
+      "id": "a67785b1-0c81-4218-a895-1d6bb5bf6d4c",
+      "name": "Mark Sent",
+      "retryOnFail": true,
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "tfElb5UmxnshtLFV",
+          "name": "Header Auth account"
+        }
+      }
     }
   ],
   "pinData": {},
@@ -141,22 +212,6 @@
         [
           {
             "node": "Search Settings",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Send a message": {
-      "main": [
-        []
-      ]
-    },
-    "HTTP Request": {
-      "main": [
-        [
-          {
-            "node": "Send a message",
             "type": "main",
             "index": 0
           }
@@ -189,7 +244,40 @@
       "main": [
         [
           {
-            "node": "HTTP Request",
+            "node": "Digest",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Send a message": {
+      "main": [
+        [
+          {
+            "node": "Mark Sent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Digest": {
+      "main": [
+        [
+          {
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -200,15 +288,14 @@
   "active": true,
   "settings": {
     "executionOrder": "v1",
-    "binaryMode": "separate",
-    "availableInMCP": false
+    "binaryMode": "separate"
   },
-  "versionId": "0c987ace-0972-4b34-bb39-8794b7fa6b45",
+  "versionId": "11090f24-e674-419d-b73f-57e3e0e0ea1d",
   "meta": {
     "templateCredsSetupCompleted": true,
-    "instanceId": "06216e3172ef64b78f5327c03e8be718e2118a5c0463ccb5375ea1dfb2b8f336"
+    "instanceId": "0bdc98c8a590b8f3223729e0e48b8727d83cbcdd6d6e32f43a2f810296a7f425"
   },
   "nodeGroups": [],
-  "id": "kBCwFI65I6AVn5Qr",
+  "id": "uYcFmyy16CQKw7DZ",
   "tags": []
 }
