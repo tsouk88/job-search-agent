@@ -22,6 +22,7 @@ import io
 import secrets
 from uuid import UUID
 import redis
+import psycopg
 import socket , time , httpx
 
 
@@ -125,8 +126,29 @@ def searchhelper(input:SearchInput , search_agent , metadata: dict | None=None):
 
 @app.post("/ask")
 @limiter.limit("10/minute")
-def askAI(request: Request, input:SearchInput):
+def askAI(request: Request, input:SearchInput , n8nkey: str = Header(None)):
+    n8ndigest = False
+    key = os.getenv("N8N_DEDUPE")
+    if n8nkey:
+        if not key:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        if (secrets.compare_digest(key , n8nkey)):
+            n8ndigest = True
+        else :
+            raise HTTPException(status_code=401, detail="Unauthorized")
     filtered , mem , country = searchhelper(input , agent)
+    if n8ndigest:
+        dedupedjobs=[]
+        with psycopg.connect(os.getenv("DATABASE_URL")) as conn:
+            rows = conn.execute("select joblink from n8njobs").fetchall()
+            sent = {row[0] for row in rows}
+            for job in filtered:
+                if job["apply_url"] is not None:
+                    if job["apply_url"] not in sent:
+                        dedupedjobs.append(job)
+                        conn.execute("insert into n8njobs (joblink) values (%s)", (job["apply_url"],))
+                        sent.add(job["apply_url"])
+        filtered=dedupedjobs
     return PlainTextResponse(format_jobs_markdown(filtered , mem , country))
 
 
