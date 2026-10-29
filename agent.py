@@ -154,6 +154,7 @@ ALIASES = {
     "front end": "frontend",
     "postgresql": "postgres",
     "javascript": "js",
+    "developer": "engineer"
 }
 
 def canon(text: str) -> str:
@@ -535,7 +536,8 @@ def collect_results(state: State):
                 seen.add(key)
                 unique_jobs.append(job)
     scored = [(score_job(job, query), job) for job in unique_jobs]
-    matched = [pair for pair in scored if pair[0] >= TITLE_WEIGHT]
+    wants_engineer=title_hit("engineer", canon(query))
+    matched = [pair for pair in scored if pair[0] >= TITLE_WEIGHT and (not wants_engineer or title_hit("engineer", job_title(pair[1])))]
     matched.sort(key=lambda pair: pair[0], reverse=True)   
     for i ,(score , match) in enumerate(matched, start=1):
         url = match.get("apply_url") or match.get("url") or match.get("applicationLink")
