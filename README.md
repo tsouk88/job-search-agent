@@ -392,7 +392,7 @@ DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/jobsearch_memory
 ALLOWED_ORIGINS=http://localhost:3000  # comma-separated list of browser origins allowed to call the API
 EVALUATE_TOKEN=      # x-api-key for /evaluate (the n8n workflow)
 EVALS=               # x-api-key for /askeval, used by eval_runner.py
-N8N_DEDUPE=          # n8nkey header for /digest and /digest/sent (the n8n digest)
+N8N_DEDUPE=          # x-api-key for /digest and /digest/sent (the n8n digest)
 OPENROUTER_API_KEY=  # only for the Jev judge in eval_runner.py
 ```
 
@@ -460,7 +460,7 @@ n8n's own workflow static data was tried first and dropped: it never persisted b
 4. In **Search Settings**, replace `YOUR_UNIQUE_THREAD_ID` with a value only you know — `python -c "import uuid;print(uuid.uuid4())"`. Anyone who learns this value can change that thread's filters, so do not publish it
 5. Point the three HTTP nodes at your own backend (`http://host.docker.internal:8002` from Docker, `http://localhost:8002` without it)
 6. Create the table once in your Postgres: `create table n8njobs (joblink text primary key, added_at timestamptz not null default now());`
-7. Set `N8N_DEDUPE` in the backend's `.env`, and in n8n create a **Header Auth** credential with name `n8nkey` and the same value. Digest and Mark Sent both use it; without it `/digest` answers 401
+7. Set `N8N_DEDUPE` in the backend's `.env`, and in n8n create a **Header Auth** credential with name `x-api-key` and the same value. Digest and Mark Sent both use it; without it `/digest` answers 401
 
 **Why the wake node and the 120-second wait.** On a sleeping free-tier instance the first request is answered with an immediate `503`, not a slow response — so a longer timeout does not help, and n8n's retry ceiling (5 tries, 5s apart) covers only ~25s of a cold start. With the Celery worker sharing the same instance, the boot takes 70-80s. The wake node exists purely to trigger the boot and is set to `On Error: Continue`, since failing is its normal outcome. Drop both nodes if your backend is always on.
 
@@ -477,8 +477,8 @@ n8n's own workflow static data was tried first and dropped: it never persisted b
 | `/feedback` | POST | yes | Turn feedback ("no MERN", "no senior") into filter keywords. Input capped at 100 characters |
 | `/upload` | POST | yes | Upload PDF resume — agent extracts skills and finds matching jobs. Max 5MB, first 5 pages |
 | `/evaluate` | POST | yes | AI scoring of job listings. Requires the `x-api-key` header |
-| `/digest` | POST | no | Search, minus the listings already mailed. Returns `{md, links}`. Requires the `n8nkey` header |
-| `/digest/sent` | POST | no | Record `links` as mailed. Requires the `n8nkey` header |
+| `/digest` | POST | no | Search, minus the listings already mailed. Returns `{md, links}`. Requires the `x-api-key` header |
+| `/digest/sent` | POST | no | Record `links` as mailed. Requires the `x-api-key` header |
 
 Every endpoint is rate limited to 10 requests per minute per IP.
 

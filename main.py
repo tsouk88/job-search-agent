@@ -1,4 +1,4 @@
-from fastapi import FastAPI , UploadFile , Form , Request , Header , HTTPException
+from fastapi import FastAPI , UploadFile , Form , Request , Header , HTTPException , Depends
 from pydantic import BaseModel, Field
 from dotenv import load_dotenv
 from agent import graph  , normalize_jobs , filter_jobs  
@@ -132,15 +132,19 @@ def askAI(request: Request, input:SearchInput):
     filtered , mem , country = searchhelper(input , agent)
     return PlainTextResponse(format_jobs_markdown(filtered , mem , country))
 
-@app.post("/digest")
+def keycheck(envname):
+    def check(x_api_key: str = Header(None)):
+        key = os.getenv(envname)
+        if not key or not x_api_key:
+            raise HTTPException(status_code=401, detail="Unauthorized")
+        match = secrets.compare_digest(key , x_api_key)
+        if not match: 
+            raise HTTPException(status_code=401, detail="Unauthorized")
+    return check
+
+@app.post("/digest", dependencies=[Depends(keycheck("N8N_DEDUPE"))])
 @limiter.limit("10/minute")
-def n8ndigest (request: Request ,input:SearchInput, n8nkey: str = Header(None)):
-    key = os.getenv("N8N_DEDUPE")
-    if not key or not n8nkey:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    check = secrets.compare_digest(key , n8nkey)
-    if not check: 
-        raise HTTPException(status_code=401, detail="Unauthorized")
+def n8ndigest (request: Request ,input:SearchInput):
     filtered , mem , country = searchhelper(input , agent)
     dedupedjobs=[]
     with psycopg.connect(os.getenv("DATABASE_URL")) as conn:
@@ -154,30 +158,19 @@ def n8ndigest (request: Request ,input:SearchInput, n8nkey: str = Header(None)):
     md=format_jobs_markdown(dedupedjobs , mem , country)
     links = [job["apply_url"] for job in dedupedjobs]
     return { "md" : md  , "links" : links }
+   
 
-@app.post("/digest/sent")
+@app.post("/digest/sent" , dependencies=[Depends(keycheck("N8N_DEDUPE"))])
 @limiter.limit("10/minute")
-def digestwrite(request: Request , links: SentLinks , n8nkey:str = Header(None)):
-    key = os.getenv("N8N_DEDUPE")
-    if not key or not n8nkey:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    check = secrets.compare_digest(key , n8nkey)
-    if not check: 
-        raise HTTPException(status_code=401, detail="Unauthorized")
+def digestwrite(request: Request , links: SentLinks ):
     with psycopg.connect(os.getenv("DATABASE_URL")) as conn:
         for link in links.links:
             conn.execute("insert into n8njobs (joblink) values (%s) on conflict (joblink) do nothing", (link,))
     return {"status" : "Insertion completed"}    
 
-@app.post ("/evaluate")
+@app.post ("/evaluate" , dependencies=[Depends(keycheck("EVALUATE_TOKEN"))])
 @limiter.limit("10/minute")
-def evaluaten8n(request: Request , jobs : EvaluateInput ,  x_api_key: str = Header(None) ):
-    key = os.getenv("EVALUATE_TOKEN")
-    if not key or not x_api_key:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    check = secrets.compare_digest(key , x_api_key)
-    if not check: 
-        raise HTTPException(status_code=401, detail="Unauthorized")
+def evaluaten8n(request: Request , jobs : EvaluateInput ):
     valid_jobs = jobs.jobs
     prompt =f"""You are a personal job evaluator. 
             I am looking for a remote AI/backend engineering job.
@@ -295,15 +288,9 @@ def checkhealth():
             return {"status" : "ok"}   
 
 
-@app.post("/askeval")
+@app.post("/askeval",dependencies=[Depends(keycheck("EVALS"))])
 @limiter.limit("10/minute")
-def evaltest(request: Request , input:SearchInput , x_api_key: str = Header(None)):
-    key = os.getenv("EVALS")
-    if not key or not x_api_key:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-    check = secrets.compare_digest(key , x_api_key)
-    if not check: 
-        raise HTTPException(status_code=401, detail="Unauthorized")
+def evaltest(request: Request , input:SearchInput):
     metadata = {"run_type": "eval"}
     filtered , mem , country = searchhelper(input , eval_agent , metadata)
     md = format_jobs_markdown(filtered , mem , country)
