@@ -22,7 +22,7 @@ import json
 import io
 import secrets
 from uuid import UUID
-import redis
+import redis , redis.exceptions
 import psycopg
 import socket , time , httpx
 
@@ -125,7 +125,11 @@ def searchhelper(input:SearchInput , search_agent , metadata: dict | None=None):
             cache = None
         else:
             savedjobs= jobcache(input.user_input ,input.country)
-            cache=r.get(savedjobs)
+            try:
+                cache=r.get(savedjobs)
+            except redis.exceptions.RedisError as e:
+                print(e)
+                cache = None
         if cache is not None:
             data=json.loads(cache)
             query = data["jobs"]
@@ -133,10 +137,13 @@ def searchhelper(input:SearchInput , search_agent , metadata: dict | None=None):
             search_agent.update_state(config , {"user_input" :input.user_input , "country": input.country , "last_fetch_time" : fetched_at , "clean_jobs" : query })
         else:    
             query, _ , last_fetch = run_agent(search_agent,input.user_input, input.thread_id, input.country , metadata)
-            if metadata is None:
+            if metadata is None and query :
                 jobs_cache={"jobs" : query , "fetched_at" : last_fetch}
                 cached =json.dumps(jobs_cache)
-                r.set(savedjobs , cached , ex=14400)
+                try:
+                    r.set(savedjobs , cached , ex=14400)
+                except redis.exceptions.RedisError as e:
+                    print(e)
         searched_country = input.country
     else:
         query = state.values.get("clean_jobs" , [])
@@ -163,6 +170,7 @@ def keycheck(envname):
             raise HTTPException(status_code=401, detail="Unauthorized")
     return check
 
+
 @app.post("/digest", dependencies=[Depends(keycheck("N8N_DEDUPE"))])
 @limiter.limit("10/minute")
 def n8ndigest (request: Request ,input:SearchInput):
@@ -180,15 +188,14 @@ def n8ndigest (request: Request ,input:SearchInput):
     links = [job["apply_url"] for job in dedupedjobs]
     return { "md" : md  , "links" : links }
    
-
 @app.post("/digest/sent" , dependencies=[Depends(keycheck("N8N_DEDUPE"))])
 @limiter.limit("10/minute")
 def digestwrite(request: Request , links: SentLinks ):
     with psycopg.connect(os.getenv("DATABASE_URL")) as conn:
         for link in links.links:
             conn.execute("insert into n8njobs (joblink) values (%s) on conflict (joblink) do nothing", (link,))
-    return {"status" : "Insertion completed"}    
-
+    return {"status" : "Insertion completed"} 
+   
 @app.post ("/evaluate" , dependencies=[Depends(keycheck("EVALUATE_TOKEN"))])
 @limiter.limit("10/minute")
 def evaluaten8n(request: Request , jobs : EvaluateInput ):
@@ -307,7 +314,6 @@ def checkhealth():
             raise HTTPException(status_code=503, detail="Timed Out")
         else:
             return {"status" : "ok"}   
-
 
 @app.post("/askeval",dependencies=[Depends(keycheck("EVALS"))])
 @limiter.limit("10/minute")
