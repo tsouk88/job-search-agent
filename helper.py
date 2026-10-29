@@ -38,7 +38,7 @@ def run_agent(agent: Runnable ,user_input: str, thread_id: str, country: str = "
     config = {"configurable": {"thread_id": thread_id} , "metadata": metadata } 
     result = agent.invoke(
         {"user_input": user_input, "country": country, "fetched_jobs": []}, 
-        config=config
+        config=config ,  durability="exit"
     )
     return result["clean_jobs"], result.get("memory", []) , result.get("last_fetch_time", "")
 
