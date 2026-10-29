@@ -115,11 +115,23 @@ Workable is the applicant-tracking system most companies in Greece run, so a rol
 
 ### Feedback and memory
 
-Tell the agent what to filter out — "no MERN", "no senior roles", "no usa" — and it stores your preferences in **PostgreSQL via LangGraph's PostgresSaver**. Filters persist across searches and across days.
+Tell the agent what to filter out — "no MERN", "no senior roles", "no PHP" — and it stores your preferences in **PostgreSQL via LangGraph's PostgresSaver**. Filters persist across searches and across days.
 
 Seniority words (`senior`, `junior`, `lead`, `principal`, …) are matched against the **title only**. Every posting says "work with senior engineers" somewhere in its body; that shouldn't disqualify a mid-level role. Everything else — technologies, locations — is matched against title, description and location.
 
 Active filters are shown at the bottom of every response. Say **"reset filters"** to clear them.
+
+To narrow by location, use the country field rather than a filter: "no usa" would also drop a European listing whose description mentions an office in the USA, while the country check reads only the location.
+
+### Search cache
+
+A search's results are kept in Redis for four hours under the normalised query and the country (`jobs:python developer:greece`), shared by every user. Before this, the only reuse was per thread, so each new visitor fetched from all five sources, and so did every request that arrived with a fresh UUID. On a hit the results are written into the caller's thread as if the graph had run, so `/feedback` and `/reset` find them there. The four hours count from the original fetch, not from the hit, so nobody is served listings older than that. `/askeval` skips the cache in both directions: an eval should measure the agent, not a copy of an earlier run.
+
+Filters are not part of the key. They are applied after the cache, per thread, which is what lets one cached search serve users who exclude different things.
+
+### What a thread costs
+
+LangGraph writes a checkpoint after every step by default. With five sources fanned out, one search left four checkpoints and every source's raw listings in Postgres: about **3.7MB per search**, and 24 threads had reached 260MB. The graph now runs with `durability="exit"` and writes once, when the run ends: about **41KB per search**. What that gives up is resuming a run that crashed halfway, which a search does not need: it is simply run again.
 
 The agent reads everything the five sources return and shows the top 12 after ranking (`MAX_RESULTS`, at the top of `agent.py`). RemoteOK is the exception: it is asked to match on the title before it replies, so its own ten are already ten that matched.
 
@@ -327,6 +339,7 @@ Use absolute paths to the virtualenv's interpreter — the client starts the pro
 |-------|-----------|
 | Agent | LangGraph (fan-out with `Send` API) |
 | Memory | PostgreSQL via `PostgresSaver` |
+| Cache & queue | Redis — search cache, rate limiter, Gemini budget, Celery for CV uploads |
 | Voice | Pipecat (Daily transport, Deepgram STT, ElevenLabs TTS) |
 | MCP | Official Python SDK (`mcp`), stdio transport |
 | LLM | Google Gemini 2.5 Flash — feedback extraction, CV parsing, n8n scoring |
@@ -390,6 +403,7 @@ LANGSMITH_PROJECT=
 LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com  # if outside US
 DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/jobsearch_memory
 ALLOWED_ORIGINS=http://localhost:3000  # comma-separated list of browser origins allowed to call the API
+REDIS_URL=redis://localhost:6379/0  # rate limiter, Gemini budget, Celery and the search cache
 EVALUATE_TOKEN=      # x-api-key for /evaluate (the n8n workflow)
 EVALS=               # x-api-key for /askeval, used by eval_runner.py
 N8N_DEDUPE=          # x-api-key for /digest and /digest/sent (the n8n digest)
