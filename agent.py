@@ -67,7 +67,7 @@ REGIONS = {
     "india": ["apac", "asia"],
 }
 
-GLOBAL_WORDS = ("worldwide", "anywhere", "global")
+GLOBAL_WORDS = ("worldwide", "anywhere", "global" , "world wide")
 
 
 def job_location(job: dict) -> str:

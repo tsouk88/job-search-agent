@@ -53,7 +53,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 // filters on the listing's own location - so the list is for the user's
 // convenience, not a constraint.
 const COUNTRIES = [
-  ['', 'Worldwide'],
+  ['', 'All locations'],
   ['greece', 'Greece'],
   ['cyprus', 'Cyprus'],
   ['united-kingdom', 'United Kingdom'],
@@ -70,7 +70,7 @@ const COUNTRIES = [
 ];
 
 // The chosen country lives in localStorage, outside React. Reading it through
-// useSyncExternalStore lets the server render "Worldwide" (there is no
+// useSyncExternalStore lets the server render "All locations" (there is no
 // localStorage there) and the browser pick up the saved choice right after
 // hydration, without setting state inside an effect.
 const countryListeners = new Set<() => void>();

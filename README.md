@@ -22,7 +22,7 @@ The agent queries five job sources in parallel:
 - [Jobicy.com](https://jobicy.com/api/v2/remote-jobs)
 - [Workable](https://jobs.workable.com) — the public board of the ATS most Greek companies run
 
-Pick a country from the dropdown, or leave it on Worldwide.
+Pick a country from the dropdown, or leave it on All locations, which applies no location filter.
 
 Results are scored, ranked and filtered in plain Python — no model in the search path. An LLM is still used where judgement genuinely helps: turning your spoken feedback into filter keywords, reading your CV, and scoring listings for the n8n digest.
 
@@ -85,7 +85,7 @@ RemoteOK's tags are not trusted. The API is still queried by tag, but every list
 
 ### Choosing a country
 
-The dropdown sets a country; Worldwide is the default and behaves as before. Each source filters on its own where it can, and the rest are filtered here, in one place:
+The dropdown sets a country; All locations is the default and applies no location filter. Each source filters on its own where it can, and the rest are filtered here, in one place:
 
 | Source | How the country is applied |
 |---|---|

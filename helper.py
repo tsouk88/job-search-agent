@@ -54,7 +54,7 @@ def active_filters_line(memory: list | None, country: str = "") -> str:
     than running a new one - it is meant to be instant, not five more API calls.
     So changing the dropdown and asking to exclude something shows the previous
     country's listings, and this line is what tells the reader so."""
-    parts = [f"Showing: {country.replace('-', ' ').title() if country else 'Worldwide'}"]
+    parts = [f"Showing: {country.replace('-', ' ').title() if country else 'All locations'}"]
     seen = []
     for entry in memory or []:
         for keyword in entry.split(","):
