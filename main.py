@@ -18,6 +18,7 @@ from tasks import filework , celery_app
 import asyncio
 import pdfplumber
 import logging
+import json
 import io
 import secrets
 from uuid import UUID
@@ -77,8 +78,13 @@ def check_gemini_budget(name , limit):
     if n > limit:
         raise HTTPException(status_code=429, detail="Gemini calls are out")
     return n
-    
 
+def jobcache(query , country ):
+    querylow = " ".join(query.lower().split())
+    key = f"jobs:{querylow}:{country}"
+    return key
+
+    
 class HealthCheckFilter(logging.Filter):
     def filter(self, record):
         if  "GET /health " not in record.getMessage():
@@ -115,7 +121,22 @@ def searchhelper(input:SearchInput , search_agent , metadata: dict | None=None):
     current_query=state.values.get("user_input" , "")  
     current_country=state.values.get("country" , "")
     if not last_known_fetch or current_query != input.user_input or current_country != input.country or (datetime.now() - datetime.fromisoformat(last_known_fetch)).total_seconds() > 14400 :
-        query, _ , last_fetch = run_agent(search_agent,input.user_input, input.thread_id, input.country , metadata)
+        if metadata is not None:
+            cache = None
+        else:
+            savedjobs= jobcache(input.user_input ,input.country)
+            cache=r.get(savedjobs)
+        if cache is not None:
+            data=json.loads(cache)
+            query = data["jobs"]
+            fetched_at = data["fetched_at"]
+            search_agent.update_state(config , {"user_input" :input.user_input , "country": input.country , "last_fetch_time" : fetched_at , "clean_jobs" : query })
+        else:    
+            query, _ , last_fetch = run_agent(search_agent,input.user_input, input.thread_id, input.country , metadata)
+            if metadata is None:
+                jobs_cache={"jobs" : query , "fetched_at" : last_fetch}
+                cached =json.dumps(jobs_cache)
+                r.set(savedjobs , cached , ex=14400)
         searched_country = input.country
     else:
         query = state.values.get("clean_jobs" , [])
