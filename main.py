@@ -221,6 +221,16 @@ def evaluaten8n(request: Request , jobs : EvaluateInput ):
     return response
 
         
+def pdfread(file):
+    bytesiofile = io.BytesIO(file)
+    try: 
+        with pdfplumber.open(bytesiofile) as pdf:
+            pages = pdf.pages[:5]
+            text = "\n".join(page.extract_text() or "" for page in pages)
+    except Exception as e:
+        print(e)
+        raise HTTPException(status_code=415, detail="Only PDF files are accepted")
+    return text
 
 @app.post ("/upload")
 @limiter.limit("10/minute")
@@ -231,16 +241,9 @@ async def uploadfile(request: Request , file: UploadFile, thread_id: UUID = Form
     if file.content_type != "application/pdf":
         raise HTTPException(status_code=415, detail="Only PDF files are accepted")
     file = await file.read()
-    uploadedfile = io.BytesIO(file)
-    try: 
-        with pdfplumber.open(uploadedfile) as pdf:
-            pages = pdf.pages[:5]
-            text = "\n".join(page.extract_text() or "" for page in pages)
-    except Exception as e:
-        print(e)
-        raise HTTPException(status_code=415, detail="Only PDF files are accepted")
     # this endpoint must stay async — it awaits the upload — so the blocking
     # calls go to a thread rather than stalling the event loop
+    text = await asyncio.to_thread(pdfread,file)
     await asyncio.to_thread(check_gemini_budget , "site" , SITE_LIMIT)
     job = await asyncio.to_thread(filework.delay , text, thread_id, country)
     return {"job_id": job.id}
