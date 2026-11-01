@@ -23,6 +23,9 @@ sources:
   - id: openwiki-source-23775c3de52f3ab95a13cb8b
     resource: repo://README.md
 generated: { by: "openwiki/0.6.1", at: "2026-10-01T12:03:35.670Z" }
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-11-01T15:48:11.877Z
 ---
 
 # Testing and evals

@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:7d0d8451c4297c1fd4585a20cbed77aa4371eef099810ec8e51bf73c365fff9d",
+  "pageVersion": "sha256:1d98686044675195dfa6a5ed8297fbb56be6cf8df99228ddd56899e889503403",
   "claims": [
     {
       "id": "claim_0391a247f6e84f1fb3d5f869c427fb84",
       "statement": "The Harbor eval freezes five job sources: RemoteOK, Himalayas, Remotive, and Jobicy (JSON APIs mapped by hostname in HOSTS) plus Workable (HTML at jobs.workable.com, served via a separate workable_fixture path router). Any host outside these five, or any Workable path the fixture map does not recognise, raises RuntimeError, so adding a sixth source to agent.py would turn the eval red before it ships.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L570-L586",
+          "resource": "repo://agent.py#L571-L587",
           "version": "repo-lines-v1:sha256:0109ad8f3809d0f1454a106e9a83ca0bfd17c76903600d90bc1b3369566596cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliMzJiMGZmZjNlMWJkYTk3MzUxOGFmMTEwMGYyYmE1ZDY2YzEyNmQzZWQxYzAzMjlmZGZmZjBiOTNiYmRjOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlOTk2N2YxMjk5MWNhM2VmNmI2ZmVmYjZiNDRmN2IwODdjOTQxMzYyNzkxNDBjYmNkNzFmMDk5M2I2MDQ4ZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3ZmVlMjlhNTNhNTE2OGJiMGVkM2E3ZTg5MzA3MWYyYTZmYTAyY2MwOTIxN2JkYjdiODZiMTkxMTVhNTE4YTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhM2NmNTE5MjM1NGY3MTYxNWFjNTEwMzRiM2U5N2MyMGVkYTk5NjQzZmNhZjViYmU2ZDQxYWQ1OWJkMTIxNjcifQ"
         },
         {
@@ -32,7 +32,7 @@
     },
     {
       "id": "claim_d4a59ce629f64b60bf4126ebff5b4d62",
-      "statement": "After Workable was added as a fifth source, the expected.json set was rewritten by hand from the new fixtures: three Workable listings (Python Developer, Junior Python Developer, Mid-Level Python Developer at EUROPEAN DYNAMICS) joined the kept set and the Workable 'Senior Backend Engineer (Python)' joined the dropped set on the title-only branch, moving the split to 7 kept / 5 dropped.",
+      "statement": "After Workable was added as a fifth source, the expected.json set was rewritten by hand from the new fixtures: three Workable listings (Python Developer, Junior Python Developer, Mid-Level Python Developer at EUROPEAN DYNAMICS) joined the kept set and the Workable 'Senior Backend Engineer (Python)' joined the dropped set, resulting in 6 kept and 6 dropped listings.",
       "evidence": [
         {
           "resource": "repo://evals/filter-exclusion-senior/environment/fixtures/workable/view-hrFtaRqbZsYCPcCVeEr4Q2.html#L3-L3",
@@ -40,13 +40,13 @@
         },
         {
           "resource": "repo://evals/filter-exclusion-senior/tests/expected.json",
-          "version": "repo-file-v1:sha256:7999ec870b7c5b558dd57ada207b645f0b4be5ae91dcf1ade3050ab109532a88"
+          "version": "repo-file-v1:sha256:116a84d2ba5a62e7333a6640e6d03d11deebb4634769d0ef85a8c276739a2200"
         }
       ]
     },
     {
       "id": "claim_da6a5baa1cb14f68b220104b414621ed",
-      "statement": "The test query 'python developer' with exclusions ['senior', 'game', 'canonical'] exercises both branches of filter_jobs: 'senior' (a SENIORITY term) drops listings via the title-only branch (the Jobicy 'Senior Software Engineer - Python/MongoDB' and the Workable 'Senior Backend Engineer (Python)'), while 'game' and 'canonical' drop via the full-text branch (title + description + location). 'canonical' matches only in the description of the Jobicy 'Python Engineer' (149543) listing, not its title.",
+      "statement": "The test query 'python developer' with exclusions ['senior', 'game', 'canonical'] exercises both branches of filter_jobs: 'senior' (a SENIORITY term) drops listings via the title-only branch (the Jobicy 'Senior Software Engineer - Python/MongoDB' and the Workable 'Senior Backend Engineer (Python)'), while 'game' and 'canonical' drop via the full-text branch (title + description + location). 'canonical' matches only in the description of the Jobicy 'Python Engineer' (149543) listing, not its title. There are 6 listings dropped in total.",
       "evidence": [
         {
           "resource": "repo://agent.py#L29-L51",
@@ -58,7 +58,11 @@
         },
         {
           "resource": "repo://evals/filter-exclusion-senior/tests/expected.json",
-          "version": "repo-file-v1:sha256:7999ec870b7c5b558dd57ada207b645f0b4be5ae91dcf1ade3050ab109532a88"
+          "version": "repo-file-v1:sha256:116a84d2ba5a62e7333a6640e6d03d11deebb4634769d0ef85a8c276739a2200"
+        },
+        {
+          "resource": "repo://evals/filter-exclusion-senior/tests/test_outputs.py#L59-L70",
+          "version": "repo-lines-v1:sha256:16777fb9a32a7c030fd4c5a2fbef8211a693d72d78a6e5593d371fabf4204cf3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY0OWY5YTMxYzViNjM5MzlhYjkwNmQyZDhmYjEwNzg4NzExZTBmYmU0OTFlMjNlODdiNWIxZGY4OTNkMmMwMzkiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyMzhmMGM5NDZjNzU1NDVmMjVkYTU1ZDQwNGZlYjE0Mjc3MWQ2NTM4YTc1NDY2NjQ1NWFlZjdiOGNlMzdkMTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBhOWI4NmExNmY0N2NjZDljZmQ1MTc2OTNmNTBjNWVkMDI2MTk2MDc3ODlhNGJjM2MxZTg4MGM2OTdiNGYxOTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU1ZmM4MWZhMGI1Y2M1NGJlYTNhOGY5YjExMWU4YWZmYWQ4MmViNTIwNmU2OGM0YjU3MGQ2YzIyMTM1YjdmMWUifQ"
         }
       ]
     },
@@ -137,6 +141,6 @@
   ],
   "verification": {
     "by": "openwiki/0.6.1",
-    "at": "2026-10-01T12:03:35.670Z"
+    "at": "2026-11-01T15:48:11.877Z"
   }
 }

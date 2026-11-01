@@ -1,0 +1,40 @@
+{
+  "schemaVersion": 1,
+  "pageVersion": "sha256:8ee6e99d6f292cd38937b3710778a8eba18db5e7b3ff9878d1bf1e995f5be90e",
+  "claims": [
+    {
+      "id": "claim_e453a7e960f745e585a832759d812d14",
+      "statement": "The keyword search agent uses a three-condition cache check (no previous fetch, query changed, or >4 hours elapsed) to decide whether to re-run the agent graph or use cached job results.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py",
+          "version": "repo-file-v1:sha256:772d2a1d86f71495365d3cbe847a3a75293ec1e113805def745156e02a16940b"
+        }
+      ]
+    },
+    {
+      "id": "claim_2f1b338b96044588840f7e9880804274",
+      "statement": "The feedback workflow updates thread memory without re-invoking the agent graph, performing a local re-filtering of cached jobs instead.",
+      "evidence": [
+        {
+          "resource": "repo://main.py",
+          "version": "repo-file-v1:sha256:40f8adafe7bff77a76fb933b9dfbca59384933e7f246bc2804176f46fe524365"
+        }
+      ]
+    },
+    {
+      "id": "claim_1f7cea17adf24bbdb80d49314aa7559f",
+      "statement": "The Harbor CI evaluation runs against frozen job API responses to verify the agent's filtering logic in isolation from LLM or network dependencies.",
+      "evidence": [
+        {
+          "resource": "repo://eval_runner.py",
+          "version": "repo-file-v1:sha256:6cceb0c235817ce412e15aa97cd3625c00b458a3f35ee0978f7ed40637f6035a"
+        }
+      ]
+    }
+  ],
+  "verification": {
+    "by": "openwiki/0.6.1",
+    "at": "2026-11-01T15:48:11.877Z"
+  }
+}

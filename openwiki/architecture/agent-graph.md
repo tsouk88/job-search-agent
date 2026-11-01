@@ -5,7 +5,7 @@ description: The LangGraph state machine in agent.py — fan-out to five job API
 tags: [agent, langgraph, graph, scoring, filtering, normalization, fan-out]
 verified:
   - by: openwiki/0.6.1
-    at: 2026-11-01T14:50:14.085Z
+    at: 2026-11-01T15:48:11.877Z
 sources:
   - id: openwiki-source-eca60e2ced68ba99bd0ac710
     resource: repo://agent.py

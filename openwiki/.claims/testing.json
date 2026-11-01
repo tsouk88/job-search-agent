@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:0c2a6c5d54816f7fb74489dc7aab87f02b03d3c511634d33ac85fdc637b84eb2",
+  "pageVersion": "sha256:8c14b3bc576b005452845a53d8d900309ae2d7311b404b0d2c552875e5f953f4",
   "claims": [
     {
       "id": "claim_6cd6982141bc4315a5044d9b2fd060c5",
@@ -8,11 +8,11 @@
       "evidence": [
         {
           "resource": "repo://README.md#L326-L328",
-          "version": "repo-lines-v1:sha256:910f078084a0bcdec088e408bb4667c73e7eae5ab8b8356f6e1df0d988f30b88:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWE0NzQwNzY2YjgzODBhZGU1ZDYxN2Y4ZGE5ZmM3MjNkZmEwY2IyZTkzNzFlYmVmN2FjZTlmYjE3NTMwODcyMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGJlMzE0Y2EzODI0M2Y5MmU4MTgyNmU5MDM1NzIxMGUzNmRjODY1Nzg2Mzg2ZmVhOGU5MDk2MmU4ODYxNDk1MiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMjM5MTc1Zjk5ODA4YmYzMjc1ZDQ2NGNiZWI4YWZhNjlkYzZlOWE3MjJhMjUzNjUwM2E3N2VmNGZmN2UwOGRjNyJ9"
+          "version": "repo-lines-v1:sha256:e7c899a0129a0cb18f937aba0bbefb290ff722b9f5ca0534032e3c5144a85344:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVhNjhhNTY0Y2IwMTQwN2E2MTMxYTE3YzMyMGU1NmNjNDI0YWRlY2VjNDMzNmY5NzRmZjRlYjUxZDJmYjZkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjdlNTc4OGQ1ZDlkNzNkMjRhODFkYmMwYTVhNzRiZmE4MmM5YzNiM2FmOTllNTJhZjc5NmU5MGI0NjhhOGEzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTJmODEzMDc3YTkyZWE3MjI2NmE2YzY1Y2JiM2VmMzY3ODc3MTJiYWFjOWY5NGM4ZGQ5MDBmZGE4ZjRlZDYyNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODgwOTE4YWM2NDMwNzA0MDMwMDQzMjc4YWJiMTY3MDAxYzY4MzQzZmM1YTNhZGY3ZjgyYjYxNjk1MjliODRhZiJ9"
         },
         {
-          "resource": "repo://eval_runner.py#L90-L91",
-          "version": "repo-lines-v1:sha256:4b2b6facc079f11d92fbb41dc6fe3ed9fe2413a42d584d1ba273f2d072f633d6:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGEwZjg1MGRlZDJkZjcxMTBlMzU5NDY2ZWZmYzEwMGM0ZWQyNDRkNDhiZDVhN2MwZTQwMTQ0Nzc2N2M4MDZhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZGMwOTU3MGZjZjVhZTEyN2I0YTA5YzI0NjFmMWJkYjQxYjk0YzkwNGM1YTgxOTBiM2U0ZDA1MGM5OGRmZmU0ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzEzNTE1MjRkZWI4MjI1NzE4MTQxNjhlNzk1MGE4ZjNlOTRiYmJjOTY2Y2Y3MDk0YjkzZjU3OGM4MTk2YTZhYyJ9"
+          "resource": "repo://eval_runner.py",
+          "version": "repo-file-v1:sha256:6cceb0c235817ce412e15aa97cd3625c00b458a3f35ee0978f7ed40637f6035a"
         },
         {
           "resource": "repo://evals/check_reward.py#L1-L9",
@@ -56,25 +56,25 @@
     },
     {
       "id": "claim_b508da0da1c340348d1a4a94c39848d0",
-      "statement": "Adding Workable turned the Harbor eval red before shipping because the frozen environment knew four hosts and the fan-out had changed; the expected set was rewritten by hand from the new fixtures (three Workable listings kept, its senior listing dropped, a Jobicy listing leaving both).",
+      "statement": "Adding Workable turned the Harbor eval red before shipping because the frozen environment knew four hosts and the fan-out had changed; the expected set was rewritten by hand from the new fixtures.",
       "evidence": [
         {
           "resource": "repo://README.md#L440-L442",
-          "version": "repo-lines-v1:sha256:2bc34733afbc729a21d3383178117c751549dca9539e13068f560743ece3261d:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2I2MjlhYzAyZTM4ZTNmNzM5MjFmOWY0YmVjOTQ2MzkyZWEwYTY2MzM1YTE4ZTVhYTU1NTliNmE5Mjk4MTJhNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDZlMWE5ZjM5YzU3NWJiYTFkOTNlMjgxMzdmNWIxMzRlMzY2MWY1NjBlODEzYWI2NjgwMDZjYzE5MmUwNGY5NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGU3NTM1NjNjZWMyMjllNWMwNjNlZmE2NTE5ZjBkNGY3MmUxN2JjY2E1Mzk1MzQxMTM5MGViZjgzYThkMTJmNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZjZlMzcyZTJhYmVhOTA3MTFlODg4ZGU1Mjg1NmVkZGI4YWRiZTUzNjFhOGE0ZmE2YjBiZjc3MWQ3MzhiM2UwNyJ9"
+          "version": "repo-lines-v1:sha256:2a6f81a337851588f56284e714af53ca83b940cafa4eada29533d3bc5bdfacbb:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzYzYWQ3NjdjNWI3YmM5NWM4NGY3MDA0MTJjNDY3ZTMxZjg5ZGYwZGZkZDBmYWI0MTM3ODA5MmRjMTdjODcyZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzcyMGFlMzhhMWU5OGY3N2UzZDNiYTdjMmViMDNmNjk3NWYzODhkNGY5OWU5Y2U2NzljMTJiMWIzODZlN2RmZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGNkODVjMWZiZGUwN2MyZGI5NmU2OTA0MTQ5YTI0ODFhMjQwN2EzNjU4OTlmNmUyYTM0Y2RjYTUzZWY4ZjZlNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGE1YjlmMzJkZmRmYzM5OTJmYjY5YTRlNDk3MjkwYzI4ZWIxNzU5MDE4NWRiNmI5YTFmNGUxNmMzMDUwZTQ2ZiJ9"
         },
         {
-          "resource": "repo://evals/filter-exclusion-senior/tests/expected.json#L1-L18",
-          "version": "repo-lines-v1:sha256:7999ec870b7c5b558dd57ada207b645f0b4be5ae91dcf1ade3050ab109532a88:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://evals/filter-exclusion-senior/tests/expected.json",
+          "version": "repo-file-v1:sha256:116a84d2ba5a62e7333a6640e6d03d11deebb4634769d0ef85a8c276739a2200"
         }
       ]
     },
     {
       "id": "claim_c2ce84d03ab2401da92ee20885c3239b",
-      "statement": "The Harbor entry under test is mcp_server.search_remote_jobs(query, exclude_keywords); the pass condition is that the set of apply_url values in output.json exactly equals the hand-written keep set in expected.json (7 kept, 5 dropped), and the verifier never calls filter_jobs to avoid grading the code against itself.",
+      "statement": "The Harbor entry under test is mcp_server.search_remote_jobs(query, exclude_keywords); the pass condition is that the set of apply_url values in output.json exactly equals the hand-written keep set in expected.json, and the verifier never calls filter_jobs to avoid grading the code against itself.",
       "evidence": [
         {
-          "resource": "repo://evals/filter-exclusion-senior/tests/expected.json#L1-L18",
-          "version": "repo-lines-v1:sha256:7999ec870b7c5b558dd57ada207b645f0b4be5ae91dcf1ade3050ab109532a88:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE2ZmIwOGZkYTFhY2I5NTdiNjExNmJkMzc4MTFhMWZlNDFhMDE2MTFjMDYzMWVkYmY3ODZkNjg4OWEyN2E1NWMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxMmNhMzQ1Y2NmNzViZjljMDgwNmJjZTY5NWJlOGRlODA4Yjc5OTg0MjUxYTdhNTRkMjAyY2Y2MTAxZGQ0NTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+          "resource": "repo://evals/filter-exclusion-senior/tests/expected.json",
+          "version": "repo-file-v1:sha256:116a84d2ba5a62e7333a6640e6d03d11deebb4634769d0ef85a8c276739a2200"
         },
         {
           "resource": "repo://evals/filter-exclusion-senior/tests/test_outputs.py#L53-L79",
@@ -88,15 +88,15 @@
     },
     {
       "id": "claim_12f37b22c6d0478db51d5e8a1dde32f5",
-      "statement": "The LangSmith eval posts 24 queries from the job-search-eval dataset to localhost:8002/ask and scores relevant/total with a Gemini 2.5 Flash structured-output judge; the current baseline is ~0.90 across 24 cases (16 August).",
+      "statement": "The LangSmith eval posts queries to localhost:8002/askeval and scores relevant/total with a Gemini 2.5 Flash structured-output judge.",
       "evidence": [
         {
           "resource": "repo://README.md#L330-L334",
-          "version": "repo-lines-v1:sha256:782fa43eacf47047e73596d5f27345b4047be258c81bc52f9b3f7a00158285c6:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTI0N2IwNjQ2MGRhNzI3ODk3ODM5MTM4ZmJjMThkMGM1YmQyMThhYTc1ZmE4MTNkMWRjMTI5OTY1NTVlODNjZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmI2MGU4ZDgyYmM3NjkxMTAzOWU2MDE0Nzg0M2QzOGUzMzRmZTczZWFhNDViZjE2ZGNhZGViZmQ3YzhiYjNjNCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzZmODRmNzRiZWZlMjQzZTA2MTc5NDU4ZDE1MTE1NTE2ODQ2NTM1N2RhNzZhNWQ0OTBhYWRiNGU4NDYzYzY3MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGVjNjE0OTk0ZDEzMTMxYWY0ZGU1NjFkMjY5NzA3MTA3ZjY3Mjc0OGM3OTU2NTM2YzcyNDZiZjIxY2QwODVhYyJ9"
+          "version": "repo-lines-v1:sha256:96461417ecc96fe7b8053330391fd1861c7543f481f44018a1b31320a3108e08:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdjMDZjNTYxZDVjMzI3MzQzNjg1MjY4YTQ2YjMzOTFmMzk5OGVlZTg5MGQyYmU1MWYwZDIxY2M0YTUzYWU2ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjUyZDcxMTEwM2Q1MGE0Mzc4MzBjNmZiY2QwNGZiNGJhYjQ5YTBmODJmNmQyNmQxYzc5MWM2ZTg0ODhkZDA5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGUwZjcyOTNkMTU2YTZkMTI1MjhkYjEyOTMzNzllNTJhNWY4MzY3MDQ0Mjk3YjIyODJiOTdmZjJjODYwNDM4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDRmZTgyZDM1MGFhYmE1Y2Y1Y2Q5MTJmZmUxMmFmODk5ZmViM2E4NDc2OGFmMGU4OTVjYzMxMDRiOGZiNzBhOSJ9"
         },
         {
-          "resource": "repo://eval_runner.py#L13-L91",
-          "version": "repo-lines-v1:sha256:351e14ae19d56c1dd6c91c91d2116429f3ddc8e5082f2ed3414d6f0b5ca4f088:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU4M2I1YTg3MzdhZWQ5YmMwZjU4ZDhlMzIzNmFjNzQyNDE2ZDVjMDQ3YmJmN2E5NjE5NzBiZDc1OTZhZTRkY2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkMTA1NmU1Y2E2ZGY4ZmVmNmIwY2Y0NTlhYTAwMWI3MTAzYTI0ZWUwMDlmODQ1ODA4MWJiODg0MTAyZWI1MzUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMxMzUxNTI0ZGViODIyNTcxODE0MTY4ZTc5NTBhOGYzZTk0YmJiYzk2NmNmNzA5NGI5M2Y1NzhjODE5NmE2YWMifQ"
+          "resource": "repo://eval_runner.py#L48-L64",
+          "version": "repo-lines-v1:sha256:e3dea6f3c5dfe145185a61336ccc784b648b0838c041c02c485d66beeaa7725a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxNDQzYjRjMGE2ZGFkZGEyMjk2MTVkN2IxMzlhOTYwZTM3YTQwNjNhMDExMzRmODgzYzdkN2Q5NGMwZDQ5YmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4OGY0MGIwMTE3YzYyZWNiZjUwMzE4ZGI5MmYyN2VlOTExNzVmMjYzZGZhMGQ3YzhiMzkzODlhN2NlMTg4NDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjZTRmZDgzMzRhNTgyODFkMDhiZTY5YWI4NGRlMTY5NmJiY2VkYzI3NDg4NjdlN2JjYWJmOTA4NzllYTYyY2EifQ"
         }
       ]
     },
@@ -106,11 +106,15 @@
       "evidence": [
         {
           "resource": "repo://README.md#L384-L394",
-          "version": "repo-lines-v1:sha256:804d33483843c8e40dcddb317dfe972908f7bdae43c340e1bdf98560b7d225fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmZDNjMzQyODc2YTliYTViYTdkNWQ3ZmMzMDVjOGE2OWJhMjgxZjQ4MzkyNzg2YmRkMmI4ODNiMGI4NTNlNTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzNGUxMWExNWY2NzBmMzUyNzFjN2ZiNjdkYzBiN2Q5MWQ5OTVkMjQwMDU2OTRjYmI4YzBhNjZkNDVkZDg3NTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhMWUzYjZiZGMyOWUyYjAyY2JkODI3YTE0ODNiZjU1ZmJjM2IxZGRlNzljZWM5MGFlZmZjNzZmNWY4NGM0MjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4YmVjMzRkYzM5ZGNhZmU3Zjk4NDk0N2JmNmY5YWE0MzY5YzQxZWQ4OWI4NDMwYzk3NjJkNjE5MDg0NTZiNGQifQ"
+          "version": "repo-lines-v1:sha256:72d4361642a509daeb76aea7fc49d257a85331b24322ad807d2813de64d5e6cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjQyZDU3MWFlODE0ZGEzYTQ4NzM2MjQ0ZmEwNGE4YjQ0MzY1NjhkYzA3N2ZkZDVjODY3YmM3MjliZGY1ZjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2YWQwYWNmZWVhYjYzNzIwNDBkYTU4NDVmNTk5MTM5NzgzMjU0ZWZlNGJkOTJkNjEwZDA5ZGJjYTc0OTM1MmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlmYjllZDMxZmI1ODRhMmM0ODc0MmZhMTY2NjFhOTRiYjkxOTU5YzcxNDQ4MWJjMDg2YjU0NjhlM2Y0YTVmZWIifQ"
         },
         {
-          "resource": "repo://eval_runner.py#L41-L85",
-          "version": "repo-lines-v1:sha256:eb13c57d462f060df8d6c9c4f941afa82500cd21d1e928dc0eaeff5a0c7b982e:eyJzZWxlY3RlZExpbmVDb3VudCI6NDUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA1MTUwODU4NDMyOTliZDMxZmM2MWI3MmYwOWI5ZTIwMTdjYTg4YmE4ODJkMzcxOGJjN2YzN2UwZDE4MjBlMWEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3ZDJmY2YyZDAzNDg1MDBkNDQ5MWVjMGExOTQyODNlYmYxYjE3ZThiZGExZTY0MmU4MGRjMmY2MzBiODY5YWUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFkZDk2M2Y2YmIzYWRkNWY4Njg1MjE0NmViZTEwNDQ5ZDlmZWM3OTA2MjM3MmFmZWE1NmE5YjU5MzBhZjIyZGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjODk5MGZkYzhiZWZjNThlNzFmNzg4ZThlNzhlYjQ4OWJhNjJmOTA3M2I1MDJkYjRiMGU3MzEyMDlmOTQzYTcifQ"
+          "resource": "repo://eval_runner.py#L52-L57",
+          "version": "repo-lines-v1:sha256:b54c34f42d723379a3255639b71425f34f5f96dbcf880832f16a766244c09d60:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzJjNTk2ODFmNGJmZGUxYWFjNWRjNmZkNmY3MzE2YTdhMjIxNDI2OTg2ODNmMTY5YmMwZWUzMWVlMDY4NDhlNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTZiMDQ0OTE0Njk3MjJlODM2M2E5NGU0MDQ0NTM4ZTAxM2EyYTIxN2UzNmIxZTU2OGJhNjBhY2I3YjRjOGYyZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDExN2Q5MjMzNjE0MTZmMTQ4NWUzMzk1ZmIwZDNkMzQwY2I3OWMwZjA4MzY4NzQ5MDQ5YmJiNzNkYTZjMTRmYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjU1NjU3YTU0YmVhYTkxMjExZGIzNTE1YjE5YmQ3MTQzZjYwYTE5YmNlMTc5YjAwOTQwYTgwMDllYzQ1YTMwMyJ9"
+        },
+        {
+          "resource": "repo://eval_runner.py#L84-L95",
+          "version": "repo-lines-v1:sha256:00c3416c19a6d65c889be0d8ffbf215e6953c3daa78db579ec6619377466a6dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczMzQ2NDdhMGQwYjk0Y2ZlYjUxOGZlYjJiYmQ3NGEyNzI4OThjYmFkZmQ2OWY4MmM5YTg3ZGU0ZjU3MWMxMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzNjdlZWM3YjYxMWNhNDBjMjRjNzBhMzc4NmZjMjY1Yzc4OWNiOWMzNDI1ODJiM2Q5ZTQwMTY1OGZkN2Y3NjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhNWZkZTRiYzdmZGFiODU2ZGQ5NGUxNjZkZTE5YjkzZDU5MmQ0MmUzNjRjNmQ5ZDg4YmExMDMzMjY2ZmFmNjkifQ"
         }
       ]
     },
@@ -119,32 +123,32 @@
       "statement": "LangSmith changes are judged against a control run of the unchanged code on the same day, not a stored baseline, because live job boards shift (the same unchanged code scored 0.765 five days later) and individual cases wobble; the aggregate is the signal.",
       "evidence": [
         {
-          "resource": "repo://README.md#L336-L341",
+          "resource": "repo://README.md#L152-L157",
           "version": "repo-lines-v1:sha256:82772c8de944e6fd9b24d1769764fa356b1f23ac3c2868435130623e73079590:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDdmODg5OWM3ZmVmYjgyY2FlOWJkNGU2NzQ0NjY0NDU2MGE1MjdkNjQ5ZDRmN2U5NmE0OTkxNTc3ZDQ5M2U3NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjZkODNmYTE2YzlmNWQxOGYzZDU3ZjI2M2ZmMzE1ZDhlNTU3NWEzYTM3YTU0MjczOTg1NTUyNGVmMjI2NTk3OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2JiMDMzM2RhZWNlMTQwZmQwMmU5ZmIxNWIyOTA0OWFhMGE4NTFkYzk4Y2E3MDQxY2VmMjJiOTljZTUyNWRiZCJ9"
         }
       ]
     },
     {
       "id": "claim_b55699a6888e4a8692dfa438f2689884",
-      "statement": "Local Harbor runs use PYTHONPATH=$(pwd) harbor run ... --job-name local followed by python evals/check_reward.py evals/jobs/local; the LangSmith eval uses python eval_runner.py with the backend on port 8002, requiring LANGSMITH_API_KEY and GEMINI_API_KEY.",
+      "statement": "Local Harbor runs use PYTHONPATH=$(pwd) harbor run ... --job-name local followed by python evals/check_reward.py evals/jobs/local; the LangSmith eval uses python eval_runner.py with the backend on port 8002, requiring LANGSMITH_API_KEY, GEMINI_API_KEY, and an EVALS key.",
       "evidence": [
         {
           "resource": "repo://README.md#L346-L348",
-          "version": "repo-lines-v1:sha256:975d4e3f8e8066b81afa4a9dd0146a40951d139fc642c8d51974ef20c36df632:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNWRlMmY1MzI4ZWU2ZTgwNTBlOGFhZmQ4ZGM4NjlhMDY5Y2Q5NTg0ZWRhYWY1NGZlNTg5ZDczYzNiN2RjZDc5OSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdjMDZjNTYxZDVjMzI3MzQzNjg1MjY4YTQ2YjMzOTFmMzk5OGVlZTg5MGQyYmU1MWYwZDIxY2M0YTUzYWU2ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjI4MmZhYTA5ZDAyZDYxMDA3YWMwYTE5NmRmZjI3MzViMzAwZTAwZjdiMGE0NjM5MDBmNTQ3MTU0OGRlMmE3NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2RjMTJjMDI4YmFhY2IxNjU1ZDI4NjFhYTM3ZjEzMTFiMWYyOGU5OTUxZjk4OTA5YjE0N2NiMTAxMDY0YzZlZSJ9"
+          "version": "repo-lines-v1:sha256:279ee7cca7b0dfaade6883fc2ab26c273dafd2ba74530641628706b7b3fec7b1:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGNkZTI4YWQ4NTA2N2FmNWVjZjM4ZjVkNmVjZDc5YmM5ZmZmMWI2YzJkY2VlYjBkNGQyOGU3MmViZDhjZDQ1NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmU2Mjg1ZDM5NzJiYmM0ZDViODM3NzcwNjlhNzY4Njk4MTZjNGZjNjQ0YmFiMjgxYTY4ZWI1ZjM4Y2I5ZGFiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDc0MTkxOTg5N2VhZjhhYzg2ZDY4ZjQyNWFlODE5Yzk2NWQxZjYxMzE4Nzk2MzUwZTlhOGUyOWVjNGQyY2ZjZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDYzNTAwMDAxZjlhOGVjNzdiMzMzNDc3YmNmZWRhYjI3YTUyMGJkNzljZGNlNDdkYjk1YTQxYTVkNDBjZGU3YSJ9"
         },
         {
           "resource": "repo://README.md#L421-L434",
-          "version": "repo-lines-v1:sha256:03ad332f79109d89507a0478a0150fbe780951cf4d9d2eea5f5e38225f479b2f:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMxMDljZGQ5MWY3MWFjMWIxNmNmNDE0M2Y3YjMwMTc5NjU0ZmRiYTAyMGIxNGYzZmM5NDBjM2E2NmU5YTU0OTgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIyMTYyNzE0MDZkOTM0OGM0ODYzMWZkOTM4NjYxZGQzY2ZkNzMzNWU5Y2QzODdkM2I5OGRkNTAxYzI3ZjYyYWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFlNzhjNGY5NjRjZjY3NDVhZGRmZDU2NTZlMjE0ZDY3MGJhODQ5Mzc5YWQzOTk2NDVmZmNiNDk3NDE1OTY1NjkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg4Njk5MzgzY2JhYWIzOTQ3OGUyNmM0YjdiNDhjN2FlZTA2MjZlMGUwMGVjMGY5Y2Y4YzNmOTVjM2M2YTY0MjQifQ"
+          "version": "repo-lines-v1:sha256:697eed9086f06555a57a5bfc6396b1cc35d981d207c60bd939e192d687154d19:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3OWFhYTMyOWRkMTk5MmZiNmFiYTRhYjg0NjE4YjJkMGZkMjI4NDYyZmVkN2VkNjI1YTU5MzZjN2I4ZGMyNzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0OTliMTQyM2UxZDY3YTQ2OTY2ZDRmYmNhNWZiZDY4MTA3OGI4MjEwNGFjOWJlZGVkZDRhODljMzM5MjUzODUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1OTcwNmZmYjQyMWIyMTU5M2JlNDc3MDJlNjk0ZjMxZDQ5ZTI4OTVjOTI4ZWEzNTFmYzdiOGYyOTY3OTE5NGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1Mjk3NGExYTMwYjRiMmRhZmVhOGFjZDI0NDMzZDg5NzVhNjEyNjQ5NmQ0YjY1NGFjM2IxOTUwMzZiZDExMjQifQ"
         },
         {
-          "resource": "repo://eval_runner.py#L30-L38",
-          "version": "repo-lines-v1:sha256:0aa38be5d88a2325a06bcb739a3a55fba02eb711e4d0a8f2a588e3610b0e8ad3:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYWFkMzc2YzRmZTYzNmM5OThhNDA5OGRiZDU1MTIxMzEwNDQyNWE1NmE3OTRhMDBjNjUzMTBiYzc1NWQ4MjEwNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDE2NDg4MDkxOTMxZGVlZmMwM2VmNzg3ZmI5MDhhZDgxOWI4Y2VjMDdlODViZGE5YjliMWJhZjE3ZTZjMmY3NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmEzY2Y1MTkyMzU0ZjcxNjE1YWM1MTAzNGIzZTk3YzIwZWRhOTk2NDNmY2FmNWJiZTZkNDFhZDU5YmQxMjE2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWQyOWJmMDdmZmQ2MzcyNDE5OTdiODViODZiYjk0MGUzZDI1NWY4MWI2ZDM4MzY3ZjZjYWVmYWExZWM0OWE4NyJ9"
+          "resource": "repo://eval_runner.py#L35-L42",
+          "version": "repo-lines-v1:sha256:179934ddd6e914b418b726b4195f8f6ea8c0d00b03c1fb7def10dd35a69be928:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzkyOWEyZjMyOWQxMWE1OTMyNmE0OWZjYmQ2YzU5ZGNkNmMxNDhjMGI5YjgzY2JiYWI0NzBjNDE2YTk5YTEwZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTI3NjVmMTI2NzI0YjdhZTFiYjAyOTIzNDEwYThkMDc1ZThjZmY3YTY2MmE0MmE1ZTg0ZWM3NGNmZTFjNWZmMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDQyNjA0ODMwNzFkZGEwYjg2NmNmMDI0YWQ5MDNkMDA5YTU5MGI4ZGJmMmNmYWU1ZDg0MDg4NmM2MTczNzM0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODJlMGMwMjE1ODEzOGM2NmNmNDNjZTQ3MWUxMjE1MGYxMzBlNjYyOGE5NWI4ZjE3ZTM0MGVlYWQ4N2VmNDI0YyJ9"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.1",
-    "at": "2026-10-01T12:03:35.670Z"
+    "at": "2026-11-01T15:48:11.877Z"
   }
 }

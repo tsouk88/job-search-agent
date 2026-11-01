@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:2fdd79f1904b5f70dd52f759bc96b0f000319427255a9a1355616d503a53064a",
+  "pageVersion": "sha256:e30fb45a40980fa910fd839fac76191d52c8bbdb2cb5bd7a0ddd46d204d2c5a8",
   "claims": [
     {
       "id": "claim_a7c74c9d054b480a93609fb308221613",
@@ -217,10 +217,78 @@
           "version": "repo-lines-v1:sha256:b6635330d9e424118b43514b37bfcb382f559e44f3a6e7cbdfb3226daf775d1c:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDZmZTg2NTlhOGIwMTQ3YTUzZDQyZDFkODk4ZjExMzQ3ZTVkNjUxMmE2ZGEzOTBkNDhkNTc4NTM1MTE4M2QyZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDBjZjM0ZWMwMDZlZTUxMjY1YWFkMDEwYWRhYWM0NjI1NWQ1YzY4MDdkNTYwMzBmODE2MTMwMjExMjBmYzgyYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTA4NDdmZGU2NmFjNTliNTllM2YxZDk0MTFmMGY1YWQxZTQyZTI4YzY5YWM2NmJmZDljZjI2NzFhZjc3N2I3MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWNlZmQwMzQ5MDZmMWY1NWU1OGUyODBhMDk5NjU1MjQyZTI3YjhiZThiYTUxNThhMDZlYmMyODgyZGNmNTU3YyJ9"
         }
       ]
+    },
+    {
+      "id": "claim_9c437636348249d5854ecc3942854a4d",
+      "statement": "The job search agent core is a deterministic, LLM-free LangGraph graph that performs fan-out, collection, scoring, and filtering, ensuring consistent and reproducible results.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py",
+          "version": "repo-file-v1:sha256:772d2a1d86f71495365d3cbe847a3a75293ec1e113805def745156e02a16940b"
+        }
+      ]
+    },
+    {
+      "id": "claim_5fafdae1849646e19f60ecbccc465947",
+      "statement": "The system exposes three distinct interfaces (REST, MCP, and Voice) which share the same underlying graph core but utilize different persistence and caching strategies.",
+      "evidence": [
+        {
+          "resource": "repo://main.py",
+          "version": "repo-file-v1:sha256:40f8adafe7bff77a76fb933b9dfbca59384933e7f246bc2804176f46fe524365"
+        },
+        {
+          "resource": "repo://mcp_server.py",
+          "version": "repo-file-v1:sha256:c6681179cf6c084340b02117d9614fbb024a0863575198f6fbb0103d912caede"
+        },
+        {
+          "resource": "repo://voice_agent.py",
+          "version": "repo-file-v1:sha256:69f51fbba2d05acc91a1535ad2dbcaf9751c6ade0cbb29574ace88de65fd7433"
+        }
+      ]
+    },
+    {
+      "id": "claim_543a7e57ee644910a832debdf4166a16",
+      "statement": "REST interface persistence is managed via PostgresSaver for checkpointer state and Redis for per-query job caching, rate limiting, and Gemini API budget enforcement.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L112-L149",
+          "version": "repo-lines-v1:sha256:ef0471a3519b0e857a7e06fa6b729e841760a917ec5f706333a1367587419438:eyJzZWxlY3RlZExpbmVDb3VudCI6MzgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhkMDlhMDY5MzJhYWZmZDQyODFkOThhNjE0MTMzMTc4NjQwN2UwNzNiM2MyNmM5NTU3MjRjNzZlOTFiZWU4ZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg3MjYwYWJkZWM3YTgxOGJiMWVhZmUyM2RjMWNmZDliOGM4ZWJiN2Q2ZmZjNjdjODQ4NzJlOTI5NjYzZGRkYjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQyNDE0ZDg1NjYxM2E5YTE1MTBiNmM1M2Y2MzA4MDMzMDQ0MDA2MmVkMDA1NjM0OWRhMWYwZTE4NDA3NDQwNTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjI5NTExNWIzMzUyY2E2ZDIxMmVhYzVlZTU5ZmQyOGQ5ZWQ3NDljMzFiMzU0NzExODY5MzY2Mjk5ZWVmZDI5Y2MifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d4eae93d8ca64dda8b0c513c5920fc4e",
+      "statement": "The /upload endpoint offloads resource-intensive CV parsing and graph execution to a Celery worker to maintain responsive event loops.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L126-L150",
+          "version": "repo-lines-v1:sha256:13e0ae41e5e4a1c44cb530a32e46ff0602a53150c085471dd039ee7d1877eced:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5N2I0N2JiODFjZTkzY2JhNjdhZmMwODY5OGE4MGNmYTA5M2E4NjY3ZTljOWY5NjUzMzc4MThkNjU3OGQxODUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzZGEyMzZiZmJiYTMxZDg1NjViYzUxMTI3ZWU3NGQ3MDg3NGM4NzI5NGU4ZTdiNzNlNzIxZTljY2ExNjdlNzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjM5MGM2OTI5MzM0ZDRkOWM5YjkxMDUxZGVjN2ViOWYyMjU0NTA4MDQzZDNkOGY4MzA4NTA2NzJiYTVkNGMyOTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3MjA0MWVlZDRiYTYwZDQ1NjYzYjdkYjFlNDVhNWU2MTAwN2Q3NmIyYzBiMzI4NDMxZTQ3OTgzNjczNGNlYWEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_017fb2bf52664be79d2e908f3cbfa35d",
+      "statement": "Gemini 2.5 Flash usage is restricted to specific LLM-enabled boundaries (/feedback, /upload, /evaluate), each subject to strict input size constraints and a daily-call budget enforced in Redis.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L104-L106",
+          "version": "repo-lines-v1:sha256:5c17afdabab539768f299adcc3c379c340fcf3283c5f0dd1a7c7c9d313fcdcc5:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOThiODRmMWEyODU1NmZjYmFlOWRjNTQ3ZjkyZmYxZjU0MDUwZWNmYjBmOWFiMzJjZTllMmFlZWY1OTVhYWY4NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmI1MDcyYTExZTU3ZjhjMThmZDE1MTc4OTA5NGY3OTAwNzE2MzYzOGM2ZTc1NWM4ZmM0MzhiOWNkMjQ1ZDhmNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmU2YTc1YWQ5YjYyZGMwMjZkODQ3MTY0YTVmMjQ3ODZjM2E4MzA3MTg1YTk2MmNmMTM2MmU5NzAxYjA5YWI2YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_a1a024e601cd41338dc9b37322807d69",
+      "statement": "The /askeval entrypoint is an LLM-free graph execution path protected for exclusive use by the eval harness, ensuring evaluation-driven changes are measurable without internal model interference.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L106-L106",
+          "version": "repo-lines-v1:sha256:98b84f1a28556fcbae9dc547f92ff1f54050ecfb0f9ab32ce9e2aeef595aaf87:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOThiODRmMWEyODU1NmZjYmFlOWRjNTQ3ZjkyZmYxZjU0MDUwZWNmYjBmOWFiMzJjZTllMmFlZWY1OTVhYWY4NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOThiODRmMWEyODU1NmZjYmFlOWRjNTQ3ZjkyZmYxZjU0MDUwZWNmYjBmOWFiMzJjZTllMmFlZWY1OTVhYWY4NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmUyYTdkN2NlYzhkMmQ5ZTFjMTI0NTNlZDVjYzQ5NWZkZTRjNTAyNWUyYWJkN2Y2M2Q4Zjc1MzYyNjY0ZWYzMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmU2YTc1YWQ5YjYyZGMwMjZkODQ3MTY0YTVmMjQ3ODZjM2E4MzA3MTg1YTk2MmNmMTM2MmU5NzAxYjA5YWI2YiJ9"
+        }
+      ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.1",
-    "at": "2026-11-01T14:50:14.085Z"
+    "at": "2026-11-01T15:48:11.877Z"
   }
 }

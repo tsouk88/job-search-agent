@@ -3,12 +3,24 @@ type: Reference
 title: Workflows
 description: User-visible and maintenance workflows — keyword search, feedback loop, CV upload, n8n digest, Harbor eval, and LangSmith eval — with change guidance for each.
 tags: [workflows, user-flows, agent, feedback, eval, search]
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-11-01T15:48:11.877Z
+sources:
+  - id: openwiki-source-eca60e2ced68ba99bd0ac710
+    resource: repo://agent.py
+  - id: openwiki-source-f1644da1c1a64a6a6567706b
+    resource: repo://eval_runner.py
+  - id: openwiki-source-833e692518af9eeaf8564cc6
+    resource: repo://main.py
+generated: { by: "openwiki/0.6.1", at: "2026-11-01T15:48:11.877Z" }
 ---
 
 # Workflows
 
 ## 1. Keyword job search
 
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Heuristic: an unescaped angle bracket inside a label breaks rendering; rephrase the label. -->
 <!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Heuristic: an unescaped angle bracket inside a label breaks rendering; rephrase the label. -->
 ```text
 sequenceDiagram
