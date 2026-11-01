@@ -3,9 +3,6 @@ type: Reference
 title: Testing and Evals
 description: Two eval systems — the deterministic Harbor eval (frozen fixtures for five sources, CI, exact-set assertions) and the LangSmith eval (live job boards, LLM judge, ~0.90 baseline over 24 cases). No classic unit test suite.
 tags: [testing, evals, harbor, langsmith, regression, quality, ci]
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-10-01T12:03:35.670Z
 sources:
   - id: openwiki-source-9ea7004cd60fc78ed888a032
     resource: repo://.github/workflows/eval.yml

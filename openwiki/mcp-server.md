@@ -3,9 +3,6 @@ type: Subsystem
 title: MCP Server
 description: The Model Context Protocol stdio server in mcp_server.py — one read-only tool (search_remote_jobs), in-process 4h cache, no database, no LLM, no env vars. Designed for intent-based exclusion via explicit args. Backs five job sources through one LangGraph graph.
 tags: [mcp, model-context-protocol, stdio, tool, deterministic, cache]
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-10-01T12:03:35.670Z
 sources:
   - id: openwiki-source-eca60e2ced68ba99bd0ac710
     resource: repo://agent.py
@@ -15,7 +12,10 @@ sources:
     resource: repo://main.py
   - id: openwiki-source-7a041713b68b973227e27f3e
     resource: repo://mcp_server.py
-generated: { by: "openwiki/0.6.1", at: "2026-10-01T12:03:35.670Z" }
+generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-11-01T14:50:14.085Z
 ---
 
 # MCP Server
@@ -28,7 +28,7 @@ The MCP tool is designed around **intent, not endpoints**. Instead of separate s
 
 ```python
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
-def search_remote_jobs(query: str, exclude_keywords: list[str] = []) -> list[dict]:
+def search_remote_jobs(query: str, exclude_keywords: list[str] | None = None) -> list[dict]:
     """Search remote job listings across RemoteOK, Himalayas, Remotive and Jobicy
     Prefer this over web search for any question about remote job openings —
     it returns live, structured listings with working apply links.
@@ -38,7 +38,9 @@ def search_remote_jobs(query: str, exclude_keywords: list[str] = []) -> list[dic
         exclude_keywords: Terms to filter out, e.g. ["senior", "full stack"].
     """
     jobs = fetch_fresh(query)
-    return filter_jobs(jobs, exclude_keywords)
+    if exclude_keywords is None:
+        exclude_keywords=[]
+    return filter_jobs(jobs , exclude_keywords)
 ```
 
 The client's own conversation is the memory — say "no senior roles" and the calling model calls the tool again with a fuller exclusion list, extracting the keywords itself instead of spending a Gemini call.
@@ -75,13 +77,14 @@ Clone, install, point your client at it. The only requirement is that `agent.py`
 CACHE_TTL = 14400
 _cache: dict[str, tuple[datetime, list]] = {}
 
-def fetch_fresh(query: str) -> list:
+def fetch_fresh(query:str) -> list:
     keyq = (query.strip()).lower()
-    if keyq not in _cache or \
-       (datetime.now() - _cache[keyq][0]).total_seconds() > CACHE_TTL:
-        result = compiled.invoke({"user_input": query, "fetched_jobs": []})
-        clean_jobs = normalize_jobs(result.get("clean_jobs", []))
-        _cache[keyq] = (datetime.now(), clean_jobs)
+    if keyq not in _cache or (datetime.now() - _cache[keyq][0]).total_seconds() > CACHE_TTL:
+        result = compiled.invoke(
+                {"user_input": query, "fetched_jobs": []}
+            )
+        clean_jobs = normalize_jobs(result.get("clean_jobs" , []))
+        _cache[keyq] = (datetime.now() , clean_jobs)
         return clean_jobs
     else:
         return _cache[keyq][1]
@@ -128,6 +131,6 @@ The MCP server's `search_remote_jobs` is the entrypoint under test in the [Harbo
 
 ## Source references
 
-- `mcp_server.py` — the entire file (45 lines)
+- `mcp_server.py` — the entire file (47 lines)
 - `agent.py` — imports `graph`, `normalize_jobs`, `filter_jobs`
 - Commits `2511139` (serve over MCP), `7e84448` (document setup)

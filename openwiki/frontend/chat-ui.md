@@ -1,11 +1,11 @@
 ---
 type: Subsystem
 title: Frontend Chat UI
-description: The Next.js 15 single-page chat interface in frontend/app/page.tsx — message routing (search, feedback, reset, upload), streaming response reader, thread_id via localStorage, country dropdown via useSyncExternalStore, markdown rendering with ReactMarkdown and remark-gfm, dark/light theme toggle.
+description: The Next.js 15 single-page chat interface in frontend/app/page.tsx — message routing (search, feedback, reset, upload), streaming response reader for /ask, async CV upload that polls a Celery job, thread_id via localStorage, country dropdown via useSyncExternalStore, markdown rendering with ReactMarkdown and remark-gfm, dark/light theme toggle.
 tags: [frontend, nextjs, react, chat, markdown, streaming, ui]
 verified:
   - by: openwiki/0.6.1
-    at: 2026-10-01T12:03:35.670Z
+    at: 2026-11-01T14:50:14.085Z
 sources:
   - id: openwiki-source-e483fd3285d99d05c7b265cf
     resource: repo://frontend/AGENTS.md
@@ -15,7 +15,7 @@ sources:
     resource: repo://frontend/app/layout.tsx
   - id: openwiki-source-8c042cb3c17efe62134801ac
     resource: repo://frontend/app/page.tsx
-generated: { by: "openwiki/0.6.1", at: "2026-10-01T12:03:35.670Z" }
+generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
 ---
 
 # Frontend Chat UI
@@ -32,7 +32,7 @@ The API base URL is set via `NEXT_PUBLIC_API_BASE` (no trailing slash), defaulti
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE || 'http://localhost:8000';
 ```
 
-Vercel deployment requires `NEXT_PUBLIC_API_BASE` pointing at the Render URL. The client appends paths like `/ask`, `/feedback`, `/reset`, and `/upload` to this base.
+Vercel deployment requires `NEXT_PUBLIC_API_BASE` pointing at the Render URL. The client appends paths like `/ask`, `/feedback`, `/reset`, `/upload`, and `/jobs/{job_id}` to this base.
 
 ## Thread identity
 
@@ -60,18 +60,26 @@ A country selector narrows results geographically. It is backed by the `COUNTRIE
 
 ```typescript
 const COUNTRIES = [
-  ['', 'Worldwide'],
+  ['', 'All locations'],
   ['greece', 'Greece'],
   ['cyprus', 'Cyprus'],
   ['united-kingdom', 'United Kingdom'],
-  // ... Ireland, Germany, Netherlands, Spain, Portugal, Poland,
-  //     United States, Canada, Australia, India
+  ['ireland', 'Ireland'],
+  ['germany', 'Germany'],
+  ['netherlands', 'Netherlands'],
+  ['spain', 'Spain'],
+  ['portugal', 'Portugal'],
+  ['poland', 'Poland'],
+  ['united-states', 'United States'],
+  ['canada', 'Canada'],
+  ['australia', 'Australia'],
+  ['india', 'India'],
 ];
 ```
 
-The empty-string value maps to "Worldwide". Anything not listed still works — the agent falls back to a worldwide search and filters on the listing's own location — so the list is for the user's convenience, not a hard constraint.
+The empty-string value maps to "All locations". Anything not listed still works — the agent falls back to a worldwide search and filters on the listing's own location — so the list is for the user's convenience, not a hard constraint.
 
-The chosen country lives in `localStorage`, **outside React**, and is read through `useSyncExternalStore` so the server render sees "Worldwide" (no `localStorage` there) while the browser picks up the saved choice right after hydration without setting state in an effect:
+The chosen country lives in `localStorage`, **outside React**, and is read through `useSyncExternalStore` so the server render sees the empty string (no `localStorage` there, so the `<select>` renders the "All locations" option) while the browser picks up the saved choice right after hydration without setting state in an effect:
 
 ```typescript
 const countryListeners = new Set<() => void>();
@@ -115,13 +123,13 @@ flowchart TD
     Stream --> Render
 ```
 
-*Client-side routing: the first word determines the endpoint. Only /ask and /upload use the streaming reader; /reset and /feedback read the full body via `await res.text()`.*
+*Client-side routing: the first word determines the endpoint. Only `/ask` uses the streaming reader; `/reset` and `/feedback` read the full body via `await res.text()`. CV upload is a separate, asynchronous flow (see below) that polls a job rather than streaming.*
 
-Commands are matched case-insensitively (`command.startsWith('reset')`, `command.startsWith('no ')`). This is a simple prefix rule — wording matters for the user: a message beginning with `no ` or `skip ` is treated as feedback, not a search. The `reset` request body carries `{ user_input, thread_id }`; the `/feedback` body carries `{ feedback, thread_id }`; the `/ask` body carries `{ user_input, thread_id, country }`. On any fetch failure the UI appends a fixed error message (`❌ Something went wrong. Please try again.`).
+Commands are matched case-insensitively (`command.startsWith('reset')`, `command.startsWith('no ')`, `command.startsWith('skip ')`). This is a simple prefix rule — wording matters for the user: a message beginning with `no ` or `skip ` is treated as feedback, not a search. The `reset` request body carries `{ user_input, thread_id }`; the `/feedback` body carries `{ feedback, thread_id }`; the `/ask` body carries `{ user_input, thread_id, country }`. On any fetch failure the UI appends a fixed error message (`❌ Something went wrong. Please try again.`).
 
-## Streaming response reader
+## Streaming response reader (/ask)
 
-For `/ask` and `/upload`, the frontend reads the response body as a stream:
+For `/ask`, the frontend reads the response body as a stream and appends each decoded chunk to the last assistant message so the markdown renders progressively:
 
 ```typescript
 const reader = res.body?.getReader();
@@ -140,11 +148,33 @@ while (true) {
 }
 ```
 
-Each chunk is appended to the last assistant message, progressively rendering the markdown. For `/feedback` and `/reset`, the response is read as complete text (`await res.text()`).
+For `/feedback` and `/reset`, the response is read as complete text (`await res.text()`) and appended as a single assistant message. The `/upload` flow does **not** stream either — it submits a job and polls for the result (see [CV upload](#cv-upload)).
 
 ## CV upload
 
+CV upload is asynchronous: the file is handed off to a Celery worker, and the frontend polls a job status endpoint until it finishes. `handleFileUpload` POSTs a `FormData` (file, thread_id, country) to `/upload`, which returns `{ job_id }`; it then calls `waitForJob(job_id)`, which polls `GET /jobs/{job_id}`:
+
 ```typescript
+const POLL_EVERY_MS = 2000;
+const POLL_TIMEOUT_MS = 120000;
+
+async function waitForJob(jobId: string): Promise<string> {
+  const deadline = Date.now() + POLL_TIMEOUT_MS;
+  while (Date.now() < deadline) {
+    await new Promise(resolve => setTimeout(resolve, POLL_EVERY_MS));
+    try {
+      const res = await fetch(`${API_BASE}/jobs/${jobId}`);
+      if (!res.ok) continue;
+      const data = await res.json();
+      if (data.status === 'done') return data.result;
+      if (data.status === 'failed') return `❌ ${data.detail}`;
+    } catch {
+      continue;
+    }
+  }
+  return '❌ This is taking longer than expected. Please try again.';
+}
+
 async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -156,14 +186,28 @@ async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
 
     setMessages(prev => [...prev, { role: 'user', content: `📄 Uploaded: ${file.name}` }]);
 
-    const res = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
-    // same streaming reader as /ask
-    ...
+    let reply = '❌ Failed to upload CV. Please try again.';
+    try {
+      const res = await fetch(`${API_BASE}/upload`, { method: 'POST', body: formData });
+      const data = await res.json();
+      if (!res.ok) {
+        if (typeof data.detail === 'string') reply = `❌ ${data.detail}`;
+      } else {
+        reply = await waitForJob(data.job_id);
+      }
+    } catch {
+      // network failure or a non-JSON error page: keep the generic reply
+    }
+
+    setMessages(prev => [...prev, { role: 'assistant', content: reply }]);
+    setLoading(false);
     e.target.value = ''; // reset input so the same file can be re-selected
 }
 ```
 
-The file input is hidden and triggered by a button; it accepts `.pdf` only (`accept=".pdf"`). The `FormData` carries `file`, `thread_id`, and `country`. The response uses the same streaming reader as `/ask`; on failure a dedicated message (`❌ Failed to upload CV. Please try again.`) is appended.
+`waitForJob` polls every `POLL_EVERY_MS` (2000 ms) up to `POLL_TIMEOUT_MS` (120000 ms = 2 minutes). It returns `data.result` when the job status is `'done'`, the string `❌ ${data.detail}` when status is `'failed'`, and a timeout message (`❌ This is taking longer than expected. Please try again.`) if the deadline passes. Non-`ok` responses and thrown fetches are swallowed with `continue`, so a transient blip just keeps polling instead of failing the whole upload.
+
+The file input is hidden and triggered by a button; it accepts `.pdf` only (`accept=".pdf"`). The `FormData` carries `file`, `thread_id`, and `country`. The initial `reply` is a generic upload-failure message; it is replaced with a backend `detail` string if `/upload` returns a non-`ok` JSON error, or with `waitForJob`'s result on success. After the reply is appended, `e.target.value` is reset so the same file can be re-selected.
 
 ## Markdown rendering
 
@@ -228,7 +272,7 @@ From `frontend/package.json`:
 
 ## Source references
 
-- `frontend/app/page.tsx` — the single-page chat component (409 lines)
+- `frontend/app/page.tsx` — the single-page chat component (423 lines)
 - `frontend/app/layout.tsx` — root layout, fonts, and analytics
 - `frontend/app/globals.css` — theme variables, skeleton/typing animations
 - `frontend/package.json` — dependencies
