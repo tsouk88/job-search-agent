@@ -28,7 +28,10 @@ sources:
     resource: repo://evals/harbor_agents/pipeline_agent.py
   - id: openwiki-source-1691a76fbd7a6781b3420f6c
     resource: repo://evals/harbor_agents/run_pipeline.py
-generated: { by: "openwiki/0.6.1", at: "2026-10-01T12:03:35.670Z" }
+generated: { by: "openwiki/0.6.1", at: "2026-11-01T15:48:11.877Z" }
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-11-01T15:48:11.877Z
 ---
 
 # Harbor Eval
@@ -43,11 +46,11 @@ The test query is `python developer` with exclusions `["senior", "game", "canoni
 
 | Term | What it drops | `filter_jobs` branch |
 |---|---|---|
-| `senior` | "Senior Software Engineer - Python/MongoDB" (Jobicy) and "Senior Backend Engineer (Python)" (Workable) | Title only (seniority match) |
+| `senior` | "Senior Software Engineer - Python/MongoDB" (Jobicy), "Senior Backend Engineer (Python)" (Workable) | Title only (seniority match) |
 | `game` | Two Panda3D game developer listings (Himalayas) | Full text (title + description + location) |
-| `canonical` | One Jobicy listing where the word appears only in the description | Full text |
+| `canonical` | One Jobicy listing ("Python Engineer") where the word appears only in the description | Full text |
 
-Result: 7 listings kept, 5 dropped.
+Result: 6 listings kept, 6 dropped.
 
 ## Architecture
 

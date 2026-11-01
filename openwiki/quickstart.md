@@ -1,8 +1,25 @@
 ---
 type: Quickstart
 title: Job Search AI Agent Quickstart
-description: Entry point for the wiki — a LangGraph job search agent with three interfaces (REST, MCP, Voice), deterministic scoring, PostgreSQL memory, Next.js frontend, Harbor and LangSmith evals, and optional n8n automation.
+description: Primary entry point for the repository; a LangGraph job search agent with REST, MCP, and voice interfaces, deterministic scoring, PostgreSQL memory, and evaluation systems.
 tags: [quickstart, overview, navigation]
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-11-01T15:48:11.877Z
+sources:
+  - id: openwiki-source-eca60e2ced68ba99bd0ac710
+    resource: repo://agent.py
+  - id: openwiki-source-f1644da1c1a64a6a6567706b
+    resource: repo://eval_runner.py
+  - id: openwiki-source-1d64a0979a354ad458b3519a
+    resource: repo://evals/check_reward.py
+  - id: openwiki-source-833e692518af9eeaf8564cc6
+    resource: repo://main.py
+  - id: openwiki-source-7a041713b68b973227e27f3e
+    resource: repo://mcp_server.py
+  - id: openwiki-source-3a30c14a947fb74b6b9d65b7
+    resource: repo://voice_agent.py
+generated: { by: "openwiki/0.6.1", at: "2026-11-01T15:48:11.877Z" }
 ---
 
 # Job Search AI Agent — Quickstart
@@ -21,21 +38,18 @@ A remote job search assistant that queries four job APIs in parallel, scores and
 | [Frontend chat UI](frontend/chat-ui.md) | Next.js single-page app, message routing, streaming reader |
 | [Harbor eval](evals/harbor-eval.md) | Deterministic CI eval with frozen fixtures |
 | [LangSmith eval](evals/langsmith-eval.md) | LLM-judge quality measurement (0.812 baseline) |
-| [Domain concepts](domains.md) | Scoring rules, filter semantics, normalization, evaluation semantics |
-| [Workflows](workflows.md) | User-visible flows — search, feedback, upload, n8n digest, eval |
 | [Operations](operations.md) | Runbook — startup, config, deployment, troubleshooting |
-| [n8n automation](operations/n8n-automation.md) | Scheduled digest workflow |
-| [Integrations](integrations.md) | External services and their contracts |
 | [Testing and evals](testing.md) | How to run both eval systems and manual checks |
 | [Source map](source-map.md) | File-level map with responsibilities and edit order |
+| [Developer Workflows](workflows.md) | Common development tasks and lifecycle management |
 
 ## What this repo does
 
-1. Searches four remote job APIs in parallel (RemoteOK, Himalayas, Remotive, Jobicy)
-2. Scores results by title-weighted keyword matching (deterministic, no LLM)
-3. Filters by accumulated user exclusions (seniority terms against title, others against full text)
-4. Returns the top 12 matches as markdown (REST) or JSON (MCP)
-5. Remembers exclusions per thread in PostgreSQL (REST), in-memory (voice), or via explicit args (MCP)
+1. Searches four remote job APIs in parallel (RemoteOK, Himalayas, Remotive, Jobicy).
+2. Scores results by title-weighted keyword matching (deterministic, no LLM).
+3. Filters by accumulated user exclusions (seniority terms against title, others against full text).
+4. Returns the top 12 matches as markdown (REST) or JSON (MCP).
+5. Remembers exclusions per thread in PostgreSQL (REST), in-memory (voice), or via explicit args (MCP).
 
 ## Main runtime pieces
 
@@ -98,10 +112,3 @@ python eval_runner.py
 | Frontend behavior | [Frontend chat UI](frontend/chat-ui.md) | `frontend/app/page.tsx` | Manual browser test |
 | Voice interface | [Voice agent](voice-agent.md) | `voice_agent.py` → `voice/server/langgraph_processor.py` | Manual voice call |
 | MCP tool | [MCP server](mcp-server.md) | `mcp_server.py` → `agent.py` | Harbor eval + MCP client test |
-| Eval coverage | [Testing](testing.md) | `evals/` or `eval_runner.py` | Run the eval |
-| Deployment | [Operations](operations.md) | `render.yaml` → `.env` → Vercel settings | Render health check |
-| n8n digest | [n8n automation](operations/n8n-automation.md) | `n8n_workflow.json` → Search Settings | Trigger manually |
-
-## Backlog
-
-No deferred items. All substantial components and workflows are documented.

@@ -3,9 +3,6 @@ type: Subsystem
 title: Backend API
 description: The FastAPI backend in main.py — lifespan compiling two graphs (PostgresSaver agent + InMemorySaver eval_agent), ten endpoints, Redis-backed rate limiting, Gemini budget, and per-query job cache, Celery async upload with job polling, keycheck header auth, n8n digest dedup, the country-aware searchhelper cache, and markdown response formatting.
 tags: [backend, fastapi, endpoints, caching, llm, cors, rate-limiting, redis, celery]
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T14:50:14.085Z
 sources:
   - id: openwiki-source-185f850c083bac055a13cd37
     resource: repo://helper.py
@@ -16,6 +13,9 @@ sources:
   - id: openwiki-source-3ea4f69fcc0222dbd310ddfc
     resource: repo://tasks.py
 generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-11-01T15:48:11.877Z
 ---
 
 # Backend API

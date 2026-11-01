@@ -3,9 +3,6 @@ type: Runbook
 title: Operations / Runbook
 description: Operational runbook — local startup (Redis + Celery), all environment variables, runtime dependencies, LangSmith observability config, Render/Vercel deployment, endpoint behavior, CORS gotchas, cold-start handling, and troubleshooting.
 tags: [operations, runbook, deployment, troubleshooting, config, render, vercel, redis, celery]
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T14:50:14.085Z
 sources:
   - id: openwiki-source-833e692518af9eeaf8564cc6
     resource: repo://main.py
@@ -14,6 +11,9 @@ sources:
   - id: openwiki-source-f70156010a8eb5325870bfc6
     resource: repo://render.yaml
 generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-11-01T15:48:11.877Z
 ---
 
 # Operations / runbook
