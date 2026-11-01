@@ -1,42 +1,42 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:ed7e488d39ee7ff91238350d4b5c25e732a3d1bfafb2dd4b6560bfe9741edaaf",
+  "pageVersion": "sha256:c001639462179f5411b1e55517ddcb0bcda9a11ee587629417c345340fabe447",
   "claims": [
     {
       "id": "claim_1418192c938d4920801a53e134d6c56f",
-      "statement": "The n8n workflow runs every 12 hours and holds no filtering logic of its own — it delegates entirely to the backend, which was a refactor introduced in commit 51b9e94.",
+      "statement": "The n8n workflow runs every 12 hours and holds no filtering or deduplication logic of its own — it only schedules, calls the backend, gates on results, and mails; search and cross-run dedup both live in the backend.",
       "evidence": [
         {
-          "resource": "repo://README.md#L278-L294",
-          "version": "repo-lines-v1:sha256:83be02514c80dcd76d95c6ee09e4c74d9486fd2ef97c9916dace7e535208f864:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyMzk2ZGFmZDY0MTM0NThlN2JkNThkZGZmOTQ3NDMyZTgyODQyZWY5OTA0MzdhYjRiMDZlYTEyMTg4ZmI0ZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxZjI2NGFhNDcyYTk5MWI0OTQzZDA4ZTRlOWE4ZmI0YzgyNDk2MjA0NjA4MTQ4YWNhYmJhMTNjYTRjMTYyZWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRkZDY4MWYzMjI3ODZkNDc1Y2ViNjIyY2U1OGM1ZDRjYjMwYzEwMWQ3N2RlMDdiMTdlN2RjMzE2MGZlNTI1MjIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVjM2ZiZjA0MmM2YTA3NDVkNjNhMzE4OTBlM2M3ZTBhNTJhNjNkYmEwMzRhM2MwNWJjODQ5MzZiYTEwYWRiY2QifQ"
+          "resource": "repo://README.md#L463-L465",
+          "version": "repo-lines-v1:sha256:344c177af3fde5452398debdcca44f6e6fb9915ae6eef79eadb7b2fd7ff46067:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTFmMjY0YWE0NzJhOTkxYjQ5NDNkMDhlNGU5YThmYjRjODI0OTYyMDQ2MDgxNDhhY2FiYmExM2NhNGMxNjJlYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODNmNzlhNDMwZjRjNjg0OTcxZjg3Y2JlMDkwMzhmM2YwNTg2N2U3Yjk5MWU1NmQzMzM2ODlhNThkZGM5MDEwMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjcyNzQ3NDU3ZDVlMTEzYTZjN2Q0YzNlOTIyMGJjOGIxZWI4OWFkYzgwYTg4ZmJkNWZhMmFlNTEwNjU0ZTRkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODJhNGNlMTZhZDEwMDg2ZTczZWFkM2FiMzY5ODY3YjcyY2FjNjE1YmJhZDM4MmVlODg2YzVkNjMzNWE5NjNjYiJ9"
         },
         {
-          "resource": "repo://n8n_workflow.json",
-          "version": "repo-file-v1:sha256:edb3ee6a6f4e5c5290c41c6c76c66d73c2254f94cdfac64c5989035710a3cadd"
+          "resource": "repo://n8n_workflow.json#L29-L48",
+          "version": "repo-lines-v1:sha256:7ed3c5a1504dbe6676df58b93062f6b3d7a626ebd9dd808720ab70c16df1fe1f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg0NmVkNmFjZjVmNjkxZGFlZGJmMTc2ZDMyZTAyZjhiNTIyNjgxZmYxN2M5ZDY3MDk4MzY1YTMxNzUyNmY1NjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1MjA5YjlmMjM5YjMxNDg3NDUyNzU0MjI1ODdiYzZiMDA2OTc0ZGUwMTNlMmEwY2FmNDIyYjAzZjJiNDkxZDAifQ"
         }
       ]
     },
     {
       "id": "claim_7dab64df2b204ed89a74054414131407",
-      "statement": "The workflow node chain is Schedule Trigger (every 12h) → Search Settings (query + thread_id) → Wake node (GET /docs, On Error: Continue) → Wait 60s → HTTP Request (POST /ask, 5 retries, 5s apart, 90s timeout) → Gmail (Send a message).",
+      "statement": "The workflow node chain is Schedule Trigger (every 12h) -> Search Settings (query + thread_id) -> Wake node (GET /docs, On Error: Continue, retryOnFail maxTries 2) -> Wait 120s -> Digest (POST /digest, httpHeaderAuth, 5 retries 5s apart, 90s timeout) -> If (links not empty) -> [true] Send a message (Gmail, message ={{ $json.md }}, executeOnce true) -> Mark Sent (POST /digest/sent, httpHeaderAuth).",
       "evidence": [
         {
-          "resource": "repo://n8n_workflow.json#L138-L198",
-          "version": "repo-lines-v1:sha256:db1ad85bdc7ff5b0977de0f91e6017dcd0bf04a036ca2682a2288a78cfffae32:eyJzZWxlY3RlZExpbmVDb3VudCI6NjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5NzkwMTlmZTQ5MDc3ZDE0NWIwYzY0YWQ1NWQyN2M5MWU0OTQwN2U2MzhhMDU2NWNjZTA1MmY2YjZlNDU3MDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlZmVlYmEwNWNhOTBmMTQ2ZGQyMGNmNWUxNjJkMDBlOTlmNWQ3ZDFhNDcwYzg1MzFkNjMzNzI1MjJmNzYwYmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY5NzkxNjczOWQwNjUwNTJjNDllNTllZGE2NmFlMDVkNTk4YjgzZTBkN2I2ZmJjNTUyNjg5NjMyOGFkNDU5ODkifQ"
+          "resource": "repo://n8n_workflow.json#L209-L287",
+          "version": "repo-lines-v1:sha256:5cd0db7fffda4bbf1dd0dfaabbf70fec1d01545c583afd470de3ee5b36dab04c:eyJzZWxlY3RlZExpbmVDb3VudCI6NzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjA5NzkwMTlmZTQ5MDc3ZDE0NWIwYzY0YWQ1NWQyN2M5MWU0OTQwN2U2MzhhMDU2NWNjZTA1MmY2YjZlNDU3MDUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRkNWNkMmZiNGYzZGY4ODQ1MTUyNTViMzk1MjNmMmY4YjU0NzJiZWVhOWY1NjZmZmNhMjA0ZGI4MDI1NjEwNDEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjJlZmVlYmEwNWNhOTBmMTQ2ZGQyMGNmNWUxNjJkMDBlOTlmNWQ3ZDFhNDcwYzg1MzFkNjMzNzI1MjJmNzYwYmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiMjNlNGRhMmYzNmEzY2I2MjUzZTU5YmJjMTJkY2I2NDYzMmE1YmJlY2NjMzc2NzJiNTQyMDM1MDFiZThkNjUifQ"
         },
         {
-          "resource": "repo://n8n_workflow.json#L29-L136",
-          "version": "repo-lines-v1:sha256:66ab71a2f5c7dea95c72eae5d9c8f70929683378d07ac7376f31063aa64098d0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTA4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmOWNhODkxYmZmN2FjMWY3Y2VhYWU0MGVmMDUxMDY2YmU5ZWZlNDdiNGU0MjgxZTg2YzMxOWJlMmM1NWViY2U0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI5NjRkOGMwNzM0Mjk4OTMxMDE1NzZkODhkOTkxMjdlODlkNjg5MWQzYjE3ZTg5ZGYwMmVjOWFlNzA3MDVkOGJlIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4NDZlZDZhY2Y1ZjY5MWRhZWRiZjE3NmQzMmUwMmY4YjUyMjY4MWZmMTdjOWQ2NzA5ODM2NWEzMTc1MjZmNTY2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiIxMGFiZjVlMmQ4MDQ2NDBjMDQ0MDA1MzhhZmFlOTRiNzM3MmJjMzE3NjRiYWNhMmE3NmRhMmNhMGY0NzA1OTU1In0"
+          "resource": "repo://n8n_workflow.json#L29-L206",
+          "version": "repo-lines-v1:sha256:8c4b9790038a86e0a42be483a93d31586ea2af34cc4feff495302151d68ae2a6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTc4LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmOWNhODkxYmZmN2FjMWY3Y2VhYWU0MGVmMDUxMDY2YmU5ZWZlNDdiNGU0MjgxZTg2YzMxOWJlMmM1NWViY2U0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0ODkzZjQwZTM3ODFlYjg5NmM4MmQwNDZhMDgwNjdhMTFlMzVjZGYyZjFkZmFmMjZmZWE5MGI4ZGI2Njc2NDEzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiI4NDZlZDZhY2Y1ZjY5MWRhZWRiZjE3NmQzMmUwMmY4YjUyMjY4MWZmMTdjOWQ2NzA5ODM2NWEzMTc1MjZmNTY2IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1YjU0ZGE4NzZmMmExMjY3MWM0YTllOTkyMDJmNzZhYWNmNmIyN2U1NDhmYmIzY2JkOTAwZmI5MzI1M2JlOGU3In0"
         }
       ]
     },
     {
       "id": "claim_6978165961964bb08a8a476029468f72",
-      "statement": "The POST /ask HTTP Request node uses retryOnFail=true, maxTries=5, waitBetweenTries=5000ms, and a 90000ms timeout; its JSON body carries query and thread_id from the Search Settings Set node.",
+      "statement": "The Digest HTTP Request node (POST /digest) uses retryOnFail=true, maxTries=5, waitBetweenTries=5000ms, a 90000ms timeout, genericCredentialType httpHeaderAuth, and a jsonBody carrying user_input and thread_id from the Search Settings Set node.",
       "evidence": [
         {
-          "resource": "repo://n8n_workflow.json#L49-L76",
-          "version": "repo-lines-v1:sha256:ce8da8145d6d864fada91a564314eb3fd816c8641e964a05b659bcd3a30be25a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI2OTUwZThjZGY1YzlhZjZhMjFlMjAxMGRiYTg2MWRkNDhmOTE5OWIzYTVjNDhiOTc3NGJmNmQ5MWFlMzUxMTMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY1MjA5YjlmMjM5YjMxNDg3NDUyNzU0MjI1ODdiYzZiMDA2OTc0ZGUwMTNlMmEwY2FmNDIyYjAzZjJiNDkxZDAifQ"
+          "resource": "repo://n8n_workflow.json#L144-L179",
+          "version": "repo-lines-v1:sha256:3499087a6955745bacd82bebcbbb04876150e32a939ed17e5761fcdc3fd1c8ef:eyJzZWxlY3RlZExpbmVDb3VudCI6MzYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkZTBlYTkxNjJjMTg0OGUyNTM5ZThiYTdkNTBhZDhiZjU3MGI1YTc2ZTY0MGEyZmMyYTE4YTNmZjNjZTQyM2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZlNmEyZTFlMDBiNjQyYjEzNmI0OGMzZDc3MDhmMTYxMTViZDUzNTljOWZhOGEzOTc3MTg2M2IwMjgyZjhiZTEifQ"
         }
       ]
     },
@@ -45,8 +45,12 @@
       "statement": "The Wake node sends GET /docs with onError set to continueRegularOutput (On Error: Continue), existing purely to trigger a cold boot on a sleeping free-tier Render instance; failing is its normal outcome and the workflow continues regardless.",
       "evidence": [
         {
-          "resource": "repo://n8n_workflow.json#L106-L121",
-          "version": "repo-lines-v1:sha256:f19209569a1ab663da9243f921d3eed88abb4ca4371840ba4d79900379111e88:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjA2OGZjZjBlYWU1ZWM0Mjg0Mzk1ZjVmMzgzNjRkZmQ4ZTE4ZmEyMDI5OTU1YjI1NzhlMGIxZWM2MDQzYmEyYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjA4YmNjOWI0OGY1ZTAxMzdkMzZlNzMzMDE2Nzg1MjI5YTlkZGJlMjUxMmQ4OTExN2M4OWQ5NmYwYTg0MTliNzcifQ"
+          "resource": "repo://README.md#L479-L479",
+          "version": "repo-lines-v1:sha256:ceff9f7588a668157d15e3fe27b997b75a97ee1f7db1891fa889c26a979154c9:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmZjlmNzU4OGE2NjgxNTdkMTVlM2ZlMjdiOTk3Yjc1YTk3ZWUxZjdkYjE4OTFmYTg4OWMyNmE5NzkxNTRjOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmZjlmNzU4OGE2NjgxNTdkMTVlM2ZlMjdiOTk3Yjc1YTk3ZWUxZjdkYjE4OTFmYTg4OWMyNmE5NzkxNTRjOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzgwYjNlNDFlNzNmZTA2MWY5OTQyN2M5NTgwNGIzMzQzYjVlYjUyYTQ2MjYzMGM3M2ZmZmY1MjE2M2Y1MWQyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDYzZGQ4MjFlNmM2NTllM2VlZmJiY2ViMTA3YTQ0YjViZWFlZmE4ZDA0MmMxOWIzYmMyMWIwYzkzNjcwMmVhMiJ9"
+        },
+        {
+          "resource": "repo://n8n_workflow.json#L78-L95",
+          "version": "repo-lines-v1:sha256:d45cfdd055e3fc5b246004fac4f79d6f438a88f2a0d0d3fa1098a220c78fd9fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkN2VjNmExZjJhY2ZlNDhhZTM5OTY3Y2Q5MjVkZGE1NTkxYjJjZmM2YmJjZGZiOTk4YWYxM2U4OTU0NTVjZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2MmFmNTkzNjU2ZmRhYTU0M2M5MDBiODgxNmE0M2RkOTE5ZjgyYzRhOTJlMjczOGFkMTUzNjdjNGY0NGZlZmMifQ"
         }
       ]
     },
@@ -63,7 +67,7 @@
           "version": "repo-lines-v1:sha256:a578a099baede83376a86e945ba1b3609892d11ab9dfe89b9c2c8d2800ae8fac:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU3OGEwOTliYWVkZTgzMzc2YTg2ZTk0NWJhMWIzNjA5ODkyZDExYWI5ZGZlODliOWMyYzhkMjgwMGFlOGZhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU3OGEwOTliYWVkZTgzMzc2YTg2ZTk0NWJhMWIzNjA5ODkyZDExYWI5ZGZlODliOWMyYzhkMjgwMGFlOGZhYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGFhYmU4NTk1NDkwYTUzZjFjNmRjMmMwNDJkYTA3ODk0MTNhMTNmMjVmOWNhZTNjZWEyOTNhZWMxZjMyZjUxOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGRiNzljZDU5NTQzY2I2ZThkMzdlMzI2OGU4ODQ4MmZlZmIzZjEyMzBlYmRkOTc5YTZlMzgwYTlmN2FiZTkxMSJ9"
         },
         {
-          "resource": "repo://agent.py#L558-L586",
+          "resource": "repo://agent.py#L559-L587",
           "version": "repo-lines-v1:sha256:5d0cc266b85eb13822d3c3878357a502074eccc2e299891b90cacfacdce23f4e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNzkzOTZkM2FhM2ZhYzkwYTZjMTc0NzcxYjliOTNkMDI1ZDI2ZTNlODIxZDQwMmMwZDM4NDhhYzk3OWFkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlOTk2N2YxMjk5MWNhM2VmNmI2ZmVmYjZiNDRmN2IwODdjOTQxMzYyNzkxNDBjYmNkNzFmMDk5M2I2MDQ4ZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZjE5MjFjOWJjNGY5MGI4NzQwNThkNGQ5MTFmMjAxNWQ1MzU4ZWUwODRlNDZhNDAwYWEwMTM5YjczNDdhOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhM2NmNTE5MjM1NGY3MTYxNWFjNTEwMzRiM2U5N2MyMGVkYTk5NjQzZmNhZjViYmU2ZDQxYWQ1OWJkMTIxNjcifQ"
         }
       ]
@@ -73,8 +77,8 @@
       "statement": "Search Settings is a Set node carrying query (default 'python AI backend engineer remote') and thread_id (default 'YOUR_UNIQUE_THREAD_ID') — the only node the operator edits to configure the digest.",
       "evidence": [
         {
-          "resource": "repo://n8n_workflow.json#L77-L105",
-          "version": "repo-lines-v1:sha256:c396eb1ef0296350b84b8cb1bdcc325d0dda7ba38b500ed2ca34452e374c9e79:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYwZDg0ZDYyNWMwZmQwYmExM2NmMjg3MmNjZGRmZDNlMTkyNTY4ODc4ZjYyMGFmMzMzMjgyZTAzY2JhYTJlZjEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzZjlhMGE2MjJjYWZmOGEyOGJkMDQ5Y2FhZWI1ODhkZGRjODdjNWM3MGI3NTlmMmZlZmU2NjRkYzQ4YmYxOTkifQ"
+          "resource": "repo://n8n_workflow.json#L49-L77",
+          "version": "repo-lines-v1:sha256:3c7435189f72adef8d1df2334b0ebf310e6d2f0e344e4b257aa565440e489491:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNiMmZlNWQ4YTc4OGJhYjIyNmM2Nzc1MGRjNjljN2U2ZjNjNGUxNDUwZWViNWE1ZTEzYzEyYzQ2YzM5YTEyMDUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEzZjlhMGE2MjJjYWZmOGEyOGJkMDQ5Y2FhZWI1ODhkZGRjODdjNWM3MGI3NTlmMmZlZmU2NjRkYzQ4YmYxOTkifQ"
         }
       ]
     },
@@ -83,44 +87,40 @@
       "statement": "Persistent filters are set by calling POST /feedback once with the same thread_id; the thread outlives the workflow so stored exclusions persist across digest runs, and the response footer lists the filters actually stored (extraction done by an LLM and may generalize more than intended).",
       "evidence": [
         {
-          "resource": "repo://README.md#L305-L306",
-          "version": "repo-lines-v1:sha256:cdd52513d21d00ac63990b40aab807e05c30e73635335ec6ee4aacd2a38d3dc8:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTMzMjcyZmI2MjllOWVmMTQ5Yzc0NDRiYjJjYmQ4ZjE3ZWIwMTMzNDc1ZTYwMGUxZjk4M2VkOTJhYjYzZGU2NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzIwZWI1MjVjMWFlNjllOGJhOGYwNTQ5MWYxZmZiMDkzMTUyNzRmNDAxMzgyYTkzYzI5MjMxMWViNjJiYTBmYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+          "resource": "repo://README.md#L481-L481",
+          "version": "repo-lines-v1:sha256:e33272fb629e9ef149c7444bb2cbd8f17eb0133475e600e1f983ed92ab63de67:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTMzMjcyZmI2MjllOWVmMTQ5Yzc0NDRiYjJjYmQ4ZjE3ZWIwMTMzNDc1ZTYwMGUxZjk4M2VkOTJhYjYzZGU2NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTMzMjcyZmI2MjllOWVmMTQ5Yzc0NDRiYjJjYmQ4ZjE3ZWIwMTMzNDc1ZTYwMGUxZjk4M2VkOTJhYjYzZGU2NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmI1NWRiN2FhZWY0ZjkyMjZiOGJjMzdmMzczODY5M2VmYzViZjdmZjk4M2MzZDRhZWQwNDNjZmY2ZWU2NDkwNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
         },
         {
-          "resource": "repo://main.py#L173-L191",
-          "version": "repo-lines-v1:sha256:2292e95fa43679182d623ff4b9af1f54f06eff620baad51403f34d36d5530742:eyJzZWxlY3RlZExpbmVDb3VudCI6MTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiZjdhM2IyMDNjMmNiMjIxODZiNmEwNDU3ZjkyMTc3N2QzYzIzMWUwZTkwNWY3Njg2YzZlZjZlYmQ1NmE4MjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NTZkOTEzYjIyODYyOWU0MGZkZDA2NmZhM2M2NjA3ZWZkYzM4NGE5ZmYyYjU5NWUzYjg1NTEzYjgwZTE2NDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzNGRhZWE5ZTcxNjQ0YjYzZDBkZGE4OWRjNDdlMGJkNmU0YTY0MWRiN2YzZGU4NzNlZDkzYmFjODIyOTdjZjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4ODU3NWI0MDcwYTY2MTM4ZTQ3MDBlN2NkNTEwNjUxMzE0MDE3YzdhZTI0ZjFlNGYwMjc2MmMyYzA2NWY1ODAifQ"
+          "resource": "repo://main.py#L267-L286",
+          "version": "repo-lines-v1:sha256:e6fb7c1bbb73549e0598c61e5b5133ccddc8ed5956618f7b28b3917ecf93f146:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiZjdhM2IyMDNjMmNiMjIxODZiNmEwNDU3ZjkyMTc3N2QzYzIzMWUwZTkwNWY3Njg2YzZlZjZlYmQ1NmE4MjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NTZkOTEzYjIyODYyOWU0MGZkZDA2NmZhM2M2NjA3ZWZkYzM4NGE5ZmYyYjU5NWUzYjg1NTEzYjgwZTE2NDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUwNWUxZDljMDliYzE5YjE5MTU4ZTEzNjlhNzNhNDkzZmJlM2MzMzlmZmUzMjEwM2FjMmEzNzhlNDYzNTVjYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4ODU3NWI0MDcwYTY2MTM4ZTQ3MDBlN2NkNTEwNjUxMzE0MDE3YzdhZTI0ZjFlNGYwMjc2MmMyYzA2NWY1ODAifQ"
         }
       ]
     },
     {
       "id": "claim_bf5200cf4ed14226aeb91c5186b85c57",
-      "statement": "The /evaluate endpoint is auth-gated: it requires an x-api-key header matched against the EVALUATE_TOKEN env var via secrets.compare_digest (constant-time), and returns 401 without the env var or header. The exported workflow carries a YOUR_EVALUATE_TOKEN placeholder for this token.",
+      "statement": "The /evaluate endpoint is auth-gated: it requires an x-api-key header matched against the EVALUATE_TOKEN env var via secrets.compare_digest (constant-time), and returns 401 without the env var or header. It is a separate token from N8N_DEDUPE and is not wired into this workflow.",
       "evidence": [
         {
-          "resource": "repo://README.md#L322-L322",
-          "version": "repo-lines-v1:sha256:6cf0e38faa042ff5a84cfc6e14eb1520fcbc81d1684250282396390f372bc7c5:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNmNmMGUzOGZhYTA0MmZmNWE4NGNmYzZlMTRlYjE1MjBmY2JjODFkMTY4NDI1MDI4MjM5NjM5MGYzNzJiYzdjNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmNmMGUzOGZhYTA0MmZmNWE4NGNmYzZlMTRlYjE1MjBmY2JjODFkMTY4NDI1MDI4MjM5NjM5MGYzNzJiYzdjNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjZlNGFiNjUwOTZjNmQ1OTg5MjVlNWMwYThmMTQ5ZTQxNWE4ZjAyMTQ3MzI0ZGJmYWIwYzMzM2ZmNTI4OTAzYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
+          "resource": "repo://main.py#L163-L171",
+          "version": "repo-lines-v1:sha256:2af72c175cf7cd799786da486272569e8205e25e286b7b482fd1b7f1b5d8943a:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGU1N2I0ZGFkZTY1YjY2OTRhOTZjNDQxMDNhMzZlMTI1Y2JlMTlhMmQ3M2VhOTlmZTg3OWJkYzEwNGUyZjhkMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTY5NDg4NmI4NzEwMmVmZDc1YjYzNjY2YzRiMWYwYjU1NDk5OWZhN2IxMDI3Nzc4YWMxY2YxY2MwMTU4NzNjMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTIxNDc4ZjVmOTRmZDI2MmJmMmMxNTEyZTRiYzIzNzVjMDRhMzVlYmUwMzA5MzEwYTA4N2ZjMzc2MDFhZGU4YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTg2NDAwZTUwMjUyY2ViY2I4Njc1NWMyNTgxZjczNGM3NmQxZTRhMDI3ODU5ZDcxNGJmZTIzMGZjN2I1YWM4YSJ9"
         },
         {
-          "resource": "repo://main.py#L111-L119",
-          "version": "repo-lines-v1:sha256:90ae113cd380c1a2067928446f91462ceed168d5f666f8c9abe97fc1660dcea3:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODZjMTE1ZTkzMzRhYjliOThkNWRmOTczMDY5N2E5MjFiNzgxMDAyNjQ3OTU1MWE0NzMxNzdjY2ZlMjkyODJiNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNmJmNTMyZGNmZmZjNmI1ZDgyNjlhOWYzZjBiYjI0Mzc2ZDc4MmJkYzEwMzk1MGE1YjM4NWM1YTYwYTMzZDc5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNTdiMjQ0MTEwZTViMzRjOWQwYzFkNjRkNjEwMWNkMjA4NzRiODIwMWYwY2NjMmVjMzE4NmY0NjIzYTZhYjVlNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODRmY2NkYjQzYWNkZjM4N2VlM2FiMDkzMzQzOTUyMDk3NWYwNzU2NTY3MjViMWZjYzg5YzExMDRkYzgzNThlMSJ9"
+          "resource": "repo://main.py#L199-L221",
+          "version": "repo-lines-v1:sha256:7a6cdb8fdae92bf9a0497af6888acb5035a4fee63abe073c91807c37b2b6f844:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NjZjZjNlNTVlMTQzNzU2MjlmNjZlNWU1ZDMxZWY2Mjg5NmRhMGUyYmEzY2ZkZTUwNjk3Y2ExOGUwYjU4MDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMDg1MzI5MTBjZmNlZmU1ODcwM2Q0MzQ0NWE5YzIwMmIxMjQ4NzcyZjE2ZWY1YTE2MzBlNjJmMjVkZjAyNzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiOGRjMDEwNTNjOGExNzEzOTQ0OWMzM2NjMTVjOTNlYjM0N2E5OTExNzU2NzgyODEyODFlNzUyOTQzN2RlMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4MTY4YWM3NWI3Y2EyOGQyN2Y1ZWU3NWU3Yzg4ZGE1NjQ1NzMzNDQyNGMzYTkzZjAxNTQ4OGQ3ZmYwNTFlZWEifQ"
         }
       ]
     },
     {
       "id": "claim_255b3f6a081e47b3bde07bde866b8320",
-      "statement": "Both HTTP nodes in the workflow should point at the backend URL — http://host.docker.internal:8002 from Docker, http://localhost:8002 without Docker.",
+      "statement": "All three HTTP nodes in the workflow (Wake GET /docs, Digest POST /digest, Mark Sent POST /digest/sent) should point at the backend URL — http://host.docker.internal:8002 from Docker, http://localhost:8002 without Docker.",
       "evidence": [
         {
-          "resource": "repo://README.md#L302-L302",
-          "version": "repo-lines-v1:sha256:903e11c53b87b1b2034534e88748bc3201ecc2e9794ed90397d2e70283e8570c:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTAzZTExYzUzYjg3YjFiMjAzNDUzNGU4ODc0OGJjMzIwMWVjYzJlOTc5NGVkOTAzOTdkMmU3MDI4M2U4NTcwYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTAzZTExYzUzYjg3YjFiMjAzNDUzNGU4ODc0OGJjMzIwMWVjYzJlOTc5NGVkOTAzOTdkMmU3MDI4M2U4NTcwYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmVlNjczOTM3OWQ4Y2MxYTM5ZmNkY2U5NmQ5ODAyY2ZjOTM1NDYzYTk0NWFiNTg4M2RiMGEwMTRiNTA5ZWYzYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYmRkNTNjNTBhZWI5YzlhZDA3NTkwZDMxNDM1MzA2N2M3Y2M2YTQxODlhNzY2MTI5ZThkYjczMjQxM2Q2MjhlYSJ9"
+          "resource": "repo://README.md#L475-L475",
+          "version": "repo-lines-v1:sha256:48fc31a9d352cb1a49768c75caccc159f0d2ef878f647241e1038bc2c98b8ea6:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDhmYzMxYTlkMzUyY2IxYTQ5NzY4Yzc1Y2FjY2MxNTlmMGQyZWY4NzhmNjQ3MjQxZTEwMzhiYzJjOThiOGVhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDhmYzMxYTlkMzUyY2IxYTQ5NzY4Yzc1Y2FjY2MxNTlmMGQyZWY4NzhmNjQ3MjQxZTEwMzhiYzJjOThiOGVhNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmVlNjczOTM3OWQ4Y2MxYTM5ZmNkY2U5NmQ5ODAyY2ZjOTM1NDYzYTk0NWFiNTg4M2RiMGEwMTRiNTA5ZWYzYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzgwYjNlNDFlNzNmZTA2MWY5OTQyN2M5NTgwNGIzMzQzYjVlYjUyYTQ2MjYzMGM3M2ZmZmY1MjE2M2Y1MWQyMSJ9"
         },
         {
-          "resource": "repo://n8n_workflow.json#L106-L108",
-          "version": "repo-lines-v1:sha256:13f9a0a622caff8a28bd049caaeb588dddc87c5c70b759f2fefe664dc48bf199:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjljYTg5MWJmZjdhYzFmN2NlYWFlNDBlZjA1MTA2NmJlOWVmZTQ3YjRlNDI4MWU4NmMzMTliZTJjNTVlYmNlNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2MyNWRkYjM0ODUxNDE5ODAwMTZiZDVjYzJiMDU1YmM1NzEzOWYxMTkyOTIyZGIzMDc5MjM4YTk3ZTYzMTVjMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDY4ZmNmMGVhZTVlYzQyODQzOTVmNWYzODM2NGRmZDhlMThmYTIwMjk5NTViMjU3OGUwYjFlYzYwNDNiYTJhYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjVmZGUxNGQzMzFkMDgzMDA3ZWU1OGUxN2Y0MmMwZDJjOTU3Y2MwNDQ3MGMwNTU2NzdhZjk3Y2JkOTVlYjcwYSJ9"
-        },
-        {
-          "resource": "repo://n8n_workflow.json#L51-L52",
-          "version": "repo-lines-v1:sha256:494287c4ba35521aaefe347a4ef089ec0031d57e4cae2346f119fd7acfdc337d:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODQ5NTAwM2Q3OTg1ZjQyZmM2NmYxYjQ2YzUyNWQ1MjU3MTY5ZjZlYzliNWE2MjM2NWFiMTE3ZjE1MmI0NmZjMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjU5NTM4MTZlNjJkNDE4NmIxNjdiYTNmZTNlZTM0M2IzYzA5OGVkMGRlMTM4MzFhNDQ1ZWVjODliMzkxZGEyNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYjNlNGM3YjM3NGJlODc3ZDI2MTU0OTM1NTUyYTNmNDE3NGQ0ZTNmYTc5NDg5NmFiMDQ1ZGJlMWRlY2QxNDUwYiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDI3OWJlODcxZTdiNDgxMjUzODYxMjc1MTZjYTYyMWE4OGEwYWExZmRmZDk2NTAwY2E4NzBmYjg5YTVkZjhhMyJ9"
+          "resource": "repo://n8n_workflow.json#L78-L206",
+          "version": "repo-lines-v1:sha256:0f210ffac422f044627c925b2db25d0a82cb9f123403be96d87242609a15835c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTI5LCJmaXJzdFNlbGVjdGVkTGluZUhhc2giOiJmOWNhODkxYmZmN2FjMWY3Y2VhYWU0MGVmMDUxMDY2YmU5ZWZlNDdiNGU0MjgxZTg2YzMxOWJlMmM1NWViY2U0IiwibGFzdFNlbGVjdGVkTGluZUhhc2giOiI0ODkzZjQwZTM3ODFlYjg5NmM4MmQwNDZhMDgwNjdhMTFlMzVjZGYyZjFkZmFmMjZmZWE5MGI4ZGI2Njc2NDEzIiwicHJlY2VkaW5nQ29udGV4dExpbmVDb3VudCI6MywicHJlY2VkaW5nQ29udGV4dEhhc2giOiJmZDdlYzZhMWYyYWNmZTQ4YWUzOTk2N2NkOTI1ZGRhNTU5MWIyY2ZjNmJiY2RmYjk5OGFmMTNlODk1NDU1Y2Q0IiwiZm9sbG93aW5nQ29udGV4dExpbmVDb3VudCI6MywiZm9sbG93aW5nQ29udGV4dEhhc2giOiI1YjU0ZGE4NzZmMmExMjY3MWM0YTllOTkyMDJmNzZhYWNmNmIyN2U1NDhmYmIzY2JkOTAwZmI5MzI1M2JlOGU3In0"
         }
       ]
     },
@@ -129,14 +129,70 @@
       "statement": "If the backend is always on (not a sleeping free-tier instance), the Wake node and the Wait node can both be dropped — they exist only for cold-start handling.",
       "evidence": [
         {
-          "resource": "repo://README.md#L304-L304",
-          "version": "repo-lines-v1:sha256:7ee770983585e653c678933f3c0113a83556204f033020abebacc89ebb07916e:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiN2VlNzcwOTgzNTg1ZTY1M2M2Nzg5MzNmM2MwMTEzYTgzNTU2MjA0ZjAzMzAyMGFiZWJhY2M4OWViYjA3OTE2ZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiN2VlNzcwOTgzNTg1ZTY1M2M2Nzg5MzNmM2MwMTEzYTgzNTU2MjA0ZjAzMzAyMGFiZWJhY2M4OWViYjA3OTE2ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTllOTY5YmQyN2EwZmYzMmQyMTBmOWVkNzM1NmI1ZDQ4MThmY2NiNjQxN2RmY2RjYTk0ZmVjYmY0YmVmOTkxMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDYzZGQ4MjFlNmM2NTllM2VlZmJiY2ViMTA3YTQ0YjViZWFlZmE4ZDA0MmMxOWIzYmMyMWIwYzkzNjcwMmVhMiJ9"
+          "resource": "repo://README.md#L479-L479",
+          "version": "repo-lines-v1:sha256:ceff9f7588a668157d15e3fe27b997b75a97ee1f7db1891fa889c26a979154c9:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmZjlmNzU4OGE2NjgxNTdkMTVlM2ZlMjdiOTk3Yjc1YTk3ZWUxZjdkYjE4OTFmYTg4OWMyNmE5NzkxNTRjOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmZjlmNzU4OGE2NjgxNTdkMTVlM2ZlMjdiOTk3Yjc1YTk3ZWUxZjdkYjE4OTFmYTg4OWMyNmE5NzkxNTRjOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzgwYjNlNDFlNzNmZTA2MWY5OTQyN2M5NTgwNGIzMzQzYjVlYjUyYTQ2MjYzMGM3M2ZmZmY1MjE2M2Y1MWQyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDYzZGQ4MjFlNmM2NTllM2VlZmJiY2ViMTA3YTQ0YjViZWFlZmE4ZDA0MmMxOWIzYmMyMWIwYzkzNjcwMmVhMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_0974a9911a164d44b20badfe92939055",
+      "statement": "POST /digest runs searchhelper -> normalize_jobs -> filter_jobs (applying the thread's stored memory), then reads every joblink from the Postgres n8njobs table and keeps only jobs whose apply_url is not in that set, returning {md, links} where md is the formatted markdown and links is the apply_url list of the surviving listings.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L116-L154",
+          "version": "repo-lines-v1:sha256:0dfcbe781f6665f0745a2216a2b170002adbe89318a34e099cad964af58d6403:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmODY3NzAyMWJkYTBiZDM5Y2Q3MTgyMWIyNzBlZTM3MzZhOGMwMDVhNzI5ZjA2NjlkN2RjNDQ2YzMxYjNlM2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1YzVlMjFhNzZlNTUxN2MwNmY4MmEwM2VkYmU2MTIzNjNhMTg4ZGNlNTZmMmEyMjAyYmQyOTVhNTdkMzc1ZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4ZjU3YjI1ZDc0YWRlMjQ1NzA3ZjZhOGE4MzkyYmQzNjJkNTE3MGJhMTgxNWIzZjViOWI3YzJkZWRlYTJiMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmMjU5MjkzMjA0NzZmOTMzYjllZGQwNzU1ZjY3NTc5ZTMwYjgwYzI1MTkwYTE0YTBkZGYzNjA4ZTk4MjJmYTUifQ"
+        },
+        {
+          "resource": "repo://main.py#L174-L189",
+          "version": "repo-lines-v1:sha256:aa4dd5dbbf9c08591ae6c79ab89afd2a00dc98d25d66798deb3e17f77d3b7b74:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwNWYzYjAzYWIxZWMwZTk2NWNhMzk1ZTM0ZjJkNmM3OGIxYTc2NDI4N2E5YjQxNzU0YTc3NGIxMWNiYzlmNzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwYWQwMTFmYjE4YThmMWY3ODAzMjM4MzAxYTUxZGM1YzY2NjdjYTMyNDJhMDE2ZjlmYzkwNWJlZGI1OTc3OGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4NTU5Zjc5NDVkNjc2ZTMzOGFlM2I4MGI0Mjk1NWNkYWJhNzY5NmY1OTdhMDAxYWY0ZDMwNzFiYjRiOWYzODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyZmQ3YTk2MjA3YjUzYzUyZjJjNGQzZjE0NzEwZDMwOTcwZjQ5ZmY1MjU3NWFiYjZmODY3NGE0NWU3M2NjYmQifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_57ef50ab38674745924125eef28ca42f",
+      "statement": "POST /digest/sent inserts each link into the n8njobs table with ON CONFLICT (joblink) DO NOTHING; the workflow calls it only after Gmail succeeds, so a failed email after a successful search does not mark listings sent, and the idempotent insert makes the worst case a repeated email rather than a missing one — the workflow never emails the same job twice across runs.",
+      "evidence": [
+        {
+          "resource": "repo://README.md#L465-L467",
+          "version": "repo-lines-v1:sha256:3a9c7b90b0e711c0a0bd57fc4eb7b3dbbbaec378874e48a185fe33aac1f9cd9b:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODNmNzlhNDMwZjRjNjg0OTcxZjg3Y2JlMDkwMzhmM2YwNTg2N2U3Yjk5MWU1NmQzMzM2ODlhNThkZGM5MDEwMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2NmODk2NDI5MDViNWRiZGRjZGM4YmVkMWVjM2E3MWE2MDVmNTBjYzRiYmJjZWZkNWY2YzMxNDBjMTg1NzQzMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTk3ZDQ3OWE5NzdhNTRlMjE3NGI1ZGMyYjFlYjRhZDJkNTg4YmMzODkyNDFiYTAxM2JjYmU1YjhhZTU5MTc1MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWMzZmJmMDQyYzZhMDc0NWQ2M2EzMTg5MGUzYzdlMGE1MmE2M2RiYTAzNGEzYzA1YmM4NDkzNmJhMTBhZGJjZCJ9"
+        },
+        {
+          "resource": "repo://main.py#L191-L197",
+          "version": "repo-lines-v1:sha256:712aba82ffd1e27884c7958c60e0844f5b6aa9de4b52df67a6ed2a3a28e540b1:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWUwZmM1NDI1ODRkODg1MmMxOTQwYmQ2NGQzZTJkMGQ1MTdhZTY3NzFkNjRmNTFjOTk2Mzg0MjRmODM0M2UwOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjJhNWQ1YzIyNjI1MzUwZmVlZTlmYzFlODQ1NmQ3MmE0ZTY1Zjg0NTRjNDhhNmZlMmZkMmRlZGI1NjhmNGE3MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjk4MmY5ZGU4MmJkNjNhOTEyNTlmNmIwOTc4M2ZhMzY0NjBlNWYzYzE5ZTQzZTViYzY5MmRjN2RiZWY2NGIyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2QxMjE5OTI3NWQxZTRlNjQ4MmY1NjkyODIyN2Q2YzA1MjJmMWNkNjI3YmIwZTA5NjhiYzQyYzgxZjMzOGQ4YiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_f83c2190d3c04152a832057e508aef99",
+      "statement": "Both backend HTTP nodes in the workflow (Digest and Mark Sent) authenticate via an httpHeaderAuth (Header Auth) credential whose value is the N8N_DEDUPE secret; the backend guards /digest and /digest/sent with keycheck('N8N_DEDUPE') using secrets.compare_digest and returns 401 without the matching x-api-key header.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L163-L197",
+          "version": "repo-lines-v1:sha256:2e9815d47d28f8fc18a3647733d4344e31b00df0e080c9bfe2810851f6587597:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlNTdiNGRhZGU2NWI2Njk0YTk2YzQ0MTAzYTM2ZTEyNWNiZTE5YTJkNzNlYTk5ZmU4NzliZGMxMDRlMmY4ZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYTVkNWMyMjYyNTM1MGZlZWU5ZmMxZTg0NTZkNzJhNGU2NWY4NDU0YzQ4YTZmZTJmZDJkZWRiNTY4ZjRhNzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMTQ3OGY1Zjk0ZmQyNjJiZjJjMTUxMmU0YmMyMzc1YzA0YTM1ZWJlMDMwOTMxMGEwODdmYzM3NjAxYWRlOGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkMTIxOTkyNzVkMWU0ZTY0ODJmNTY5MjgyMjdkNmMwNTIyZjFjZDYyN2JiMGUwOTY4YmM0MmM4MWYzMzhkOGIifQ"
+        },
+        {
+          "resource": "repo://n8n_workflow.json#L144-L206",
+          "version": "repo-lines-v1:sha256:dc45fc4baf6ccc98e800f682a1b791692fd6972b0254b5b94cefdf8f5d8bc015:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTNmNDBlMzc4MWViODk2YzgyZDA0NmEwODA2N2ExMWUzNWNkZjJmMWRmYWYyNmZlYTkwYjhkYjY2NzY0MTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZkZTBlYTkxNjJjMTg0OGUyNTM5ZThiYTdkNTBhZDhiZjU3MGI1YTc2ZTY0MGEyZmMyYTE4YTNmZjNjZTQyM2EiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjViNTRkYTg3NmYyYTEyNjcxYzRhOWU5OTIwMmY3NmFhY2Y2YjI3ZTU0OGZiYjNjYmQ5MDBmYjkzMjUzYmU4ZTcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_38a936173a044d35a105d2c579d29aed",
+      "statement": "The If node checks ={{ $json.links }} with the array notEmpty operator; only the true branch continues to Gmail, so a run that finds no new listings stops at the If node and sends nothing.",
+      "evidence": [
+        {
+          "resource": "repo://n8n_workflow.json#L110-L143",
+          "version": "repo-lines-v1:sha256:26ebbcdc01231734a4886f7c4c66f50c2a37ea54a9fb0d840ca8e77b41160bc1:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUxNWNiNzJjNmVmYjhkNDJjNmM1Njc5N2VlOTA0Y2FiYmMyMTkyYThlZWFhNDAxMTkxYWY3NGM0MjZkZjhlMjUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZlNmEyZTFlMDBiNjQyYjEzNmI0OGMzZDc3MDhmMTYxMTViZDUzNTljOWZhOGEzOTc3MTg2M2IwMjgyZjhiZTEifQ"
+        },
+        {
+          "resource": "repo://n8n_workflow.json#L265-L275",
+          "version": "repo-lines-v1:sha256:c5c6cefa0da1a0d911109236d29e6c79c6db4b95030be1ffd2f4530971470122:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2MzlhZDQwZTQ1YjQwOWZlMzQ1NmVlMDk5MGIzNmY1ODQ2ZWQwOWM2MjUxYjc3OTFjMTFmOWJjY2M5ZmI4MDQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdjYjczNjVmYjBiNWExMjA2YWRmZDY5ODBkYjBkOGE0ZTJkZGFiNzVkNmU5MjY3ZjMzYmE3YTg4Y2Q1ZmJlNmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYxMDliYTBiZjBhZDE4Y2RhOTRmNjgxY2FmN2RiZjQxNzRlM2RmMDEyMjkzM2RjZDc3Mzc5NDRiNTYxOTVlYjEifQ"
         }
       ]
     }
   ],
   "verification": {
     "by": "openwiki/0.6.1",
-    "at": "2026-10-01T12:03:35.670Z"
+    "at": "2026-11-01T14:50:14.085Z"
   }
 }

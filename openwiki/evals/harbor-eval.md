@@ -3,9 +3,6 @@ type: Subsystem
 title: Harbor Eval
 description: The deterministic Harbor eval in evals/ — frozen job API fixtures for FIVE sources (RemoteOK, Himalayas, Remotive, Jobicy, Workable), no network, no LLM, no database. Tests filter_jobs exclusion logic against hand-written expected sets. Runs in CI on every push to agent.py or mcp_server.py.
 tags: [evals, harbor, deterministic, frozen-fixtures, ci, filtering, regression]
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-10-01T12:03:35.670Z
 sources:
   - id: openwiki-source-9ea7004cd60fc78ed888a032
     resource: repo://.github/workflows/eval.yml

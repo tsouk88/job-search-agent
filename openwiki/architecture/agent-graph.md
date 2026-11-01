@@ -5,11 +5,13 @@ description: The LangGraph state machine in agent.py — fan-out to five job API
 tags: [agent, langgraph, graph, scoring, filtering, normalization, fan-out]
 verified:
   - by: openwiki/0.6.1
-    at: 2026-10-01T12:03:35.670Z
+    at: 2026-11-01T14:50:14.085Z
 sources:
   - id: openwiki-source-eca60e2ced68ba99bd0ac710
     resource: repo://agent.py
-generated: { by: "openwiki/0.6.1", at: "2026-10-01T12:03:35.670Z" }
+  - id: openwiki-source-185f850c083bac055a13cd37
+    resource: repo://helper.py
+generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
 ---
 
 # Agent Graph
@@ -80,6 +82,7 @@ ALIASES = {
     "back-end": "backend", "back end": "backend",
     "front-end": "frontend", "front end": "frontend",
     "postgresql": "postgres", "kubernetes": "k8s", "javascript": "js",
+    "developer": "engineer",
 }
 def canon(text: str) -> str:
     text = text.lower()
@@ -88,7 +91,7 @@ def canon(text: str) -> str:
     return text
 ```
 
-`canon` spells the synonyms one way *before* matching, so a single token can match every spelling. It is applied by `signal_tokens`, `distinctive_tokens`, and `job_title`.
+`canon` spells the synonyms one way *before* matching, so a single token can match every spelling. It is applied by `signal_tokens`, `job_title`, and inside `score_job` (to both the description and the query words). `distinctive_tokens` is the one exception: it tokenizes the raw query (`query.lower()`) without alias normalization, so a multi-word alias like "machine learning" yields the literal words `machine` and `learning` as tag candidates rather than `ml`.
 
 ### signal_tokens
 
@@ -106,13 +109,13 @@ The words of the query that carry meaning, after `canon` normalization. `GENERIC
 TAG_LIMIT = 3
 def distinctive_tokens(query: str) -> list[str]:
     seen = []
-    for token in re.findall(r'\w+', canon(query)):
+    for token in re.findall(r'\w+', query.lower()):
         if token not in GENERIC and token not in seen:
             seen.append(token)
     return seen[:TAG_LIMIT]
 ```
 
-Picks the non-generic tokens in order, deduplicated, capped at `TAG_LIMIT = 3`. These are the tag-based API queries (RemoteOK, Jobicy). Picking the wrong word costs almost every result (`?tags=fullstack` returns 1 listing where `?tags=react` returns 101), so the fetchers try these in order and stop as soon as one comes back full. Empty means no word narrows anything, and the caller should ask without a tag. `fetch_wjobs` falls back to `signal[:1]` when `distinctive_tokens` is empty.
+Picks the non-generic tokens in order, deduplicated, capped at `TAG_LIMIT = 3`. Unlike `signal_tokens`, this tokenizes the raw query (`query.lower()`) rather than `canon(query)`, so it sees the literal words of the query, not the aliased forms. These are the tag-based API queries (RemoteOK, Jobicy). Picking the wrong word costs almost every result (`?tags=fullstack` returns 1 listing where `?tags=react` returns 101), so the fetchers try these in order and stop as soon as one comes back full. Empty means no word narrows anything, and the caller should ask without a tag. `fetch_wjobs` falls back to `signal[:1]` when `distinctive_tokens` is empty.
 
 ### title_hit
 
@@ -172,11 +175,15 @@ A `fetch_fijobs` for the arbeitnow.com feed is defined but commented out and not
 ```python
 def score_job(job: dict, query: str) -> float:
     title = job_title(job)
-    description = (job.get("description") or ... ).lower()
+    description = canon(job.get("description") or job.get("jobDescription", "")
+                   or job.get("excerpt", "") or job.get("jobExcerpt", "") or "")
     signal = signal_tokens(query)
     words = re.findall(r'\w+', canon(query).lower())
     gen = [w for w in words if w in GENERIC]
-    gen_hits = 0 if len(words) == len(gen) else sum(1 for g in gen if title_hit(g, title))
+    if len(words) == len(gen):
+        gen_hits = 0
+    else:
+        gen_hits = sum(1 for g in gen if title_hit(g, title))
     desc_words = re.findall(r'\w+', description)
     freq = sum(desc_words.count(s) for s in signal)
     bonus = freq / 8
@@ -188,8 +195,8 @@ def score_job(job: dict, query: str) -> float:
 
 The score is no longer just `title_hits * 10 + desc_hits`. It combines four signals:
 
-- **`title_hits`** — how many `signal_tokens` match the title via `title_hit`, weighted by `TITLE_WEIGHT = 10`.
-- **`desc_hits`** — how many signal words appear in the description at all.
+- **`title_hits`** — how many `signal_tokens` match the title via `title_hit`, weighted by `TITLE_WEIGHT = 10`. The title itself is already `canon`-normalized by `job_title`.
+- **`desc_hits`** — how many signal words appear in the description at all. The description is `canon`-normalized before this word list is built, so aliased spellings match there too.
 - **`gen_hits`** — a generic-word tie-breaker: if the query had non-generic words, how many of its `GENERIC` words appear in the *title*. When the whole query is generic, `gen_hits` is forced to 0 so a query of pure generic words does not inflate scores.
 - **`bonus = freq / 8`** — frequency-based description scoring: the total count of signal-word occurrences in the description divided by 8, rewarding descriptions that mention the query terms repeatedly.
 
@@ -209,21 +216,25 @@ def collect_results(state: State):
             seen.add(key)
             unique_jobs.append(job)
     scored = [(score_job(job, query), job) for job in unique_jobs]
-    matched = [pair for pair in scored if pair[0] >= TITLE_WEIGHT]
+    wants_engineer = title_hit("engineer", canon(query))
+    matched = [pair for pair in scored
+               if pair[0] >= TITLE_WEIGHT
+               and (not wants_engineer or title_hit("engineer", job_title(pair[1])))]
     matched.sort(key=lambda pair: pair[0], reverse=True)
-    ...
     matched = matched[:MAX_RESULTS]
     ...
 ```
 
-The dedup key is now the **company + title hash** (`re.sub(r'[^a-z0-9]', '', company.lower() + title)`), not the apply URL. The same role is often posted once per city — six identical "Senior Backend Engineer" listings with six different links — so identity is employer and title, or duplicates take places in the twelve and the reader is handed seven.
+The dedup key is the **company + title hash** (`re.sub(r'[^a-z0-9]', '', company.lower() + title)`), not the apply URL. The same role is often posted once per city — six identical "Senior Backend Engineer" listings with six different links — so identity is employer and title, or duplicates take places in the twelve and the reader is handed seven.
 
 Each surviving job must also pass two filters before scoring:
 
 - **`location_ok(job, country)`** — the single place for the country, whether the source filtered on its own or not. Empty `country` means no filtering. Otherwise a listing is open if it names the country, names a region containing it (via `REGIONS`), says it is worldwide (`GLOBAL_WORDS`), or says nothing about location (most boards, when the answer is "anywhere").
 - **`job_is_recent(job)`** — `MAX_AGE_DAYS = 120`. Workable in particular keeps filled roles on its board; a listing older than 120 days is dropped. Sources spell the date as an ISO string or epoch seconds; a listing with no date is kept (absence is not age), and an unparseable date is kept too (the `try/except` returns `True`).
 
-Then: score → keep `score >= TITLE_WEIGHT` → sort by score descending → cap at `MAX_RESULTS = 12`. The description is `strip_html`-cleaned and truncated to 500 characters here, separate from `normalize_jobs` (150, in the interface layer).
+Then: score → keep `score >= TITLE_WEIGHT` → sort by score descending → cap at `MAX_RESULTS = 12`. There is one extra admission gate beyond the score threshold: a **`wants_engineer` special case**. When the query itself asks for an "engineer" (`title_hit("engineer", canon(query))`), a job is only kept if its title also contains "engineer" — so an "engineering manager" or "director of engineering" that matched on other signal words is excluded, because the user asked for an engineer, not someone who runs them.
+
+After capping, `collect_results` cleans each kept job's description with `strip_html` and truncates it to **2000 characters** (this is the graph's own representation, separate from the interface layer — `normalize_jobs` does not truncate, and `format_jobs_markdown` in `helper.py` re-truncates the already-shortened text to a 150-character `textwrap.shorten` preview for display).
 
 `fetched_jobs` is set to `None` (clears the accumulated list via `add_or_reset`). **`last_fetch_time` is only written when results exist** — an empty result set does not update the cache timestamp, so a subsequent retry re-runs the graph.
 
@@ -245,7 +256,7 @@ The `SENIORITY` frozenset now includes more terms: `senior`, `sr`, `junior`, `j�
 
 ## normalize_jobs
 
-Called by all three interfaces after the graph. Unifies source-specific field names into a canonical shape (`company`, `position`, `location`, `description`, `salary`, `apply_url`), repairs mojibake via `fix_mojibake` (on company, position, location, and description), strips HTML from the description via `strip_html`, cleans salary, and deduplicates by a **company + position hash** (`re.sub(r'[^a-z0-9]', '', company.lower() + position.lower())`). See [domain concepts](../domains.md#normalization-and-mojibake-repair).
+Called by all three interfaces after the graph. Unifies source-specific field names into a canonical shape (`company`, `position`, `location`, `description`, `salary`, `apply_url`), repairs mojibake via `fix_mojibake` (on company, position, location, and description), strips HTML from the description via `strip_html`, cleans salary (a salary that reduces to only spaces/hyphens/zeroes after `re.sub(r'[\s\-0]', '', ...)` is reported as `"Salary not listed"`), and deduplicates by a **company + position hash** (`re.sub(r'[^a-z0-9]', '', company.lower() + position.lower())`). `normalize_jobs` does **not** truncate the description — that happens earlier in `collect_results` (2000 chars). See [domain concepts](../domains.md#normalization-and-mojibake-repair).
 
 ## Constants
 
@@ -263,8 +274,7 @@ All live at the top of `agent.py`. `TITLE_WEIGHT` is the admission threshold (ti
 
 ## Source references
 
-- `agent.py` — the entire file (~596 lines)
-- `main.py` — imports `graph`, `normalize_jobs`, `filter_jobs`
-- `mcp_server.py` — imports `graph`, `normalize_jobs`, `filter_jobs`
-- `voice_agent.py` — imports `graph`, `normalize_jobs`, `filter_jobs`
-- Commits `3fca572` (removed LLM from /ask), `dd282ff` (filter at fetch time), `f26bc5b` (survive dead API)
+- `agent.py` — the entire file (`State`, `add_or_reset`, `filter_jobs`, `canon`/`ALIASES`, `signal_tokens`, `distinctive_tokens`, `job_title`, `title_hit`, `score_job`, `normalize_jobs`, the five fetcher nodes `fetch_jobs`/`fetch_sjobs`/`fetch_tjobs`/`fetch_fjobs`/`fetch_wjobs`, `collect_results`, `fan_out`, and the `graph` wiring)
+- `main.py` — imports `graph`, `normalize_jobs`, `filter_jobs`; compiles the graph with a PostgresSaver checkpointer (or InMemorySaver for evals)
+- `mcp_server.py` — imports `graph`, `normalize_jobs`, `filter_jobs`; compiles the graph with no checkpointer and caches results for `CACHE_TTL = 14400` seconds
+- `voice_agent.py` — imports `graph`, `normalize_jobs`, `filter_jobs`; compiles the graph with a MemorySaver checkpointer

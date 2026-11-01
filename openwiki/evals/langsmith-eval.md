@@ -3,9 +3,6 @@ type: Subsystem
 title: LangSmith Eval
 description: LangSmith-based regression harness that posts 24 queries to the /ask endpoint and scores the ratio of relevant/returned listings with a Gemini 2.5 Flash judge. Current baseline ~0.90 (16 August). Runs against live job boards so the aggregate is the signal, not any single case.
 tags: [evals, langsmith, llm-judge, regression, quality]
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-10-01T12:03:35.670Z
 sources:
   - id: openwiki-source-f1644da1c1a64a6a6567706b
     resource: repo://eval_runner.py

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:d114773dd7e10d695e274d11e435a12f8d454435fd01e1328eade693833c89dd",
+  "pageVersion": "sha256:35020a147531907be0035da5231ea4a99eb668750f51300fa2c49a1b2686f439",
   "claims": [
     {
       "id": "claim_ee7e5f1ecab84656b513e7ea0865c868",
@@ -11,7 +11,7 @@
           "version": "repo-lines-v1:sha256:edd2e0ed52448e6f8b5ca94ed9fe6712ba50a913d032e46ad979f3172f24610f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4NDMzYzdkZGI3ZWRkMDlhMGY4Y2YyMDAyNzY2OTM2NDc4NTk3Y2NjZjAwN2EzNGZjMzNiMDYyYjgxNzc3YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlOGM2MjlhMTAwMDAwNmYxMjY3M2U5ZGYwMjFhNDlkNzFiZTcwZTg1MzVjZjAwMDFjODU4Njc4MzMwOWE0YTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3MDE0OWUwNjlhZDY3ZWNjZjQ3MzY0NmZmMWM3NTAwNTBkMzI5ZDExMDAxOGRjNTc2Njg3OGVhZmExZDYwN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwOTk4YmZiNjg3OTA2N2YwYmVmMmY0ZjNkZTQ0ZWYyYjc5MmQ3YjA3MTdlNGZjYWUyODM4ZTRiNTAyMTRkZDMifQ"
         },
         {
-          "resource": "repo://agent.py#L558-L565",
+          "resource": "repo://agent.py#L559-L566",
           "version": "repo-lines-v1:sha256:b143d02db64d9f5443ac4a43f1cb723d0b6fff1591d382ed9e603dc11fb9bdfc:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M3OTM5NmQzYWEzZmFjOTBhNmMxNzQ3NzFiOWI5M2QwMjVkMjZlM2U4MjFkNDAyYzBkMzg0OGFjOTc5YWRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODliZTM1NWU3MTZjZWVjOTM0YzlhYTBmOTk3ZGIwMGNkMWE4OTdlODczODRiZGU3OWRhYzJkZWI1MjUyMjJkNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRmMTkyMWM5YmM0ZjkwYjg3NDA1OGQ0ZDkxMWYyMDE1ZDUzNThlZTA4NGU0NmE0MDBhYTAxMzliNzM0N2E5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWE4MmViZTllZDQwN2MzYTZiYTRiMDAzNDI5MmJhYTUyYzExY2U1YWUyODYxMDc0MDJkZTQ3OTJlZWVjYWNmYyJ9"
         },
         {
@@ -29,12 +29,12 @@
       "statement": "The MCP server's in-process cache uses CACHE_TTL=14400 seconds (4h), the same freshness threshold the REST backend applies to its persisted last_fetch_time before re-running the agent graph, so both interfaces share one freshness policy.",
       "evidence": [
         {
-          "resource": "repo://main.py#L99-L100",
-          "version": "repo-lines-v1:sha256:43c9283fbf8c34136f1f4c0c055533ae53296cc00e0e773023ee699748ceb969:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTkwZjEyMTNlMTBmOWVlYWQ0NDJkMWY3ZjU2ZmU0ZGJiZWNhNWQ2YzE2YWZkZWJiYjFjOGYwZTBjYmIxZjMwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODk4MzViOWFlZTFlNDQ1NmQzYWY2YzgyYmE0OWU0ODNlMWVkZDRjMzU0Nzk2MDk5Njc1N2ZjMDYzM2U0MzY5OSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTI5ZDMzYTkwNDkxNDI2OWU4NDYzMjRiZTg1M2I5ZjZhNDg2MjhiZTdmOWFhOTk5ZjUzZTg0MDhiYTUzMDRmMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDEzZjIwOTA3YzU2MTBjMDJjMDgwZGNiMzlmMDkwMWE0NjZmNjYxNWZmMDM4NzFmNjkxMTU0YzI5MjA5MjFjMiJ9"
+          "resource": "repo://main.py#L123-L123",
+          "version": "repo-lines-v1:sha256:a90f1213e10f9eead442d1f7f56fe4dbbeca5d6c16afdebbb1c8f0e0cbb1f300:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTkwZjEyMTNlMTBmOWVlYWQ0NDJkMWY3ZjU2ZmU0ZGJiZWNhNWQ2YzE2YWZkZWJiYjFjOGYwZTBjYmIxZjMwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTkwZjEyMTNlMTBmOWVlYWQ0NDJkMWY3ZjU2ZmU0ZGJiZWNhNWQ2YzE2YWZkZWJiYjFjOGYwZTBjYmIxZjMwMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTI5ZDMzYTkwNDkxNDI2OWU4NDYzMjRiZTg1M2I5ZjZhNDg2MjhiZTdmOWFhOTk5ZjUzZTg0MDhiYTUzMDRmMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTQ2YzAzMWQ4YmZlNGY3MGRhNzNjNzA2NGNlNjVmNzA5MjU2MWMwMDQxYjE5ZGM4OTljMWVmYzZhNzg3Zjk0ZSJ9"
         },
         {
-          "resource": "repo://mcp_server.py#L14-L27",
-          "version": "repo-lines-v1:sha256:5c41d821e30a711de6976fbe820cd7b3890a050a4f9a089d2c20106e337c2179:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4N2I4ZTk4MjlkNTNkZTM2OWUwNTUwZmQ0ZmNiMDhmNjUwNTA4NzlkZjRlNDlhNjRmNGE0M2VmMDE5MjdkNDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOTJhZjI3YmVjMGQ2MmNlMjdlZjQ2MzBhYTdmNDk3OTllMDNiNmViNDYzY2QxNDUzODdkNzdhOTUzMDA2YzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1ODFlNjg2NjA1NTFkZGRjZGJiZmNjODZkNzExMmEwYzgxOTllODNlY2E2NTVmMDYxNzMwMWE5Y2RjNTk4YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjMDk1NzBmY2Y1YWUxMjdiNGEwOWMyNDYxZjFiZGI0MWI5NGM5MDRjNWE4MTkwYjNlNGQwNTBjOThkZmZlNGQifQ"
+          "resource": "repo://mcp_server.py#L14-L14",
+          "version": "repo-lines-v1:sha256:d87b8e9829d53de369e0550fd4fcb08f65050879df4e49a64f4a43ef01927d43:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDg3YjhlOTgyOWQ1M2RlMzY5ZTA1NTBmZDRmY2IwOGY2NTA1MDg3OWRmNGU0OWE2NGY0YTQzZWYwMTkyN2Q0MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDg3YjhlOTgyOWQ1M2RlMzY5ZTA1NTBmZDRmY2IwOGY2NTA1MDg3OWRmNGU0OWE2NGY0YTQzZWYwMTkyN2Q0MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTU4MWU2ODY2MDU1MWRkZGNkYmJmY2M4NmQ3MTEyYTBjODE5OWU4M2VjYTY1NWYwNjE3MzAxYTljZGM1OThhNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMmFkYjdhOWVkMzcxY2ViOGQzMWRhYzBjNjM5ZTQyNzE1NTQ1N2I2NDQ5MmNjZDA3ODEwNTkxMDlhNmUxMjBmNyJ9"
         }
       ]
     },
@@ -43,22 +43,22 @@
       "statement": "fetch_fresh caches the normalized job list (post-normalize_jobs, pre-filter_jobs) keyed by the stripped-and-lowercased query, so subsequent calls with different exclude_keywords filter the cached list locally without re-invoking the graph or re-hitting the job boards.",
       "evidence": [
         {
-          "resource": "repo://mcp_server.py#L14-L27",
-          "version": "repo-lines-v1:sha256:5c41d821e30a711de6976fbe820cd7b3890a050a4f9a089d2c20106e337c2179:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ4N2I4ZTk4MjlkNTNkZTM2OWUwNTUwZmQ0ZmNiMDhmNjUwNTA4NzlkZjRlNDlhNjRmNGE0M2VmMDE5MjdkNDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOTJhZjI3YmVjMGQ2MmNlMjdlZjQ2MzBhYTdmNDk3OTllMDNiNmViNDYzY2QxNDUzODdkNzdhOTUzMDA2YzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE1ODFlNjg2NjA1NTFkZGRjZGJiZmNjODZkNzExMmEwYzgxOTllODNlY2E2NTVmMDYxNzMwMWE5Y2RjNTk4YTciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjMDk1NzBmY2Y1YWUxMjdiNGEwOWMyNDYxZjFiZGI0MWI5NGM5MDRjNWE4MTkwYjNlNGQwNTBjOThkZmZlNGQifQ"
+          "resource": "repo://mcp_server.py#L17-L27",
+          "version": "repo-lines-v1:sha256:86f0e42fdf2b486f14dd638bd043db707786040d4d4db780221de41f7a061928:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiNzUwOTY2MTg0MWQ5ZGUyNjEzYTE0ZDU4YmNhZjM2NzFkN2JmYmY5YjcxY2Q5Y2Y3MTJmNGI0Y2U3YjEzYzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMwOTJhZjI3YmVjMGQ2MmNlMjdlZjQ2MzBhYTdmNDk3OTllMDNiNmViNDYzY2QxNDUzODdkNzdhOTUzMDA2YzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE5MDU4NDhkMmNhZDMwZmRkOWMwMDk3ZWUxNjI4NTViMmU2ZGMwMjI4ODU0MWRhN2FkYjkzODViMmVkZTE2NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImRjMDk1NzBmY2Y1YWUxMjdiNGEwOWMyNDYxZjFiZGI0MWI5NGM5MDRjNWE4MTkwYjNlNGQwNTBjOThkZmZlNGQifQ"
         },
         {
-          "resource": "repo://mcp_server.py#L17-L42",
-          "version": "repo-lines-v1:sha256:e45d3c1fa4ae87d4afca92df4e440b30d67bb776c74c58b23f5e151da3081a69:eyJzZWxlY3RlZExpbmVDb3VudCI6MjYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdiNzUwOTY2MTg0MWQ5ZGUyNjEzYTE0ZDU4YmNhZjM2NzFkN2JmYmY5YjcxY2Q5Y2Y3MTJmNGI0Y2U3YjEzYzQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2ZDBkZTk1OWI3MGVlNzExZGNmZGU2YzZiNDk3YWUxYTBjZWFiYzBiMTgwN2ZjYzMwZTBiNzcwODY0M2EyODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImE5MDU4NDhkMmNhZDMwZmRkOWMwMDk3ZWUxNjI4NTViMmU2ZGMwMjI4ODU0MWRhN2FkYjkzODViMmVkZTE2NmUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyZWJmZTNmYmYzMWZjY2MxNDE0ZTdlMjFmNmM5YTM3OWFkMzRjNzU0NWYwMjcyYmRjZjQ3ZDU0YjM2Zjk2MWYifQ"
+          "resource": "repo://mcp_server.py#L41-L44",
+          "version": "repo-lines-v1:sha256:41cf6df14a300e7250cf6d7f2b71452f558a1044b45b3a7af64beb3758a4df91:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTUzMWEzZjRjYzBlNTY1MmQ0NGIzZGI0ZDFkMmVmYTYwMjE0ZDc4Nzc3MGMzMjU2YzM5ODVkZjFlYWE3MjVlOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODZkMGRlOTU5YjcwZWU3MTFkY2ZkZTZjNmI0OTdhZTFhMGNlYWJjMGIxODA3ZmNjMzBlMGI3NzA4NjQzYTI4NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzY2Nzc0YjIwYWUxMWEyZmU0YzQ1ZDE2ZTliZjZhMTIwZTdjZDc3ZWRhNDIyNzUxM2MxYmRkZjQ2ZGM0YzA1MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzJlYmZlM2ZiZjMxZmNjYzE0MTRlN2UyMWY2YzlhMzc5YWQzNGM3NTQ1ZjAyNzJiZGNmNDdkNTRiMzZmOTYxZiJ9"
         }
       ]
     },
     {
       "id": "claim_bcb9c031fd98454e86a06b8708f2afb8",
-      "statement": "search_remote_jobs is annotated readOnlyHint=True and takes exclude_keywords as an explicit per-call argument, making the calling client's conversation the memory for exclusion refinement instead of accumulated server-side thread state or an LLM feedback-extraction call.",
+      "statement": "search_remote_jobs is annotated readOnlyHint=True and takes exclude_keywords as an explicit per-call argument (defaulting to None, coerced to an empty list inside the body), making the calling client's conversation the memory for exclusion refinement instead of accumulated server-side thread state or an LLM feedback-extraction call.",
       "evidence": [
         {
-          "resource": "repo://mcp_server.py#L31-L42",
-          "version": "repo-lines-v1:sha256:c251171b07013abf949b316dde4c80c6b0d99f6da626dd55edd5967df51fbf49:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxODUwOWRlYTJjYWI0NjQ5YmZiMzM1ZTYwOGE4NDhiNmRjYTg4MTMzMjljMzNmMzY2M2YzN2E3MDg3ZTNjYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2ZDBkZTk1OWI3MGVlNzExZGNmZGU2YzZiNDk3YWUxYTBjZWFiYzBiMTgwN2ZjYzMwZTBiNzcwODY0M2EyODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRjMDk1NzBmY2Y1YWUxMjdiNGEwOWMyNDYxZjFiZGI0MWI5NGM5MDRjNWE4MTkwYjNlNGQwNTBjOThkZmZlNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyZWJmZTNmYmYzMWZjY2MxNDE0ZTdlMjFmNmM5YTM3OWFkMzRjNzU0NWYwMjcyYmRjZjQ3ZDU0YjM2Zjk2MWYifQ"
+          "resource": "repo://mcp_server.py#L31-L44",
+          "version": "repo-lines-v1:sha256:b027a17dcc7cc4ad0f9f02271ea5302d6d0b8fd230b9ba5ce62536d945829859:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxODUwOWRlYTJjYWI0NjQ5YmZiMzM1ZTYwOGE4NDhiNmRjYTg4MTMzMjljMzNmMzY2M2YzN2E3MDg3ZTNjYmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg2ZDBkZTk1OWI3MGVlNzExZGNmZGU2YzZiNDk3YWUxYTBjZWFiYzBiMTgwN2ZjYzMwZTBiNzcwODY0M2EyODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImRjMDk1NzBmY2Y1YWUxMjdiNGEwOWMyNDYxZjFiZGI0MWI5NGM5MDRjNWE4MTkwYjNlNGQwNTBjOThkZmZlNGQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjMyZWJmZTNmYmYzMWZjY2MxNDE0ZTdlMjFmNmM5YTM3OWFkMzRjNzU0NWYwMjcyYmRjZjQ3ZDU0YjM2Zjk2MWYifQ"
         }
       ]
     },
@@ -75,6 +75,6 @@
   ],
   "verification": {
     "by": "openwiki/0.6.1",
-    "at": "2026-10-01T12:03:35.670Z"
+    "at": "2026-11-01T14:50:14.085Z"
   }
 }
