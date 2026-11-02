@@ -32,6 +32,7 @@ load_dotenv()
 checkpointer_cm = None
 agent = None
 eval_agent = None
+logging.basicConfig(format="%(asctime)s - %(levelname)s - %(message)s")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -128,7 +129,7 @@ def searchhelper(input:SearchInput , search_agent , metadata: dict | None=None):
             try:
                 cache=r.get(savedjobs)
             except redis.exceptions.RedisError as e:
-                print(e)
+                logging.warning(e)
                 cache = None
         if cache is not None:
             data=json.loads(cache)
@@ -143,7 +144,7 @@ def searchhelper(input:SearchInput , search_agent , metadata: dict | None=None):
                 try:
                     r.set(savedjobs , cached , ex=14400)
                 except redis.exceptions.RedisError as e:
-                    print(e)
+                    logging.warning(e)
         searched_country = input.country
     else:
         query = state.values.get("clean_jobs" , [])
@@ -228,7 +229,7 @@ def pdfread(file):
             pages = pdf.pages[:5]
             text = "\n".join(page.extract_text() or "" for page in pages)
     except Exception as e:
-        print(e)
+        logging.warning(e)
         raise HTTPException(status_code=415, detail="Only PDF files are accepted")
     return text
 
@@ -255,7 +256,7 @@ def getstatus(request: Request , job_id:UUID):
     if res.status == "SUCCESS":
         return {"status" : "done", "result": res.result}
     elif res.status == "FAILURE":
-        print(res.result)
+        logging.warning(res.result)
         if isinstance(res.result, httpx.TimeoutException):
             return {"status" : "failed", "detail": "The CV reader is slow right now, please try again in a minute"}
         return {"status" : "failed", "detail": "Something went wrong, please try again"}
@@ -307,7 +308,7 @@ def checkhealth():
         ping = celery_app.control.ping(destination=[f"celery@{socket.gethostname()}"], timeout=1.0)
     except Exception as e:
         last_ping=time.monotonic()
-        print(e)
+        logging.warning(e)
         return {"status" : "ok"}  
     if len(ping) != 0:
         last_ping = time.monotonic()
