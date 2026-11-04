@@ -2,6 +2,7 @@ from typing import TypedDict,Annotated
 from langgraph.graph import StateGraph, START, END
 from langgraph.types import Send 
 from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
 import urllib.parse
 import time
 import json
@@ -305,7 +306,62 @@ def fetch_jobs(state:State):
         except requests.exceptions.RequestException as e:
             print(f"Error {e}", file=sys.stderr)
             return {"fetched_jobs": []}
+
         
+GETRO_VCS=[1680,53552,617,222,4350,1518,7715,178,29066]
+
+def getrosearch(VC , input):
+    url = f"https://api.getro.com/api/v2/collections/{VC}/search/jobs"
+    response = requests.post(
+        url,
+        json={"page": 0, "query": input or "", "filters":{"work_mode": ["remote"]}},
+        headers={"User-Agent": "Mozilla/5.0", "Accept": "application/json"},
+        timeout=10,
+        )
+    return response
+
+def vcsearch(vc , query):
+    try:
+        input = canon(query)
+        response= getrosearch(vc , input)
+        response.raise_for_status()
+        jobs=response.json()["results"]["jobs"]
+        if len(jobs)< 10 :
+            tags = distinctive_tokens(query)
+            for tag in tags or [None]:
+                response=getrosearch(vc , tag)
+                if response.status_code != 200:
+                    continue
+                jobs+=response.json()["results"]["jobs"]
+        for job in jobs:
+            org=job.get("organization") or {}
+            job["company"]=org.get("name")
+            location = job.get("locations") or []
+            job["location"]=", ".join(location)
+            job["epoch"]=job.get("created_at")
+            desc=job.get("skills") or []
+            job["description"]=", ".join(desc)                    
+    except (requests.exceptions.RequestException , json.JSONDecodeError) as e:
+        print(f"Error {e}", file=sys.stderr)
+        return []
+    return jobs
+    
+def fetch_gjobs(state:State):
+    if not state.get("user_input"):
+        return {"fetched_jobs": []}
+    signal = signal_tokens(state["user_input"])
+    query=state["user_input"]
+    raw = {}
+    with ThreadPoolExecutor(max_workers=len(GETRO_VCS)) as pool:
+        results=pool.map(lambda vc: vcsearch(vc , query), GETRO_VCS)
+        for vc_jobs in results:
+            for job in vc_jobs:
+                raw.setdefault(job.get("url") or job.get("id"), job)
+    fetched_jobs = [job for job in raw.values()
+    if any(title_hit(token, job_title(job)) for token in signal)]
+    return {"fetched_jobs": fetched_jobs}
+    
+
 def fetch_sjobs(state:State):
         if not state.get("user_input"):
             return {"fetched_jobs": []}
@@ -562,8 +618,8 @@ def fan_out(state:State):
         Send("fetch_sjobs", state),  
         Send("fetch_tjobs", state),
         Send("fetch_fjobs", state),
-        Send("fetch_wjobs", state)
-       # Send("fetch_fijobs", state)    
+        Send("fetch_wjobs", state),
+        Send("fetch_gjobs", state)    
     ]
 
 
@@ -573,6 +629,7 @@ graph.add_node("fetch_sjobs" , fetch_sjobs)
 graph.add_node("fetch_tjobs" , fetch_tjobs)
 graph.add_node("fetch_fjobs", fetch_fjobs)
 graph.add_node("fetch_wjobs", fetch_wjobs)
+graph.add_node("fetch_gjobs" , fetch_gjobs)
 #graph.add_node("fetch_fijobs", fetch_fijobs)
 graph.add_node("collect_results", collect_results)
 
@@ -584,6 +641,7 @@ graph.add_edge("fetch_sjobs", "collect_results")
 graph.add_edge("fetch_tjobs", "collect_results")
 graph.add_edge("fetch_fjobs", "collect_results")
 graph.add_edge("fetch_wjobs", "collect_results")
+graph.add_edge("fetch_gjobs", "collect_results")
 graph.add_edge("collect_results", END)
 
 

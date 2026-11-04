@@ -19,6 +19,11 @@ HOSTS = {
 # stay legible and the parser behaves exactly as it does against the live site.
 WORKABLE = "jobs.workable.com"
 
+# Getro is a POST search: the answer depends on the VC in the path and on the
+# query in the body, so the fixture is keyed by both. A pair that was never
+# captured answers with no jobs, as Getro does for a query that finds nothing.
+GETRO = "api.getro.com"
+
 
 class FrozenResponse:
     status_code = 200
@@ -29,6 +34,9 @@ class FrozenResponse:
 
     def json(self):
         return self._payload
+
+    def raise_for_status(self):
+        pass
 
 
 def workable_fixture(path):
@@ -55,12 +63,24 @@ def frozen_get(url, *args, **kwargs):
     return FrozenResponse(payload=payload)
 
 
+def frozen_post(url, *args, **kwargs):
+    parts = urlparse(url)
+    if parts.hostname != GETRO:
+        raise RuntimeError(f"unfrozen host: {parts.hostname}")
+    vc = parts.path.split("/collections/")[1].split("/")[0]
+    query = (kwargs.get("json") or {}).get("query") or ""
+    captured = json.loads((FIXTURES / "getro.json").read_text(encoding="utf-8"))
+    jobs = captured.get(vc, {}).get(query, [])
+    return FrozenResponse(payload={"results": {"jobs": jobs, "count": len(jobs)}})
+
+
 def blocked(*args, **kwargs):
     raise RuntimeError("live network access is not available in this environment")
 
 
 requests.get = frozen_get
-for name in ("post", "put", "patch", "delete", "head", "options", "request"):
+requests.post = frozen_post
+for name in ("put", "patch", "delete", "head", "options", "request"):
     setattr(requests, name, blocked)
 requests.Session.request = blocked
 requests.sessions.Session.request = blocked

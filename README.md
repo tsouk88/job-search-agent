@@ -14,13 +14,14 @@ The eval suite is itself under test. Two runs once scored the *same* nine listin
 
 ## What it does
 
-The agent queries five job sources in parallel:
+The agent queries six job sources in parallel:
 
 - [RemoteOK API](https://remoteok.com/api)
 - [Himalayas API](https://himalayas.app/jobs/api)
 - [Remotive API](https://remotive.com/api/remote-jobs) — read as a feed, not a search ([why](#remotive-is-a-feed-not-a-search))
 - [Jobicy.com](https://jobicy.com/api/v2/remote-jobs)
 - [Workable](https://jobs.workable.com) — the public board of the ATS most Greek companies run
+- VC portfolio boards, via [Getro](https://www.getro.com) — the openings of nine venture funds' portfolio companies ([details](#vc-portfolio-boards))
 
 Pick a country from the dropdown, or leave it on All locations, which applies no location filter.
 
@@ -36,7 +37,7 @@ Filtering at the source instead fixed the bug, removed the cost, and made result
 
 ## How it works
 
-Built with **LangGraph** at its core. The graph uses a **fan-out architecture** — the agent spawns parallel fetch nodes using LangGraph's `Send` API. Results are deduplicated, scored for relevance against your query, ranked, and stored.
+Built with **LangGraph** at its core. The graph uses a **fan-out architecture** — the agent spawns parallel fetch nodes using LangGraph's `Send` API, one per source. Results are deduplicated, scored for relevance against your query, ranked, and stored.
 
 ```mermaid
 flowchart TD
@@ -47,12 +48,14 @@ flowchart TD
     fan_out -->|Send API| fetch_tjobs[fetch_tjobs]
     fan_out -->|Send API| fetch_fjobs[fetch_fjobs]
     fan_out -->|Send API| fetch_wjobs[fetch_wjobs]
+    fan_out -->|Send API| fetch_gjobs[fetch_gjobs\nthread pool · 9 VC boards]
 
     fetch_jobs --> collect_results[collect_results\ncountry · dedupe · score · rank]
     fetch_sjobs --> collect_results
     fetch_tjobs --> collect_results
     fetch_fjobs --> collect_results
     fetch_wjobs --> collect_results
+    fetch_gjobs --> collect_results
 
     collect_results --> END([END])
 
@@ -61,7 +64,7 @@ flowchart TD
     classDef condStyle fill:#faf5ff,stroke:#c084fc,stroke-width:2px,color:#000;
 
     class START,END startEnd;
-    class fetch_jobs,fetch_sjobs,fetch_tjobs,fetch_fjobs,fetch_wjobs,collect_results nodeStyle;
+    class fetch_jobs,fetch_sjobs,fetch_tjobs,fetch_fjobs,fetch_wjobs,fetch_gjobs,collect_results nodeStyle;
     class fan_out condStyle;
 ```
 
@@ -91,7 +94,7 @@ The dropdown sets a country; All locations is the default and applies no locatio
 |---|---|
 | Workable | in the path, `/search/<country>/remote-<word>-jobs` |
 | Jobicy | `geo=<country>` |
-| Himalayas, RemoteOK, Remotive | no usable location filter (Himalayas answers `location`, `countryCode` and `region` with the same number of listings as no parameter at all), so they are filtered on each listing's own location field |
+| Himalayas, RemoteOK, Remotive, VC boards | no usable location filter (Himalayas answers `location`, `countryCode` and `region` with the same number of listings as no parameter at all), so they are filtered on each listing's own location field |
 
 A listing counts as open to a country if it names the country, names a region containing it (Europe, EMEA, …), says it is open to everyone, or says nothing at all: most boards leave the field empty when the answer is anywhere. "Remote" is deliberately not one of those words. It says how the work is done, not where from, and "Remote, US only" is a common way to write a restriction.
 
@@ -113,6 +116,16 @@ Remotive documents `search`, `category` and `limit`, but its edge cache does not
 
 Workable is the applicant-tracking system most companies in Greece run, so a role here appears on its public board and almost nowhere else the agent looks. The search pages render client-side, but they carry a schema.org `ItemList` of the twenty results, and each link spells out its own title and employer. So the twenty are filtered and deduplicated without opening any of them, and only the survivors are fetched for their `JobPosting` (description, date, who may apply). `robots.txt` allows the path form of `/search` and disallows the query-string form, so the path form is the one used. The country segment is not optional: without it the board stops reading the keyword too, and `remote-python-jobs` returns commercial representatives in Rome. Worldwide is sent as the explicit slug `worldwide`.
 
+### VC portfolio boards
+
+Venture funds publish their portfolio companies' openings on job boards, and many of those boards run on Getro. They list startups that rarely post on the general remote boards, and each listing links straight to the company's own applicant-tracking page. Nine funds are searched (Point Nine, Creandum, Earlybird, General Catalyst, Backed, Smartfin, Antler, firstminute and Theory), each one filtered to remote roles on Getro's side.
+
+Each fund is asked for the full query first. A narrow query on a small board often finds almost nothing, so when it returns fewer than ten the fund is asked again for each distinctive word, the same fallback RemoteOK gets. Every listing that comes back is then re-checked against its own title.
+
+Getro returns no description, only a list of skills, so the skills stand in for it. That puts its listings at a disadvantage when scored: a title match counts the same, but there is less underneath to break the tie. For `python developer` the two Getro listings that qualify rank fifteenth and sixteenth and don't make the twelve; a broader query like `ai engineer` brings back 32 of them to compete.
+
+The nine funds are searched from a thread pool inside one node instead of as one `Send` each. The graph keeps describing sources, not funds, and the time is the same either way: the requests wait on the network, so nine funds take about as long as the slowest one, **1.4s** where one after another they took about 6s. A fund that answers with an error contributes nothing instead of failing the node.
+
 ### Feedback and memory
 
 Tell the agent what to filter out — "no MERN", "no senior roles", "no PHP" — and it stores your preferences in **PostgreSQL via LangGraph's PostgresSaver**. Filters persist across searches and across days.
@@ -125,7 +138,7 @@ To narrow by location, use the country field rather than a filter: "no usa" woul
 
 ### Search cache
 
-A search's results are kept in Redis for four hours under the normalised query and the country (`jobs:python developer:greece`), shared by every user. Before this, the only reuse was per thread, so each new visitor fetched from all five sources, and so did every request that arrived with a fresh UUID. On a hit the results are written into the caller's thread as if the graph had run, so `/feedback` and `/reset` find them there. The four hours count from the original fetch, not from the hit, so nobody is served listings older than that. `/askeval` skips the cache in both directions: an eval should measure the agent, not a copy of an earlier run.
+A search's results are kept in Redis for four hours under the normalised query and the country (`jobs:python developer:greece`), shared by every user. Before this, the only reuse was per thread, so each new visitor fetched from every source, and so did every request that arrived with a fresh UUID. On a hit the results are written into the caller's thread as if the graph had run, so `/feedback` and `/reset` find them there. The four hours count from the original fetch, not from the hit, so nobody is served listings older than that. `/askeval` skips the cache in both directions: an eval should measure the agent, not a copy of an earlier run.
 
 Filters are not part of the key. They are applied after the cache, per thread, which is what lets one cached search serve users who exclude different things.
 
@@ -133,7 +146,7 @@ Filters are not part of the key. They are applied after the cache, per thread, w
 
 LangGraph writes a checkpoint after every step by default. With five sources fanned out, one search left four checkpoints and every source's raw listings in Postgres: about **3.7MB per search**, and 24 threads had reached 260MB. The graph now runs with `durability="exit"` and writes once, when the run ends: about **41KB per search**. What that gives up is resuming a run that crashed halfway, which a search does not need: it is simply run again.
 
-The agent reads everything the five sources return and shows the top 12 after ranking (`MAX_RESULTS`, at the top of `agent.py`). RemoteOK is the exception: it is asked to match on the title before it replies, so its own ten are already ten that matched.
+The agent reads everything the six sources return and shows the top 12 after ranking (`MAX_RESULTS`, at the top of `agent.py`). RemoteOK is the exception: it is asked to match on the title before it replies, so its own ten are already ten that matched.
 
 > **LangSmith tracing is enabled.** Graph runs are fully observable — every node execution, its latency and its output. Note that the search path no longer makes LLM calls, so token usage now appears only for feedback extraction, CV upload and the n8n evaluator.
 
@@ -254,7 +267,7 @@ The old 0.90 baseline is gone. It was measured against LLM-based filtering on a 
 
 Both problems above share a root: the number moves for reasons that have nothing to do with the code. Live listings shift hourly, and the same input scored 0.333 and then 0.167 because a model was doing the scoring.
 
-So the filter is measured somewhere else. One capture of every source is frozen into the repository (the four JSON APIs, plus Workable's search and listing pages reduced to the schema.org blocks the parser reads), the container runs with its network disabled, and the expected result is written out by hand. Same input, same number, every time.
+So the filter is measured somewhere else. One capture of every source is frozen into the repository (the four JSON APIs, Workable's search and listing pages reduced to the schema.org blocks the parser reads, and Getro's answers keyed by fund and query), the container runs with its network disabled, and the expected result is written out by hand. Same input, same number, every time.
 
 ```bash
 uv tool install harbor
@@ -270,13 +283,15 @@ python evals/check_reward.py evals/jobs/local
 
 Docker is the only requirement. No API key, because nothing in this path calls a model — the harness is the repository's own MCP tool, running unmodified against fixture files instead of the internet. That is also why it can sit on every pull request: it costs a runner minute and no tokens.
 
-The query is `python developer`, excluding `senior`, `game` and `canonical`. Three terms rather than one, so that both halves of the filter are exercised: `senior` through the title-only seniority rule, `canonical` through the full-text rule, where the word appears in descriptions and in no title at all. Seven listings survive, five don't. Leaving one in and dropping one too many both score zero.
+The query is `python developer`, excluding `senior`, `game` and `canonical`. Three terms rather than one, so that both halves of the filter are exercised: `senior` through the title-only seniority rule, `canonical` through the full-text rule, where the word appears in descriptions and in no title at all. Six listings survive, six don't. Leaving one in and dropping one too many both score zero.
 
 The expected set is written by hand, which is the whole point. A verifier that recomputed it by calling `filter_jobs` would be comparing the code against itself and would pass forever.
 
 It bites: collapsing the filter so every keyword is matched against titles only takes the score from 1.0 to 0.0, and the failing test names the two listings that leaked through. Notably, deleting `senior` from the seniority list does **not** — the word would still match the same title as an ordinary keyword. Controls that fail to fail are worth knowing about.
 
 It also caught a change it was never written for. Adding Workable turned it red before anything shipped: the frozen environment knew four hosts and refused the fifth, because the fan-out had changed and every assertion after it would have been measuring something else. The expected set was rewritten by hand from the new fixtures. Three Workable listings joined the kept set and its senior one the dropped set, and a Jobicy listing left both, because twelve places are still twelve and a fifth source competes for them.
+
+The sixth source was the first to search with a POST, which the frozen environment blocked outright. Getro's answers are now frozen by fund and by query, the two things the response depends on. This time the expected set did not move: both Getro listings reach the ranking and finish outside the twelve. So the eval proves the new source doesn't break the pipeline, not that its listings get through.
 
 What it does not cover: one query, one moment in the market, and no listing in the capture carries "senior" in its description alone — so the rule that seniority is judged on titles only is never tested in the one shape that separates it from ordinary matching. The fixtures are real captured data and were not edited to manufacture that case.
 
@@ -346,7 +361,7 @@ Use absolute paths to the virtualenv's interpreter — the client starts the pro
 | LLM Integration | LangChain `init_chat_model` |
 | Backend | FastAPI |
 | Frontend | Next.js 15 + ReactMarkdown + remark-gfm |
-| Job sources | RemoteOK, Himalayas, Remotive (cached feed), Jobicy, Workable (public board) |
+| Job sources | RemoteOK, Himalayas, Remotive (cached feed), Jobicy, Workable (public board), 9 VC portfolio boards (Getro) |
 | Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) — 0.90 across 24 cases; per-listing judges (Jev via OpenRouter, Gemini) beside it |
 
 ---
