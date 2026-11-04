@@ -42,7 +42,7 @@ def run_agent(agent: Runnable ,user_input: str, thread_id: str, country: str = "
     )
     return result["clean_jobs"], result.get("memory", []) , result.get("last_fetch_time", "")
 
-SOURCES = "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app | Jobicy.com | jobs.workable.com"
+SOURCES = "Sources: Some jobs from Remotive.com | RemoteOK.com | Himalayas.app | Jobicy.com | jobs.workable.com | VC portfolio boards (via Getro.com)"
 
 NO_RESULTS = ("No jobs matched your search and active filters.\n\n"
               "Try a different search, or say \"reset filters\" to clear what you excluded.")
