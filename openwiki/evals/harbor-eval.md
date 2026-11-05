@@ -1,89 +1,83 @@
 ---
 type: Subsystem
-title: Harbor Eval
-description: The deterministic Harbor eval in evals/ — frozen job API fixtures for FIVE sources (RemoteOK, Himalayas, Remotive, Jobicy, Workable), no network, no LLM, no database. Tests filter_jobs exclusion logic against hand-written expected sets. Runs in CI on every push to agent.py or mcp_server.py.
+title: Harbor Offline Evaluation
+description: Deterministic offline evaluation framework testing filtering and exclusion invariants against frozen API captures without live network or LLM dependencies.
 tags: [evals, harbor, deterministic, frozen-fixtures, ci, filtering, regression]
-sources:
-  - id: openwiki-source-9ea7004cd60fc78ed888a032
-    resource: repo://.github/workflows/eval.yml
-  - id: openwiki-source-eca60e2ced68ba99bd0ac710
-    resource: repo://agent.py
-  - id: openwiki-source-1d64a0979a354ad458b3519a
-    resource: repo://evals/check_reward.py
-  - id: openwiki-source-a68f947821d6952a6d4a07df
-    resource: repo://evals/configs/no-network.yaml
-  - id: openwiki-source-08c99c4c450a668727fdd901
-    resource: repo://evals/filter-exclusion-senior/environment/fixtures/workable/view-hrFtaRqbZsYCPcCVeEr4Q2.html
-  - id: openwiki-source-4ea2d16d70ad274641c7935e
-    resource: repo://evals/filter-exclusion-senior/environment/frozen_apis.py
-  - id: openwiki-source-d77027360dd6f5a844fd6f0d
-    resource: repo://evals/filter-exclusion-senior/instruction.md
-  - id: openwiki-source-2945aba9c5ae6f9af2da7155
-    resource: repo://evals/filter-exclusion-senior/task.toml
-  - id: openwiki-source-ab20f2fabcf9dffc06e9a9a7
-    resource: repo://evals/filter-exclusion-senior/tests/expected.json
-  - id: openwiki-source-6f3a365387ad1dfc55a94d24
-    resource: repo://evals/filter-exclusion-senior/tests/test_outputs.py
-  - id: openwiki-source-18837785d6eee548467c07ac
-    resource: repo://evals/harbor_agents/pipeline_agent.py
-  - id: openwiki-source-1691a76fbd7a6781b3420f6c
-    resource: repo://evals/harbor_agents/run_pipeline.py
-generated: { by: "openwiki/0.6.1", at: "2026-11-01T15:48:11.877Z" }
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T15:48:11.877Z
 ---
 
-# Harbor Eval
+# Harbor Offline Evaluation
 
-The Harbor eval is a deterministic regression test for the agent's `filter_jobs` exclusion logic. It exists because the [LangSmith eval](langsmith-eval.md) runs against live job boards that shift hourly — a code change cannot be isolated from market drift. Harbor freezes the data and asserts an exact output set.
+The Harbor offline evaluation is a deterministic regression test harness located in `evals/` that verifies the agent's exclusion logic in `filter_jobs`. While the live [LangSmith Evaluation](langsmith-eval.md) tests semantic relevance against external job boards that drift hourly, Harbor freezes API responses into static fixtures and executes within a network-isolated environment to assert exact output sets.
+
+Harbor ensures that any changes to the [Agent Graph](../architecture/agent-graph.md), ranking rules, or exclusion logic preserve filtering correctness without incurring token costs or relying on external API availability. For broader testing strategies, see [Testing Overview](../testing.md).
 
 ## What it tests
 
-One capability: applying a user exclusion to a fixed result set. Drop every listing whose **title** carries the excluded seniority term; keep every other listing. Over-inclusion (a senior job survives) and over-filtering (a valid job is dropped) are both failures.
+The evaluation tests the agent's ability to apply exclusion keywords to a pre-ranked result set: dropping listings whose **title** matches an excluded seniority term or whose **full text** matches any general exclusion keyword, while keeping every valid listing. Over-inclusion (an excluded job survives) and over-filtering (a valid job is dropped) both fail the test.
 
-The test query is `python developer` with exclusions `["senior", "game", "canonical"]`. Three exclusions chosen to exercise both branches of `filter_jobs`:
+The standard evaluation query is `python developer` with exclusions `["senior", "game", "canonical"]`. These exclusions evaluate both branches of `filter_jobs` in `agent.py`:
 
-| Term | What it drops | `filter_jobs` branch |
+| Term | What it drops | Matching rule & `filter_jobs` branch |
 |---|---|---|
-| `senior` | "Senior Software Engineer - Python/MongoDB" (Jobicy), "Senior Backend Engineer (Python)" (Workable) | Title only (seniority match) |
-| `game` | Two Panda3D game developer listings (Himalayas) | Full text (title + description + location) |
-| `canonical` | One Jobicy listing ("Python Engineer") where the word appears only in the description | Full text |
+| `senior` | "Senior Software Engineer - Python/MongoDB" (Jobicy), "Senior Backend Engineer (Python)" (Workable) | **Title-only match** (`SENIORITY` frozenset). Scans `title_words` only; descriptions and locations are ignored. |
+| `game` | Two Panda3D game developer listings (Himalayas) | **Full-text match** (general keyword). Scans `full_words` (`title + description + location`). |
+| `canonical` | One Jobicy listing ("Python Engineer") and one Jobicy listing ("Python and Kubernetes Software Engineer") | **Full-text match** (general keyword). In the "Python Engineer" (149543) listing, the keyword appears only in the description body, verifying full-text reach. |
 
-Result: 6 listings kept, 6 dropped.
+### Expected Test Results: 6 Kept and 6 Dropped
+
+The MCP pipeline caps results at 12 listings (`MAX_RESULTS = 12`) during ranking in `collect_results`. Against the frozen test query fixtures, exactly 12 listings enter `filter_jobs`:
+
+- **6 listings kept**:
+  - Remote Mid-Level Python Developer at EUROPEAN DYNAMICS (Workable)
+  - Remote Junior Python Developer at EUROPEAN DYNAMICS (Workable)
+  - Remote Python Developer at EUROPEAN DYNAMICS (Workable)
+  - Remote Python Developer at Astrolite Tech Solutions LLC (RemoteOK)
+  - Remote Python Developer at Infortec Consultores (RemoteOK)
+  - Python Developer at micro1 (Himalayas)
+- **6 listings dropped**:
+  - Junior Python Game Developer - Panda3D at micro1 (Himalayas) — dropped by `game`
+  - Python Game Developer - Panda3D at micro1 (Himalayas) — dropped by `game`
+  - Python Engineer #149543 (Jobicy) — dropped by `canonical` in description
+  - Python and Kubernetes Software Engineer #149563 (Jobicy) — dropped by `canonical` in description
+  - Senior Software Engineer - Python/MongoDB #149974 (Jobicy) — dropped by `senior` in title
+  - Remote Senior Backend Engineer (Python) at EUROPEAN DYNAMICS (Workable) — dropped by `senior` in title
+
+Leaving an excluded listing in or dropping a valid listing results in an eval reward of 0.
 
 ## Architecture
 
+The harness runs the repository's production MCP tool (`search_remote_jobs`) inside an isolated container against mock API dispatch stubs, followed by a deterministic verification script.
+
 ```mermaid
 flowchart TD
-    CI["GitHub Actions\neval.yml"] --> Harbor["harbor run"]
-    Harbor --> Agent["PipelineAgent\nuploads harness files"]
-    Agent --> Env["Docker environment\nno network"]
-    Env --> Run["run_pipeline.py\npatches requests.get\nwith frozen_apis"]
+    CI["GitHub Actions eval.yml"] --> Harbor["harbor run"]
+    Harbor --> Agent["PipelineAgent uploads harness files"]
+    Env["Docker container network_mode: none"] --> Run["run_pipeline.py patches requests.get and post with frozen_apis"]
+    Agent --> Env
     Run --> MCP["mcp_server.search_remote_jobs"]
-    MCP --> Graph["agent.graph\nfan-out to frozen APIs"]
-    Graph --> Pre["prefilter.json\npre-filter"]
-    Graph --> Output["output.json\npost-filter"]
-    Pre --> Verify["test_outputs.py\n5 assertions"]
+    MCP --> Graph["agent.graph fan-out to 6 frozen sources"]
+    Graph --> Pre["prefilter.json pre-filter"]
+    Graph --> Output["output.json post-filter"]
+    Pre --> Verify["test_outputs.py 5 assertions"]
     Output --> Verify
-    Verify --> Reward["reward.txt\n1 or 0"]
-    Reward --> Check["check_reward.py\nexit 0/1/2"]
+    Verify --> Reward["reward.txt 1 or 0"]
+    Reward --> Check["check_reward.py exit 0, 1, or 2"]
 ```
 
-*Harbor runs the repository's own MCP pipeline against frozen fixtures, then verifies the output with deterministic assertions. No LLM, no network inside the container.*
+*Harbor executes the unmodified MCP pipeline against frozen fixtures and asserts prefilter and postfilter invariants with deterministic pytest checks.*
 
-## The two-artifact evidence model
+## The Two-Artifact Evidence Model
 
-`run_pipeline.py` produces two JSON files:
+`run_pipeline.py` outputs two JSON artifacts during evaluation:
 
-1. **`prefilter.json`** — the pipeline output *before* `filter_jobs` runs (what the filter was given). Pulled from `mcp_server._cache` after `search_remote_jobs` populates it.
-2. **`output.json`** — the pipeline output *after* `filter_jobs` runs (what the filter returned).
+1. **`prefilter.json`**: The pipeline state *before* `filter_jobs` runs, extracted from `mcp_server._cache[query.strip().lower()][1]` after `search_remote_jobs` populates the cache.
+2. **`output.json`**: The filtered listings returned by `search_remote_jobs`.
 
-This two-artifact model is central to why the eval is trustworthy. The verifier checks both: it asserts the prefilter set equals `keep ∪ drop` (the environment didn't drift) and that the output set equals `keep` (the filter worked correctly).
+This dual-artifact structure provides an environment guard: `test_outputs.py` asserts that `urls(prefilter) == set(expected["keep"]) | set(expected["drop"])`. If upstream fan-out or fixture files change, the test fails immediately on the prefilter check before evaluating filter correctness.
 
-## Environment: frozen APIs
+## Mock API Dispatch: frozen_apis.py
 
-`environment/frozen_apis.py` replaces `requests.get` with a host router. Four JSON sources map a hostname straight to a fixture; Workable is HTML and takes a second path:
+Inside the evaluation container, `environment/frozen_apis.py` replaces entry points in the `requests` library before `agent.py` or `mcp_server.py` load. The harness supports six job sources across GET, HTML scraping, and POST search endpoints:
 
 ```python
 HOSTS = {
@@ -93,112 +87,106 @@ HOSTS = {
     "jobicy.com": "jobicy.json",
 }
 WORKABLE = "jobs.workable.com"
-
-def workable_fixture(path):
-    if path.startswith("/search/"):
-        return FIXTURES / "workable" / "search-python.html"
-    if path.startswith("/view/"):
-        job_id = path.split("/view/")[1].split("/")[0]
-        return FIXTURES / "workable" / f"view-{job_id}.html"
-    raise RuntimeError(f"unfrozen workable path: {path}")
-
-def frozen_get(url, *args, **kwargs):
-    parts = urlparse(url)
-    host = parts.hostname or ""
-    if host == WORKABLE:
-        fixture = workable_fixture(parts.path)
-        return FrozenResponse(text=fixture.read_text(encoding="utf-8"))
-    if host not in HOSTS:
-        raise RuntimeError(f"unfrozen host: {host}")
-    payload = json.loads((FIXTURES / HOSTS[host]).read_text(encoding="utf-8"))
-    return FrozenResponse(payload=payload)
+GETRO = "api.getro.com"
 ```
 
-Workable differs from the other four in two ways: it serves HTML rather than JSON, and the fetcher makes two rounds of requests — one search page for the listing links, then a page per posting. The `FrozenResponse` stub carries a `text` attribute alongside `.json()` and `.status_code = 200`; the Workable path returns a `text`-only response while the JSON sources return a `payload`-only response, so the two fetcher styles see exactly what the live site would have returned. Any host not in the five, or any Workable path the fixture map does not recognise, raises — so a sixth source added to `agent.py` would turn the eval red before it ships.
+### GET Dispatch (JSON and Workable HTML)
 
-All other `requests` methods (`post`, `put`, `patch`, `delete`, `head`, `options`, `request`) and `Session.request` are replaced with functions that raise — a call that escaped the stub would fail in-process even on a networked host. The query string is ignored (one task, one query, stated in `instruction.md`).
+`frozen_get(url, *args, **kwargs)` inspects the destination hostname:
 
-Fixtures are the verbatim `response.json()` of the four JSON APIs (captured 04/08/2026 for query `python developer`) and the captured Workable pages trimmed to the schema.org blocks the parser reads. They live in `environment/fixtures/`; the Workable HTML lives under `environment/fixtures/workable/`.
+- **JSON sources (`HOSTS`)**: RemoteOK, Himalayas, Remotive, and Jobicy map their hostname directly to a JSON fixture in `environment/fixtures/`. The payload is deserialized and wrapped in a `FrozenResponse(payload=payload)`.
+- **Workable (`jobs.workable.com`)**: Workable serves HTML pages rather than a JSON API, and its scraper makes two rounds of requests: an initial search page for listing links, followed by detail requests for each posting. `workable_fixture(parts.path)` maps `/search/` requests to `fixtures/workable/search-python.html` and `/view/<job_id>/...` to `fixtures/workable/view-{job_id}.html`. The response is wrapped in `FrozenResponse(text=fixture.read_text(encoding="utf-8"))`.
 
-## Network enforcement
+### POST Dispatch (Getro VC Search)
 
-Two independent layers:
+Getro (`api.getro.com`) hosts jobs across venture capital portfolio boards and requires HTTP POST requests. In `agent.py`, `getrosearch` sends POST requests to `https://api.getro.com/api/v2/collections/{VC}/search/jobs` with a JSON payload specifying query terms and remote work mode filters across 9 VC funds (`GETRO_VCS`).
 
-1. **Docker Compose overlay** (`evals/configs/no-network.yaml`): `network_mode: none` on the `main` service. Verified by a DNS resolution failure in the first run's verifier log.
-2. **`frozen_apis.py`**: replaces every `requests` entry point other than the frozen `get` with a function that raises.
+`frozen_post(url, *args, **kwargs)` handles these calls:
 
-`task.toml` declares `network_mode = "public"` because Harbor's own `no-network` policy is not available on Windows hosts (WSL2 kernel lacks `CONFIG_NFT_FIB_INET`). The overlay is the enforcement, not the declaration.
+1. Extracts the VC collection ID from the URL path (`/collections/{vc}/search/jobs`).
+2. Extracts the search query from the JSON body (`kwargs.get("json", {}).get("query", "")`).
+3. Loads `environment/fixtures/getro.json`, which indexes responses by VC ID and query string: `captured.get(vc, {}).get(query, [])`.
+4. Wraps results in a `FrozenResponse(payload={"results": {"jobs": jobs, "count": len(jobs)}})`. If a VC or query combination was not captured, it returns an empty job list (`count: 0`), mirroring Getro's live behavior.
 
-## The adapter: PipelineAgent
+### In-Process Network Blocking
+
+`FrozenResponse` provides stubs for `.json()`, `.text`, `.status_code = 200`, and `.raise_for_status()`.
+
+To ensure complete network isolation, `frozen_apis.py` patches:
+- `requests.get = frozen_get`
+- `requests.post = frozen_post`
+- `requests.put`, `requests.patch`, `requests.delete`, `requests.head`, `requests.options`, `requests.request`, and `requests.Session.request` are mapped to a `blocked` function that raises `RuntimeError("live network access is not available in this environment")`.
+
+Any attempt to access an unmapped hostname, unfrozen Workable path, or unhandled HTTP method immediately raises a `RuntimeError`.
+
+## Network Enforcement
+
+Network isolation uses two defense-in-depth layers:
+
+1. **Docker Compose overlay (`evals/configs/no-network.yaml`)**: Specifies `network_mode: none` on the `main` service container.
+2. **`frozen_apis.py` monkey patching**: Blocks network entry points in-process.
+
+`task.toml` sets `network_mode = "public"` only because Harbor's built-in `no-network` task policy requires WSL2 features (`CONFIG_NFT_FIB_INET`) unavailable on some Windows host configurations. The Docker Compose overlay provides the actual runtime isolation.
+
+## Role of Fixtures in Regression Testing
+
+Fixtures isolate regression testing from external variability. Live APIs frequently change ranking, rate limits, and listing availability. Freezing captures ensures that test failures reflect code regressions rather than external market drift.
+
+Furthermore, `expected.json` is **hand-written** directly from fixture analysis rather than generated by running `filter_jobs`. If the verifier called `filter_jobs` to generate the expected set, it would evaluate the code against itself and never catch logic regressions.
+
+### Source Evolution Invariants
+
+The evaluation harness acts as a strict regression gate whenever new job sources are added to the agent graph:
+
+- **Adding Workable (5th source)**: Adding Workable originally turned the evaluation red because `frozen_apis.py` did not recognize `jobs.workable.com`. Captured search and listing HTML fixtures were added under `fixtures/workable/`, and `expected.json` was rewritten by hand: 3 Workable listings joined `keep`, 1 joined `drop`, and a displaced Jobicy listing dropped out of the top 12, preserving the exact 6 kept / 6 dropped split.
+- **Adding Getro (6th source)**: Adding Getro initially failed because `requests.post` was blocked. Adding `frozen_post` and `fixtures/getro.json` enabled Getro calls to succeed. Because both captured Getro listings score lower than the top 12 listings in `collect_results`, they remain outside the top 12 cut and did not change `expected.json`. The test verified that the new POST source integrated safely into the fan-out graph without disrupting existing exclusions.
+
+## Test Harness Components
+
+### The Adapter: PipelineAgent
 
 `evals/harbor_agents/pipeline_agent.py` implements `harbor.agents.base.BaseAgent`:
+- Uploads `instruction.md`, unmodified `agent.py`, unmodified `mcp_server.py`, and `run_pipeline.py` into `/app`.
+- Executes `python /app/run_pipeline.py`.
+- Captures stdout, stderr, and exit codes without maintaining any hardcoded expected answers or filtering logic.
 
-1. Uploads `instruction.md` to the container
-2. Uploads `agent.py` and `mcp_server.py` **unmodified** from the repo root
-3. Uploads `run_pipeline.py`
-4. Executes `python /app/run_pipeline.py` in the container
-5. Records stdout/stderr/return_code
+### The Harness: run_pipeline.py
 
-No model is involved. The adapter contains no answer, no expected set, and no filtering logic — it just runs the pipeline and records what it produced.
+Runs inside `/app` within the container:
+1. Adds `/app/frozen` to `sys.path` and imports `frozen_apis`, patching `requests.get` and `requests.post` before `agent.py` or `mcp_server.py` load.
+2. Extracts query and exclusion parameters from `instruction.md`.
+3. Calls `mcp_server.search_remote_jobs(request["query"], request["exclude"])`.
+4. Writes `prefilter.json` and `output.json` to both `/app/` and `/logs/agent/`.
 
-## The harness: run_pipeline.py
+### The Verifier: test_outputs.py
 
-Runs inside the container:
+`test_outputs.py` runs under pytest with `--ctrf` output and evaluates 5 assertions:
 
-```python
-sys.path.insert(0, "/app/frozen")
-sys.path.insert(0, "/app")
-import frozen_apis  # patches requests.get before agent loads
-import mcp_server
-from mcp_server import search_remote_jobs
-
-block = re.search(r"```json\s*(\{.*?\})\s*```", instruction_text, re.DOTALL)
-request = json.loads(block.group(1))
-output = search_remote_jobs(request["query"], request["exclude"])
-prefilter = mcp_server._cache[query.strip().lower()][1]
-# dump both to /app and /logs/agent
-```
-
-Imports `frozen_apis` first so `requests.get` is patched before `agent.py` loads. Parses the JSON request from the instruction markdown. Calls `search_remote_jobs` (the production MCP tool). Extracts the prefilter from the MCP cache.
-
-## The verifier: test_outputs.py
-
-Five pytest assertions (reward 1 if all pass, else 0):
-
-| Test | What it checks |
-|---|---|
-| `test_the_filter_saw_the_frozen_listings` | `urls(prefilter) == set(expected["keep"]) \| set(expected["drop"])` — environment guard |
-| `test_no_seniority_match_in_a_title_survived` | No surviving listing has "senior" in its `position` |
-| `test_no_free_keyword_match_survived` | No surviving listing has "game" or "canonical" in its text |
-| `test_nothing_valid_was_dropped` | `set(expected["keep"]) - urls(output)` is empty |
-| `test_exact_result_set` | `urls(output) == set(expected["keep"])` |
-
-The environment guard is critical: if the fixtures or fan-out changed, every other assertion is measuring something else. A verifier that recomputed the answer with `filter_jobs` would grade the code against itself and always pass. `expected.json` is **hand-written** from `prefilter.json`.
-
-When Workable was added as a fifth source, the expected set was rewritten by hand from the new fixtures: three Workable listings joined the kept set (the Python Developer, Junior Python Developer, and Mid-Level Python Developer roles at EUROPEAN DYNAMICS), and the Workable "Senior Backend Engineer (Python)" listing joined the dropped set on the title-only branch. A Jobicy "Python Engineer" listing left both sets unchanged — twelve places are still twelve — so the overall split moved to 7 kept / 5 dropped.
-
-`test.sh` runs pytest with `--ctrf` output and writes `1` to `/logs/verifier/reward.txt` if pytest passes, `0` if it fails. The reward file is what Harbor reads as the trial outcome.
-
-## The build verdict: check_reward.py
-
-Harbor exits 0 whether the code passed or failed — the reward lives in `result.json`. `check_reward.py` separates three outcomes:
-
-| Exit code | Meaning | Reaction |
+| Test | Assertion | Guarded Invariant |
 |---|---|---|
-| 0 | All trials passed | Green build |
-| 1 | Eval failed (reward != 1.0) | Red build — the filter changed behavior |
-| 2 | Infrastructure error | The harness never ran — says nothing about the code |
+| `test_the_filter_saw_the_frozen_listings` | `urls(prefilter) == set(expected["keep"]) \| set(expected["drop"])` | Environment integrity; confirms fan-out received expected 12 listings. |
+| `test_no_seniority_match_in_a_title_survived` | All surviving jobs have no "senior" in `position` | Title-only exclusion branch for `SENIORITY` terms. |
+| `test_no_free_keyword_match_survived` | All surviving jobs have no "game" or "canonical" in text | Full-text exclusion branch for general keywords. |
+| `test_nothing_valid_was_dropped` | `set(expected["keep"]) - urls(output) == set()` | No over-filtering of valid listings. |
+| `test_exact_result_set` | `urls(output) == set(expected["keep"])` | Exact match on all 6 kept listings. |
 
-Infrastructure error (exit 2) is triggered when: `result.json` does not exist, OR `n_errored_trials + n_cancelled_trials > 0`, OR trials are incomplete (`n_total - n_completed > 0`).
+If all tests pass, `test.sh` writes `1` to `/logs/verifier/reward.txt`; otherwise, it writes `0`.
 
-Eval failure (exit 1) is detected by iterating `stats["evals"][*]["reward_stats"]["reward"]` — any reward value other than `1.0` is a failure. For each failed trial, it prints the FAILED line and the first 20 lines starting with `FAILED` or `E ` from the trial's `test-stdout.txt`.
+### Build Verdict: check_reward.py
 
-## CI integration
+Harbor records trial outcomes in `result.json` and exits 0 regardless of trial pass/fail status. `evals/check_reward.py` inspects the job output directory and returns actionable build exit codes:
 
-`.github/workflows/eval.yml` runs the Harbor eval on:
-- Push to `main` (paths: `agent.py`, `mcp_server.py`, `evals/**`, the workflow itself)
-- Pull requests (same paths)
-- Manual dispatch
+| Exit code | Verdict | Condition | Action |
+|---|---|---|---|
+| `0` | Pass | All trial rewards equal `1.0` | Build green. |
+| `1` | Test Failure | Any trial reward differs from `1.0` | Build red; prints failed pytest assertions and stack traces. |
+| `2` | Infrastructure Error | Missing `result.json`, errored trials, cancelled trials, or incomplete runs | Build red; indicates container or harness execution failure. |
+
+## Execution and CI Integration
+
+### Continuous Integration
+
+`.github/workflows/eval.yml` runs Harbor on pushes and pull requests touching `agent.py`, `mcp_server.py`, or `evals/**`:
 
 ```yaml
 harbor run \
@@ -209,29 +197,30 @@ harbor run \
   -o evals/jobs \
   --extra-docker-compose evals/configs/no-network.yaml \
   --job-name ci-${{ github.run_id }} -y
+python evals/check_reward.py evals/jobs/ci-${{ github.run_id }}
 ```
 
-The workflow sets `PYTHONPATH` to the workspace so the `-a evals.harbor_agents.pipeline_agent:PipelineAgent` import resolves. Run locally the same way with `PYTHONPATH=$(pwd) harbor run ... --job-name local`; only the job name differs, since `check_reward.py` takes the job directory as its argument.
+### Local Execution
 
-Then `python evals/check_reward.py evals/jobs/ci-${{ github.run_id }}` checks the result and the workflow uploads run evidence as an artifact (14-day retention).
+Run locally using `harbor` and `uv`:
 
-## Negative control
+```bash
+uv tool install harbor
+PYTHONPATH=$(pwd) harbor run \
+  -p evals \
+  -i "*filter-exclusion-senior*" \
+  -a evals.harbor_agents.pipeline_agent:PipelineAgent \
+  -e docker \
+  -o evals/jobs \
+  --extra-docker-compose evals/configs/no-network.yaml \
+  --job-name local -y
+python evals/check_reward.py evals/jobs/local
+```
 
-Removing `"senior"` from `agent.SENIORITY` is **not** a valid control: the term would simply be matched as an ordinary keyword and drop the same listing by its title, leaving the reward at 1. The actual negative control used is collapsing the branch selection in `filter_jobs` so every keyword is matched against the title only — this would let `canonical` (which appears only in descriptions) through, correctly failing the eval.
+## Negative Controls and Fidelity Limits
 
-## Fidelity limits
-
-- One query only (`python developer`) — nothing here says anything about other vocabulary
-- Frozen at a point in time — these listings will not exist in a month (that is the point)
-- No listing in the frozen set carries "senior" in its description only, so the title-only rule is never tested in the one shape that distinguishes it from plain full-text matching
-- `agent.py` and `mcp_server.py` are copied into the image unmodified — a change to either invalidates prior run evidence (digests in `evals/specs/filter-exclusion-senior/harness-digest.txt`)
-
-## Source references
-
-- `evals/filter-exclusion-senior/` — the task
-- `evals/harbor_agents/pipeline_agent.py` — the adapter
-- `evals/harbor_agents/run_pipeline.py` — the harness
-- `evals/check_reward.py` — the build verdict
-- `evals/specs/filter-exclusion-senior/` — design documents
-- `.github/workflows/eval.yml` — CI
-- Commits `df2b58a` (CI), `bc47271` (measure against frozen listings), `d09077f` (LF scripts)
+- **Negative Control**: Removing `"senior"` from `agent.SENIORITY` is **not** an effective negative control because `"senior"` is then treated as a general keyword, matching the title via the full-text branch and continuing to drop the same listing (yielding reward 1.0). The valid negative control is collapsing `filter_jobs` to match all terms title-only: this allows `"canonical"` (which only appears in Jobicy job descriptions) to leak through, failing `test_no_free_keyword_match_survived` and dropping the reward to 0.
+- **Fidelity Limits**:
+  - The eval exercises a single query (`python developer`) and frozen point-in-time fixtures.
+  - In the frozen fixture set, no listing carries `"senior"` solely in its description body; both senior listings contain `"senior"` in their title.
+  - `agent.py` and `mcp_server.py` are copied into the test container unmodified; alterations to either file affect evaluation behavior directly.

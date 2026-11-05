@@ -1,186 +1,261 @@
 ---
 type: Reference
-title: Domain Concepts
-description: Core domain concepts — five-source job aggregation, normalization and mojibake repair, alias-based query canonicalization, title-weighted scoring with frequency-based description contribution and generic-word tie-breaking, signal tokens, thread memory and the seniority/full-text filter split, country/location matching, age filtering, resume-derived search intent, and evaluation semantics.
+title: Domain Concepts & Scoring Models
+description: Core domain concepts including six-source job aggregation, query canonicalization, title-weighted scoring, country slug filtering and All locations fallback, memory exclusion mechanics, and evaluation metrics using Gemini 3.5 Flash-Lite.
 tags: [domain, concepts, agent, memory, evaluation, scoring, filtering, canonicalization]
-sources:
-  - id: openwiki-source-eca60e2ced68ba99bd0ac710
-    resource: repo://agent.py
-  - id: openwiki-source-f1644da1c1a64a6a6567706b
-    resource: repo://eval_runner.py
-  - id: openwiki-source-ab20f2fabcf9dffc06e9a9a7
-    resource: repo://evals/filter-exclusion-senior/tests/expected.json
-  - id: openwiki-source-6f3a365387ad1dfc55a94d24
-    resource: repo://evals/filter-exclusion-senior/tests/test_outputs.py
-  - id: openwiki-source-18837785d6eee548467c07ac
-    resource: repo://evals/harbor_agents/pipeline_agent.py
-  - id: openwiki-source-1691a76fbd7a6781b3420f6c
-    resource: repo://evals/harbor_agents/run_pipeline.py
-  - id: openwiki-source-185f850c083bac055a13cd37
-    resource: repo://helper.py
-  - id: openwiki-source-833e692518af9eeaf8564cc6
-    resource: repo://main.py
-  - id: openwiki-source-3ea4f69fcc0222dbd310ddfc
-    resource: repo://tasks.py
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T14:50:14.085Z
-generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
 ---
 
-# Domain concepts
+# Domain Concepts & Scoring Models
 
-## Job source aggregation
+The search agent aggregates, canonicalizes, deduplicates, scores, and filters remote engineering job listings across heterogeneous sources. Post-processing combines deterministic whole-word heuristics, query alias canonicalization, geographic constraints, thread memory exclusions, and structured LLM evaluation pipelines.
 
-The core domain object is a remote job listing gathered from **five public sources**, each queried differently:
+```mermaid
+flowchart TD
+    UserQuery["User Query + Country Slug"] --> FanOut["fan_out (LangGraph START)"]
+    FanOut --> RemoteOK["RemoteOK (fetch_jobs)\nTags from distinctive_tokens"]
+    FanOut --> Getro["Getro (fetch_gjobs)\n9 VC collections concurrently"]
+    FanOut --> Himalayas["Himalayas (fetch_sjobs)\nQuery search q="]
+    FanOut --> Remotive["Remotive (fetch_tjobs)\n6h TTL cached feed"]
+    FanOut --> Workable["Workable (fetch_wjobs)\nLD+JSON crawl + slug title"]
+    FanOut --> Jobicy["Jobicy (fetch_fjobs)\nTags + geo parameter"]
+    RemoteOK --> Collect["collect_results"]
+    Getro --> Collect
+    Himalayas --> Collect
+    Remotive --> Collect
+    Workable --> Collect
+    Jobicy --> Collect
+    Collect --> LocationFilter{"location_ok\nCountry slug / All locations"}
+    LocationFilter --> RecencyFilter{"job_is_recent\nMAX_AGE_DAYS = 120"}
+    RecencyFilter --> Deduplication["Deduplication\ncompany + title hash"]
+    Deduplication --> Scoring["score_job\nTitle hits vs Desc cap (9)"]
+    Scoring --> RoleConstraint{"Title role constraint\nengineer matching developer"}
+    RoleConstraint --> TopResults["Top MAX_RESULTS (12)"]
+    TopResults --> CleanNorm["normalize_jobs\nMojibake fix + field mapping"]
+    CleanNorm --> MemoryFilter["filter_jobs\nSeniority vs Full-text split"]
+    MemoryFilter --> OutputMarkdown["format_jobs_markdown\nActive filters & attribution"]
+```
+*Figure: Remote job listing lifecycle from concurrent multi-source aggregation through relevance scoring and thread memory exclusion.*
 
-- **RemoteOK** — tag-based: the `distinctive_tokens` of the query are tried as `?tags=` one at a time, stopping as soon as a tag returns `ENOUGH` (50) listings. The fetched page is then **re-checked against its own title** (tags are SEO filler), via `title_hit` over `signal_tokens`. The first keyword alone costs one request in the common case.
-- **Himalayas** — full query search (`q=`), worldwide, sorted by recent. A 429 returns nothing rather than retrying.
-- **Remotive** — a **cached feed, not a search**: `remotive_feed()` holds a module-level `_REMOTIVE` dict for `REMOTIVE_TTL = 6h`. Their edge cache does not vary on the query string, so every "search" returns the same fixed list — hence one fetch per six hours, filtered locally by `title_hit` on `signal_tokens`. A failed refresh keeps the previous list rather than emptying it.
-- **Jobicy** — tag-based with geo: `distinctive_tokens` as `tag=` plus the requested country as `geo=`. A country Jobicy does not know answers 400, so the call is retried without the geo and `location_ok` sorts out who is really open to whom. Falls back to the untagged feed when nothing comes back.
-- **Workable** — a **two-round crawl of schema.org LD+JSON**. First, `workable_urls(token, country)` fetches a `/search/{where}/remote-{token}-jobs` page and parses its `<script type="application/ld+json">` ItemList for posting URLs (the page renders client-side but the schema is plain JSON). `workable_title` reads the title out of the URL slug *before* opening the page — so the per-listing requests are spent only on postings that already passed a `title_hit` filter. Second, `workable_job(url)` opens each surviving posting and parses its `JobPosting` block for the full fields. The country sits in the path and is not optional; an unrecognized country answers 200 with an empty list, retried worldwide.
+---
 
-All five fetchers fan out concurrently from `START` via `fan_out` and converge on `collect_results`. Each source uses a different schema; the [normalization](#normalization-and-mojibake-repair) step unifies them into a canonical shape.
+## Job Source Aggregation
 
-Git history shows that Arbeitnow was removed after proving unreliable for remote filtering and hurting eval quality (commit `b3738bc`).
+The agent aggregates remote listings from **six public and aggregator sources**, fanning out concurrently from `START` in the LangGraph state machine via `fan_out` and converging on `collect_results`:
 
-## Normalization and mojibake repair
+1. **RemoteOK (`fetch_jobs`)** — Tag-based querying. The query's `distinctive_tokens` are tried sequentially as `?tags=`, halting as soon as a tag returns `ENOUGH` (50) listings. Listings are subsequently verified against the job title using `title_hit` with `signal_tokens` to eliminate irrelevant SEO tags.
+2. **Getro (`fetch_gjobs`)** — Concurrent portfolio job searches across nine venture capital collections (`GETRO_VCS = [1680, 53552, 617, 222, 4350, 1518, 7715, 178, 29066]`) using a `ThreadPoolExecutor`. Each VC is queried with `{"filters": {"work_mode": ["remote"]}}`. If a VC board returns fewer than 10 listings, `vcsearch` issues supplementary requests using `distinctive_tokens`.
+3. **Himalayas (`fetch_sjobs`)** — Full query search (`q=`), filtered worldwide and sorted by recent postings. HTTP 429 rate limits abort cleanly by returning an empty list rather than failing the graph run.
+4. **Remotive (`fetch_tjobs` / `remotive_feed`)** — Cached feed rather than a dynamic search. Remotive's edge cache does not vary on search query parameters, returning a fixed listing set. `remotive_feed()` maintains an in-memory cache with a 6-hour TTL (`REMOTIVE_TTL = 6 * 3600`). Failed refreshes retain the previous cache payload. Listings are filtered locally in Python via `title_hit` using `signal_tokens`.
+5. **Workable (`fetch_wjobs`)** — Two-stage structured LD+JSON extraction. First, `workable_urls` fetches `/search/{where}/remote-{token}-jobs` and extracts posting URLs from `<script type="application/ld+json">` `ItemList` nodes. The listing title is parsed directly from the URL slug (`workable_title`) *before* opening the job page, avoiding unnecessary network calls for non-matching roles. Second, `workable_job` opens surviving links (capped at `WORKABLE_DETAILS = 6`) to extract the `JobPosting` payload.
+6. **Jobicy (`fetch_fjobs`)** — Tag-based querying with country geolocation (`tag=` and `geo=`). If Jobicy returns HTTP 400 (indicating an unrecognized country parameter), the request is retried without `geo`, deferring geographic enforcement to `location_ok`. If no listings return, it falls back to the untagged feed.
 
-`normalize_jobs` in `agent.py` maps source-specific field names to a canonical shape:
+*Note on historical sources*: Arbeitnow was evaluated and removed (commit `b3738bc`) due to unreliable remote categorization that degraded evaluation pass rates.
 
-| Canonical field | Source fields tried |
+---
+
+## Getro VC Collections & Skills-as-Descriptions
+
+Getro endpoints (`https://api.getro.com/api/v2/collections/{VC}/search/jobs`) return structured company and job metadata for startup portfolios, but omit long-form job descriptions. `vcsearch` adapts the Getro payload into the canonical job schema:
+
+- **Company**: Extracted from `organization.name`.
+- **Location**: Formatted from the `locations` array as a comma-separated string.
+- **Timestamp**: Stored in `epoch` from `created_at`.
+- **Skills-as-descriptions**: Getro provides a `skills` array (e.g., `["Python", "FastAPI", "Docker"]`). `vcsearch` joins these into `job["description"] = ", ".join(desc)`.
+
+Populating `description` with comma-separated skills enables downstream subsystems to function uniformly without specialized Getro branches:
+- `score_job` counts skill matches in the description frequency bonus (`freq / 8`).
+- `filter_jobs` matches general exclusion keywords (technologies and frameworks) against Getro listings during thread memory filtering.
+
+---
+
+## Country Slug Filtering and "All Locations" Fallback
+
+Geographic filtering operates through country slugs (such as `united-states`, `germany`, or `greece`) or an empty string (`""`):
+
+### Source-Level Handling
+- **Workable**: Embeds the country slug directly into the path: `https://jobs.workable.com/search/{where}/remote-{token}-jobs`. When country is empty, `where` defaults to `worldwide`. If an explicit country slug returns zero URLs, `workable_urls` retries with `worldwide`.
+- **Jobicy**: Appends `geo={country}` to the query string. If Jobicy rejects the country with HTTP 400, `fetch_fjobs` strips the `geo` parameter and retries.
+- **RemoteOK, Himalayas, Remotive, Getro**: Query remote listings globally and rely on downstream filtering.
+
+### Post-Filtering in `collect_results` via `location_ok`
+In `collect_results`, every job must pass `location_ok(job, country)`:
+- **Empty Country ("All locations")**: Returns `True` unconditionally, bypassing geographic filtering.
+- **Unspecified Location**: If a job listing has an empty or blank location string, `location_ok` returns `True`. Across remote job boards, absence of location indicates worldwide eligibility.
+- **Country Name**: Matches `country.replace("-", " ")` against the job's location string using whole-word `title_hit`.
+- **Regional Grouping**: Consults the `REGIONS` mapping. For example, `greece` matches `europe`, `emea`, or `eu`; `united-states` matches `north america`, `americas`, `usa`, or `us`; `australia` matches `apac` or `oceania`.
+- **Global Designations**: Matches any token in `GLOBAL_WORDS` (`worldwide`, `anywhere`, `global`, `world wide`).
+- **Remote Alone Is Not Sufficient**: A listing stating solely `"Remote"` does **not** satisfy a specific country search. "Remote" specifies work modality, not candidate residency or hiring eligibility.
+
+### Interface Fallback Display
+In `helper.py`, `active_filters_line` formats the active search location for the footer:
+- If `country` is non-empty: `"Showing: {country.replace('-', ' ').title()}"` (e.g., `Showing: United States`).
+- If `country` is empty: `"Showing: All locations"`.
+
+---
+
+## Query Canonicalization & Title Role Constraints
+
+### Synonym Canonicalization (`canon`)
+`canon()` applies the `ALIASES` map so that varying industry terminology maps to unified tokens before matching:
+
+| Raw Phrase | Canonical Form |
 |---|---|
-| `company` | `company`, `companyName`, `company_name` |
-| `position` | `title`, `position`, `jobTitle` |
-| `location` | `location`, `jobGeo`, `candidate_required_location`, `locationRestrictions` (joined) |
-| `description` | `description`, `excerpt`, `jobExcerpt` — cleaned via `clean_description` (HTML stripped with regex, then `textwrap.shorten` to 150 chars with `...` placeholder) |
-| `salary` | `salary`, or `salary_min - salary_max`, or `minSalary - maxSalary` |
-| `apply_url` | `apply_url`, `url`, `applicationLink` |
+| `large language models`, `large language model` | `llm` |
+| `natural language processing` | `nlp` |
+| `artificial intelligence` | `ai` |
+| `machine learning` | `ml` |
+| `full-stack`, `full stack` | `fullstack` |
+| `back-end`, `back end` | `backend` |
+| `front-end`, `front end` | `frontend` |
+| `postgresql` | `postgres` |
+| `javascript` | `js` |
+| `developer` | `engineer` |
 
-Deduplication is by a hash of `company + position` (lowercased, non-alphanumeric stripped) — a role open in six cities is posted six times with six different links, so the URL is not the identity. `collect_results` deduplicates the same way (via `job_company` + `job_title`) before scoring, because duplicates would otherwise take up places in the top `MAX_RESULTS`.
+`canon()` is applied to queries in `signal_tokens` and `score_job`, and to listing titles in `job_title(job)`. Distinctive token extraction (`distinctive_tokens`), however, operates on the raw lowercased query without canonicalization because external tag APIs expect standard spelled-out terms.
 
-`fix_mojibake` attempts `text.encode("latin-1").decode("utf-8")` and falls back silently on failure — some APIs return UTF-8 content mis-declared as Latin-1.
+### Title Role Constraints ('engineer' matching 'developer')
+The mapping `"developer": "engineer"` establishes bidirectional alignment for technical roles. In `collect_results`:
 
-`strip_html` (used in `collect_results`, not `normalize_jobs`) removes HTML tags with regex and unescapes entities via `html.unescape`. It truncates to 500 characters. `clean_description` (used in `normalize_jobs`) is a separate HTML-strip + `textwrap.shorten` to 150 characters. The two truncation lengths exist because `collect_results` runs first inside the graph (500 chars for scoring/dedup), then `normalize_jobs` runs later in the interface layer (150 chars for display).
+```python
+wants_engineer = title_hit("engineer", canon(query))
+matched = [
+    pair for pair in scored
+    if pair[0] >= TITLE_WEIGHT and (not wants_engineer or title_hit("engineer", job_title(pair[1])))
+]
+```
 
-Salary is cleaned with `re.sub(r'[\s\-0]', '', f"{salary}")` — whitespace, hyphens, and zeros are stripped to check if there is any actual salary value. If the result is empty, it becomes "Salary not listed" (commit `6b55df8`).
+When a user searches for either `"developer"` or `"engineer"`, `canon(query)` produces `"engineer"`, activating `wants_engineer = True`. `collect_results` then requires a positive `title_hit("engineer", job_title(job))` on the candidate job. Because `job_title(job)` also passes the posting title through `canon()`, a listing titled "Python Developer" canonicalizes to "python engineer" and matches. This constraint prevents general engineering or developer searches from admitting adjacent non-development roles (such as product managers or technical writers) that may contain query keywords only in their descriptions.
 
-## Alias-based query canonicalization
+### Whole-Word Matching (`title_hit`)
+`title_hit(token, title)` executes the regular expression:
+```python
+r'\b{token}(?:js|s|\d+)?\b'
+```
+This requires a whole-word match while permitting standard suffixes: plural `s`, trailing version numbers (`python` matches `python3`), and technology suffixes (`react` matches `reactjs`). Prefixes are disallowed, preventing false positives such as `rust` matching `anti-trust` or `java` matching `javascript`.
 
-`canon()` applies the `ALIASES` dictionary so that synonyms map to one spelling and a single token can match all of them:
+---
 
-> `large language models → llm`, `natural language processing → nlp`, `artificial intelligence → ai`, `machine learning → ml`, `full stack / full-stack → fullstack`, `front end / front-end → frontend`, `back end / back-end → backend`, `postgresql → postgres`, `kubernetes → k8s`, `javascript → js`, `developer → engineer`
+## Relevance Scoring & Admission
 
-Without this, "ml engineer" and "machine learning engineer" were disjoint result sets (4 vs 10 listings, none shared). `canon()` is applied to both the query (in `signal_tokens`, `score_job`, and `job_title`) and each job's title (in `job_title`), so a query word and a source word written as different synonyms still match. `distinctive_tokens` does **not** canonize — it operates on the raw lowercased query, because the tag APIs expect the spelled-out word, not the alias.
+`score_job(job, query)` computes a composite score balancing title relevance, description context, and token frequencies:
 
-## Title-weighted scoring
+$$\text{score} = (\text{title\_hits} \times \text{TITLE\_WEIGHT}) + \min(\text{desc\_hits} + \text{gen\_hits} + \text{bonus}, 9)$$
 
-A job scores on where the query words appear. `score_job(job, query)` computes three contributions and combines them:
+- **`TITLE_WEIGHT` = 10**: Each query signal token found in the job title via `title_hit` contributes 10 points.
+- **Description Contribution**:
+  - `desc_hits`: Number of distinct signal tokens appearing in the description text.
+  - `bonus`: Token frequency bonus calculated as $\text{freq} / 8$, where `freq` is the total count of all signal token occurrences in the description.
+  - `gen_hits`: Generic tokens from `GENERIC` (`engineering`, `software`, `developer`, `engineer`, `remote`, `job`, `role`, etc.) that appear in the title add 1 tie-breaking point. If the query consists *entirely* of generic words, `gen_hits` is forced to 0.
+  - **The 9-Point Description Cap**: The entire non-title term $(\text{desc\_hits} + \text{gen\_hits} + \text{bonus})$ is strictly capped at `9`.
 
-1. **Title hits** — `title_hits * TITLE_WEIGHT` (10) for each `signal_token` that matches the title via `title_hit`.
-2. **Description contribution** — `desc_hits + generic-word title hits + frequency bonus`, where the frequency bonus is `freq / 8` (`freq` = total occurrences of signal tokens in the description). This whole term is **capped at 9**, strictly below `TITLE_WEIGHT` (10).
-3. **Generic-word tie-breaking** — generic words that also appear in the title add a point, but they can never admit a listing on their own. If the query is *entirely* generic words, `gen_hits` is forced to 0 so the cap is not gamed.
+### Admission Invariant
+`collect_results` enforces a cutoff of `score >= TITLE_WEIGHT` (10). Because description and generic contributions cannot exceed 9, **at least one title hit is strictly required for admission**. Description matches can reorder listings that already earned admission via a title match, but cannot admit a listing on their own.
 
-`collect_results` keeps only jobs with `score >= TITLE_WEIGHT` — **a title hit is required for admission**. Because the description contribution is capped below `TITLE_WEIGHT`, it can only reorder listings that already earned their place by matching in the title, never admit one that did not. Generic words add a tie-breaking point when they appear in the title but, like description hits, cannot admit a listing alone. When the query itself contains `engineer`, `collect_results` additionally requires a `title_hit("engineer", ...)` on the job title, so a generic "engineer" query does not admit every listing.
+---
 
-### Signal tokens
+## Normalization & Mojibake Repair
 
-`signal_tokens` strips `GENERIC` words (`developer`, `engineer`, `remote`, `role`, `position`, `specialist`, `manager`, etc.) from the query (after `canon`) before scoring. If the query is nothing but generic words, they are used anyway (so `developer job` still matches). These are the tokens that count toward title hits and the description cap.
+`normalize_jobs` maps heterogeneous source fields into a canonical representation:
 
-### `title_hit` — whole-word with optional suffix
-
-`title_hit(token, title)` matches the regex `r'\b{token}(?:js|s|\d+)?\b'` — a whole word with an optional suffix (plural `s`, version digits, or `js`). `python` hits `python3`; `react` hits `reactjs`; `agent` hits `agents`. **Prefixes are not allowed**, so `rust` does not match `anti-trust` and `java` does not match `javascript`. This replaced the earlier rule that treated tokens shorter than 4 characters as whole-word and allowed substring matching for longer ones.
-
-## Country / location matching
-
-`location_ok(job, country)` decides whether a listing is open to someone in `country`. Empty `country` means no filtering at all. Otherwise a listing counts as open if it:
-
-- names the country directly;
-- names a **containing region** from the `REGIONS` dict (`greece → europe/emea/eu`, `germany → europe/emea/eu`, `united-states → north america/americas/usa/us`, `australia → apac/oceania`, `india → apac/asia`, …);
-- says **worldwide / anywhere / global / world wide** (the `GLOBAL_WORDS` set); or
-- **says nothing** about location (most boards do this when the answer is "anywhere") — absence is not a restriction.
-
-**`Remote` is deliberately not a match**: it says *how* the job is done, not *where* it is open, so a listing that says only "Remote" is not accepted as open to a specific country. All matching uses `title_hit` over the `job_location` text and the accepted-word list.
-
-## Age filtering
-
-`job_is_recent(job)` keeps a listing only if it was posted within `MAX_AGE_DAYS = 120`. It reads the date from `date`, `pubDate`, `publication_date`, `datePosted`, or `epoch`, accepting both ISO strings and epoch seconds. **Absence is not age** — a listing with no date is kept (returns `True`). A date that fails to parse is also kept. Workable in particular keeps filled roles on its board long after they close, and a stale or dead link is worse than one fewer result.
-
-## Thread memory (avoid-keywords)
-
-Memory is the main behavioral feature. Users say what to avoid, and those exclusions are stored per `thread_id`. The filter is a **hard exclusion** applied after the graph runs — it removes matching jobs from the cached results.
-
-### The seniority / full-text split
-
-`filter_jobs` matches keywords differently depending on whether any word in the keyword is in the `SENIORITY` set:
-
-- **Seniority words** (`senior`, `sr`, `junior`, `júnior`, `jr`, `lead`, `principal`, `staff`, `mid`, `entry`, `pleno`, `sênior`, `estágio`, `head`, `director`, `vp`, `chief`) → matched against **title words only**
-- **Everything else** (technologies, locations, company names) → matched against **title + description + location** (full text)
-
-This exists because every posting says "work with senior engineers" somewhere in its body — that shouldn't disqualify a mid-level role. `filter_jobs` also removes jobs without an `apply_url` or whose `position` is empty / `Unknown`.
-
-### Accumulation and reset
-
-Memory is a `list[str]` stored in the LangGraph checkpointer state. Each feedback call appends a comma-separated keyword string. The `add_or_reset` reducer returns `[]` when `new` is `None` — that is how `/reset` clears the list.
-
-Active filters are shown at the bottom of every response. Say "reset filters" (or POST `/reset`) to clear them.
-
-### Interface differences
-
-| Interface | Where memory lives | How it persists |
+| Canonical Field | Source Fields Resolved | Processing |
 |---|---|---|
-| REST (`/ask`, `/feedback`) | PostgreSQL `PostgresSaver` | Across days, keyed by `thread_id` |
-| MCP | Explicit `exclude_keywords` arg | Per call — the client's conversation is the memory |
-| Voice | `VoiceSession.memory` (in-memory) | For the duration of one call only |
+| `company` | `company`, `companyName`, `company_name` | Mojibake fixed, whitespace collapsed |
+| `position` | `title`, `position`, `jobTitle` | Mojibake fixed, whitespace collapsed |
+| `location` | `location`, `jobGeo`, `candidate_required_location`, `locationRestrictions` | Comma-separated, mojibake fixed |
+| `description` | `description`, `excerpt`, `jobExcerpt` | HTML stripped, entities unescaped |
+| `salary` | `salary`, `salary_min - salary_max`, `minSalary - maxSalary` | Cleaned; defaults to "Salary not listed" if empty after removing whitespace, zeros, and hyphens |
+| `apply_url` | `apply_url`, `url`, `applicationLink` | Direct application URL |
 
-## Query interpretation
+- **Mojibake Repair (`fix_mojibake`)**: Attempts `text.encode("latin-1").decode("utf-8")` to fix double-encoded UTF-8 strings common in web-scraped feeds, falling back silently on failure.
+- **Deduplication**: Deduplicated on `company + position` hash (`re.sub(r'[^a-z0-9]', '', f"{company.lower()}{position.lower()}")`). Duplicate job postings for the same role across multiple cities share the same hash and are dropped before scoring.
+- **Description Lengths**: `collect_results` truncates raw descriptions to 2,000 characters for graph state. In the presentation layer, `clean_description` / `format_jobs_markdown` uses `textwrap.shorten(..., width=150, placeholder="...")` for concise markdown rendering.
 
-The system distinguishes between two kinds of text input:
+---
 
-- **Search intent**: `python backend remote`, `ML engineer`
-- **Exclusion intent**: `no MERN`, `skip senior roles`, `no usa`
+## Age Filtering
 
-The frontend routes by prefix: `reset` → `/reset`, `no `/`skip ` → `/feedback`, anything else → `/ask`. The voice agent has a wider set: `no`/`skip`/`without`/`not`/`exclude` → feedback, `tell me more`/`details` → listing detail, `reset` → clear, anything else → search.
+`job_is_recent(job)` discards postings older than `MAX_AGE_DAYS = 120`. It parses ISO 8601 strings or epoch integers from `date`, `pubDate`, `publication_date`, `datePosted`, or `epoch`. If a listing contains no date or fails parsing, it is retained: **absence of a date is not age**.
 
-Wording matters — changes to the UX should keep the routing rules obvious to users.
+---
 
-## Resume-derived search intent
+## Memory Exclusion Mechanics
 
-The `/upload` flow turns a CV into a compressed keyword summary, not a full résumé analysis. It is now **asynchronous**: `/upload` reads the PDF (first 5 pages), then hands the text to a Celery task (`filework` in `tasks.py`) so the blocking LLM and graph work run off the request's event loop. The caller polls `/jobs/{job_id}` for the result.
+Thread memory allows users to exclude unwanted job types, seniority levels, technologies, or companies across a conversation session. Exclusions are accumulated as comma-separated strings in LangGraph state and reduced via `add_or_reset` (cleared when passed `None`).
 
-The CV-to-search path inside `filework` is unchanged in behavior: Gemini (via `helper.llmchain` with `for_upload=True`) produces a `CVKeywords` structured output — an ordered keyword list starting with the role title, then the core skills. That list is joined into the search query and fed to the same `graph` + `normalize_jobs` + `filter_jobs` pipeline that serves `/ask`. The listings that come back are filtered by the same deterministic code, not re-analyzed.
+### The Seniority vs. Full-Text Split
+`filter_jobs(jobs, memory, title_only=SENIORITY)` applies hard exclusions. Each memory entry is split into keywords on commas. Each keyword is split into constituent words:
 
-## Evaluation semantics
+```python
+target = title_words if any(w in title_only for w in keyw) else full_words
+if any(w in target for w in keyw):
+    blocked = True
+```
 
-Two eval systems measure different things:
+- **Seniority Keywords** (`SENIORITY = {"senior", "sr", "junior", "júnior", "jr", "lead", "principal", "staff", "mid", "entry", "pleno", "sênior", "estágio", "head", "director", "vp", "chief"}`):
+  If any token in the exclusion keyword belongs to `SENIORITY`, the keyword is matched **strictly against the job title tokens** (`title_words`). This prevents phrases like "collaborate with senior engineers" or "reports to engineering director" in job descriptions from accidentally excluding junior or mid-level postings.
+- **Full-Text Keywords**:
+  All other exclusions (technologies like `react`, locations like `usa`, or company names) are matched against the combined text: `title + description + location` (`full_words`).
+- **Data Hygiene Exclusions**:
+  `filter_jobs` also drops listings lacking an `apply_url` or having empty or `"Unknown"` titles.
 
-- **LangSmith eval** — an LLM-judge regression harness that posts 24 queries (live data, first response only) and scores the ratio of relevant/returned listings. The current baseline is ~0.90, but because it runs against live boards that shift hourly the aggregate is the signal, not any single case — treat the number as a range, not a hard target.
+---
 
-  The runner (`eval_runner.py`) no longer posts to `/ask`. It posts each query to **`/askeval`** with the `EVALS` `x-api-key`, which returns `{md, jobs}` — the markdown string and the raw job list. Four evaluators score that response:
+## Resume-Derived Search Intent (/upload)
 
-  | Evaluator | Judge | Scope | Notes |
-  |---|---|---|---|
-  | `gemini_full_correctness` | Gemini 2.5 Flash (structured `Output`) | The full markdown | `relevant / total` over all listings in `md` |
-  | `gemini_listing_correctness` | Gemini (structured `JobOutput`, per-listing) | Each listing individually | `relevant / len(results)`; empty non-`empty_ok` → 0 |
-  | `jev_correctness` | OpenRouter `typesafe/jev-1.13` | Each listing individually | probability ≥ **0.5** threshold; empty non-`empty_ok` → 0 |
-  | `laya_correctness` | local `laya serve` (`/v1/systemone`, model `multilingual`) | Each listing individually | probability ≥ **0.5** threshold; empty non-`empty_ok` → 0 |
+The `/upload` flow processes PDF resumes asynchronously:
+1. `pdfread` reads the first five pages using `pdfplumber`.
+2. `/upload` enforces a 5 MB file size limit and dispatches processing to Celery (`filework.delay(text, thread_id, country)`), returning `{"job_id": job.id}` so FastAPI does not block the event loop.
+3. Callers poll `/jobs/{job_id}` for completion.
+4. Inside `filework` (`tasks.py`), Gemini 3.5 Flash-Lite (`helper.llmchain(for_upload=True)`) extracts candidate keywords using structured Pydantic schema `CVKeywords` (ordered role titles followed by primary skills, maximum 10 words).
+5. The extracted keywords are joined into a search query string and executed through the standard `graph`, `normalize_jobs`, and `filter_jobs` pipeline.
 
-  Every evaluator carries an `empty_ok` short-circuit: when the example expects no results and `jobs` is empty, it asserts a perfect **1.0** without calling any judge. The Gemini judges (`gemini_grade`, `askgemini`) use an explicit, decidable grading prompt — count what is there, never lower the score because an expected listing is missing, and when the criteria are silent about a listing count it as relevant. The per-listing evaluators (`jev_correctness`, `laya_correctness`) call `askjev` / `asklaya` once per job and threshold the returned probability.
+---
 
-  The live experiment is `client.evaluate(..., evaluators=[jev_correctness, gemini_listing_correctness], experiment_prefix="geminijevperjob")` — the full-correctness and laya evaluators exist and run but are not the two wired into the current experiment call.
+## Evaluation Metrics & Correctness Scoring Models
 
-- **Harbor eval** — a **deterministic set equality**. The `filter-exclusion-senior` task runs the production `mcp_server.search_remote_jobs(query, exclude_keywords)` against **five frozen sources** (RemoteOK, Himalayas, Remotive, Jobicy, Workable fixtures). `filter_jobs` output must exactly match a hand-written `expected.json` — now **6 keep / 6 drop** (not the earlier 7/5). No judge, no network, no database, no LLM in the path. The verifier never calls `filter_jobs` itself, or it would be grading the code against itself.
+System quality is validated through two distinct evaluation frameworks:
 
-Neither grades description quality. Surface phrasing can change a lot without affecting the actual business goal.
+### 1. LangSmith Evaluation Harness (`eval_runner.py`)
+`eval_runner.py` executes 24 live-query evaluations against the `/askeval` endpoint using the `EVALS` API key (`x-api-key`). Because live board contents fluctuate hourly, the aggregate baseline (~0.90) represents an expected operating range rather than a static regression bar.
 
-## Source references
+Both structured LLM evaluators and the helper chain utilize **Gemini 3.5 Flash-Lite** (`google_genai:gemini-3.5-flash-lite`):
 
-- `agent.py` — scoring, filtering, normalization, fetchers, canonicalization
-- `main.py` — endpoint routing, memory update, `/askeval`
-- `tasks.py` — Celery `filework` for the async `/upload` path
-- `helper.py` — `llmchain` / `CVKeywords`, `format_jobs_markdown`
-- `voice_agent.py` — voice memory model
-- `mcp_server.py` — explicit-arg exclusion
-- `eval_runner.py` — LangSmith eval
-- `evals/` — Harbor eval (frozen fixtures, deterministic verifier)
-- Commits `3fca572` (removed LLM from search), `6b55df8` (salary cleanup), `dd282ff` (filter at fetch time)
+| Evaluator | Model / Engine | Target Schema / Key | Scoring Mechanism |
+|---|---|---|---|
+| `gemini_full_correctness` | Gemini 3.5 Flash-Lite | `Output(reason, relevant, total)` | Grades the full generated markdown string against reference criteria. Computes $\text{relevant} / \text{total}$. |
+| `gemini_listing_correctness` | Gemini 3.5 Flash-Lite | `JobOutput(reason, relevant: bool)` under key `gemini35lite_listing_correctness` | Evaluates each listing individually via `askgemini`. Computes $\text{relevant} / \text{len(results)}$; returns 0 if results are empty unless `empty_ok` is true. |
+| `jev_correctness` | OpenRouter `typesafe/jev-1.13` | Key `jev_correctness` | Evaluates each listing individually; counts as relevant if probability $\ge 0.5$. |
+| `laya_correctness` | Local `laya serve` (`/v1/systemone`, model `multilingual`) | Key `laya_ml_correctness` | Evaluates each listing individually; counts as relevant if probability $\ge 0.5$. |
+
+- **Empty Result Short-Circuit**: If an evaluation case specifies `empty_ok: True` and the response contains zero listings, every evaluator immediately records a score of `1.0` without invoking LLM or decision APIs.
+- **Grading Invariants**: Evaluators grade strictly on the listings present. An expected listing that is absent does not lower the score, and listings on which criteria are silent are treated as relevant.
+- **Current LangSmith Experiment**:
+  ```python
+  client.evaluate(
+      run_agent,
+      data="job-search-eval",
+      evaluators=[jev_correctness, gemini_listing_correctness],
+      experiment_prefix="gemini35lite-jev-perjob"
+  )
+  ```
+  `gemini_full_correctness` and `laya_correctness` remain fully implemented and runnable, but the active experiment pipeline runs `jev_correctness` and `gemini_listing_correctness`.
+
+### 2. Harbor Evaluation Harness
+The Harbor evaluation (`filter-exclusion-senior`) verifies deterministic behavior without network calls, databases, or LLMs. It executes `mcp_server.search_remote_jobs` against five frozen source fixture datasets (RemoteOK, Himalayas, Remotive, Jobicy, Workable) and asserts strict set equality against `expected.json` (6 kept listings / 6 dropped listings).
+
+---
+
+## Related Documentation & Source References
+
+### Related Pages
+- [Agent Graph](architecture/agent-graph.md) — LangGraph state nodes, fan-out execution, and PostgreSQL checkpoint persistence.
+- [Integrations](integrations.md) — External HTTP APIs, headers, rate limit handling, and ATS endpoints.
+- [Testing](testing.md) — Harbor evaluation test execution, test fixtures, and LangSmith benchmarks.
+- [Workflows](workflows.md) — Async resume upload pipeline, Celery worker processing, and feedback loops.
+
+### Primary Source Files
+- `agent.py` — Multi-source fetchers, `collect_results`, scoring heuristics (`score_job`), canonicalization (`canon`), and memory filtering (`filter_jobs`).
+- `helper.py` — Gemini 3.5 Flash-Lite chain setup (`llmchain`), CV keyword extraction schema (`CVKeywords`), and markdown formatting (`format_jobs_markdown`).
+- `eval_runner.py` — LangSmith test harness, Gemini 3.5 Flash-Lite structured grading (`gemini_full_correctness`, `gemini_listing_correctness`), and Jev/Laya evaluators.
+- `main.py` — FastAPI routing, async `/upload` endpoint, `/askeval`, and memory state updates.
+- `tasks.py` — Celery background task `filework` for resume extraction and search orchestration.
