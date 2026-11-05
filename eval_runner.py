@@ -21,9 +21,8 @@ class JobOutput(BaseModel):
     
 
 llm = init_chat_model(
-    model="google_genai:gemini-2.5-flash",
+    model="google_genai:gemini-3.5-flash-lite",
     api_key=os.getenv("GEMINI_API_KEY"),
-    temperature=0.1,
     max_retries=10
 )
 
@@ -125,21 +124,21 @@ def gemini_listing_correctness (run , example):
     results = run.outputs["jobs"]   
     if example.outputs.get("empty_ok") and not results:
         return {
-            "key": "gemini_listing_v3_correctness",
+            "key": "gemini35lite_listing_correctness",
             "score": 1.0,
             "comment": "Returned nothing, and the reference accepts nothing. Asserted, not judged.",
             }
     scores = []
     relevant = 0
     if len(results) == 0:
-        return {"key": "gemini_listing_v3_correctness", "score": 0 }
+        return {"key": "gemini35lite_listing_correctness", "score": 0 }
     for job in results:
         score = askgemini(query , job , reference)
         if score.relevant:
             relevant += 1
         scores.append((job["position"], score))
     final_score = relevant / len(scores)
-    return {"key": "gemini_listing_v3_correctness", "score": final_score , "comment": str(scores)}
+    return {"key": "gemini35lite_listing_correctness", "score": final_score , "comment": str(scores)}
     
 def askjev(query , job , criteria):
     instructions = f"""Does this job satisfies the reference criteria or no? When the criteria are silent about a listing, count it as relevant
@@ -233,6 +232,6 @@ def laya_correctness(run, example):
 
 
 
-client.evaluate(run_agent,data="job-search-eval" , evaluators=[jev_correctness,gemini_listing_correctness],experiment_prefix="geminijevperjob")
+client.evaluate(run_agent, data="job-search-eval",evaluators=[jev_correctness,gemini_listing_correctness],experiment_prefix="gemini35lite-jev-perjob")
 
                   

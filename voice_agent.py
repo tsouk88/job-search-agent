@@ -6,9 +6,8 @@ import os
 from agent import graph , normalize_jobs , filter_jobs 
 
 llm = init_chat_model(
-    model="google_genai:gemini-2.5-flash",
+    model="google_genai:gemini-3.5-flash-lite",
     api_key=os.getenv("GEMINI_API_KEY"),
-    temperature=0.1,
     max_retries=10
 )
 chain = llm | StrOutputParser()

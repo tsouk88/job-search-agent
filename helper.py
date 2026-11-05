@@ -19,9 +19,8 @@ class CVKeywords(BaseModel):
 
 def llmchain(given_api_key: str | None , for_upload: bool = False) -> Runnable:
     llm = init_chat_model(
-            model="google_genai:gemini-2.5-flash",
+            model="google_genai:gemini-3.5-flash-lite",
             api_key=given_api_key,
-            temperature=0.1,
             max_retries=2,
             timeout=10
         )

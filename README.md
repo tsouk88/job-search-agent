@@ -124,7 +124,7 @@ Each fund is asked for the full query first. A narrow query on a small board oft
 
 Getro returns no description, only a list of skills, so the skills stand in for it. That puts its listings at a disadvantage when scored: a title match counts the same, but there is less underneath to break the tie. For `python developer` the two Getro listings that qualify rank fifteenth and sixteenth and don't make the twelve; a broader query like `ai engineer` brings back 32 of them to compete.
 
-The nine funds are searched from a thread pool inside one node instead of as one `Send` each. The graph keeps describing sources, not funds, and the time is the same either way: the requests wait on the network, so nine funds take about as long as the slowest one, **1.4s** where one after another they took about 6s. A fund that answers with an error contributes nothing instead of failing the node.
+The nine funds are searched from a thread pool inside one node instead of as one `Send` each. The graph keeps describing sources, not funds, and the time is the same either way: the requests wait on the network, so nine funds take about as long as the slowest one: **1.4s** for `python developer`, where four funds one after another took 3.3s. A fund that answers with an error contributes nothing instead of failing the node.
 
 ### Feedback and memory
 
@@ -245,6 +245,17 @@ On a fresh run Jev's mistakes were the same ones: a Java role titled "Python Dev
 
 The obvious design is to let Jev decide when it is sure and hand the rest to Gemini. It was measured and not built: catching every disagreement meant sending almost half the listings onward, and at 225 listings a run the expensive judge costs too little to be worth routing around. What stays in the eval is Gemini's whole-response score as the headline, and Jev and Gemini per listing beside it, for where they disagree.
 
+#### Changing the judge's model
+
+Google is retiring Gemini 2.5 Flash in favour of 3.5 Flash-Lite, which ignores `temperature`, so the setting that was meant to hold a judge steady was going away. Two runs on different days can't show what that costs, because the listings move in between. So the new model re-scored an experiment already on record, the same 195 listings without running the agent again, once to compare it with the old model and three times to compare it with itself.
+
+| Per-listing judge | Score | Same verdicts |
+|---|---|---|
+| Gemini 2.5 Flash | 0.840 | 193 of 195 with 3.5 Flash-Lite |
+| Gemini 3.5 Flash-Lite, three runs | 0.833, 0.833, 0.833 | 195 of 195 across the runs |
+
+Both disagreements went the same way, the new model being stricter: a Rails role for `Fullstack react remote jobs` and a Solidity compiler role for `frontend developer`. Three runs in one day are not a guarantee, and the whole-response judge was not re-measured, so its 0.90 belongs to the old model.
+
 #### Known limitation
 
 One title match is enough to admit a listing. That is fine when the distinctive word in a query is unambiguous, and it falls apart when it isn't: `data` pulls in Data Analysts, `wordpress` pulls in WordPress Support Specialists.
@@ -357,12 +368,12 @@ Use absolute paths to the virtualenv's interpreter — the client starts the pro
 | Cache & queue | Redis — search cache, rate limiter, Gemini budget, Celery for CV uploads |
 | Voice | Pipecat (Daily transport, Deepgram STT, ElevenLabs TTS) |
 | MCP | Official Python SDK (`mcp`), stdio transport |
-| LLM | Google Gemini 2.5 Flash — feedback extraction, CV parsing, n8n scoring |
+| LLM | Google Gemini 3.5 Flash-Lite — feedback extraction, CV parsing, n8n scoring |
 | LLM Integration | LangChain `init_chat_model` |
 | Backend | FastAPI |
 | Frontend | Next.js 15 + ReactMarkdown + remark-gfm |
 | Job sources | RemoteOK, Himalayas, Remotive (cached feed), Jobicy, Workable (public board), 9 VC portfolio boards (Getro) |
-| Evals | LangSmith dataset + LLM-as-judge (Gemini 2.5 Flash) — 0.90 across 24 cases; per-listing judges (Jev via OpenRouter, Gemini) beside it |
+| Evals | LangSmith dataset + LLM-as-judge (Gemini 3.5 Flash-Lite; the 0.90 across 24 cases was measured on 2.5 Flash); per-listing judges (Jev via OpenRouter, Gemini) beside it |
 
 ---
 
