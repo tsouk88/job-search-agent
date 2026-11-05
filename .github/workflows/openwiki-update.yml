@@ -10,7 +10,7 @@ permissions:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 120
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -30,6 +30,9 @@ jobs:
         run: npm install --global openwiki@0.9.0
 
       - name: Run OpenWiki
+        # Finished pages stay on disk, so a cut run still reaches the PR step.
+        timeout-minutes: 110
+        continue-on-error: true
         run: openwiki code --update --print
         env:
           OPENWIKI_PROVIDER: gemini
