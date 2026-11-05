@@ -1,169 +1,310 @@
 ---
-type: Reference
-title: Testing and Evals
-description: Two eval systems — the deterministic Harbor eval (frozen fixtures for five sources, CI, exact-set assertions) and the LangSmith eval (live job boards, LLM judge, ~0.90 baseline over 24 cases). No classic unit test suite.
-tags: [testing, evals, harbor, langsmith, regression, quality, ci]
-sources:
-  - id: openwiki-source-9ea7004cd60fc78ed888a032
-    resource: repo://.github/workflows/eval.yml
-  - id: openwiki-source-f1644da1c1a64a6a6567706b
-    resource: repo://eval_runner.py
-  - id: openwiki-source-1d64a0979a354ad458b3519a
-    resource: repo://evals/check_reward.py
-  - id: openwiki-source-a68f947821d6952a6d4a07df
-    resource: repo://evals/configs/no-network.yaml
-  - id: openwiki-source-4ea2d16d70ad274641c7935e
-    resource: repo://evals/filter-exclusion-senior/environment/frozen_apis.py
-  - id: openwiki-source-ab20f2fabcf9dffc06e9a9a7
-    resource: repo://evals/filter-exclusion-senior/tests/expected.json
-  - id: openwiki-source-6f3a365387ad1dfc55a94d24
-    resource: repo://evals/filter-exclusion-senior/tests/test_outputs.py
-  - id: openwiki-source-1691a76fbd7a6781b3420f6c
-    resource: repo://evals/harbor_agents/run_pipeline.py
-  - id: openwiki-source-23775c3de52f3ab95a13cb8b
-    resource: repo://README.md
-generated: { by: "openwiki/0.6.1", at: "2026-10-01T12:03:35.670Z" }
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T15:48:11.877Z
+type: Guide
+title: Testing & Quality Assurance
+description: Quality assurance and testing guide detailing deterministic frozen evaluations, LangSmith regression runs, and validation commands.
+tags: [testing, evals, harbor, langsmith, regression, quality, ci, getro]
 ---
 
-# Testing and evals
+# Testing & Quality Assurance
 
-This repository has **no classic unit-test suite**. The two eval systems below are the entire quality gate — there is no `pytest` collection of agent internals, no `unittest` modules. One eval is deterministic and runs in CI; the other measures live quality by hand. They answer different questions and neither subsumes the other.
+This repository has **no classic unit-test suite** — there is no `pytest` collection testing agent internals or isolated `unittest` modules. Instead, quality assurance is split between two distinct, complementary evaluation frameworks that answer fundamentally different questions. Neither suite subsumes the other.
 
-| System | What it measures | Data | Verifier | CI | Current |
-|---|---|---|---|---|---|
-| [Harbor eval](evals/harbor-eval.md) | `filter_jobs` exclusion logic | Frozen fixtures for **five** sources (RemoteOK, Himalayas, Remotive, Jobicy, Workable), captured 04/08/2026 | Deterministic pytest assertions (exact set) | Yes (push/PR touching `agent.py`/`mcp_server.py`/`evals/**`/`eval.yml`) | 1 trial passes |
-| [LangSmith eval](evals/langsmith-eval.md) | End-to-end search quality | Live job boards (24 queries) | Gemini 2.5 Flash LLM judge | No (manual) | ~0.90 over 24 cases (16 August) |
+1. **Harbor offline deterministic evaluation**: Measures exact filtering and keyword exclusion correctness (`filter_jobs`) using static, frozen HTTP responses across six job sources inside a network-isolated container (`network_mode: none`). It incurs zero token costs, executes in continuous integration on every push and pull request, and asserts exact listing membership with hand-verified expected sets.
+2. **LangSmith live regression evaluation**: Measures end-to-end search relevance against live external job boards across 24 realistic benchmark queries. It evaluates complete agent pipelines using LLM-as-a-judge models (Gemini 3.5 Flash-Lite and Jev), guided by same-day control runs to distinguish code regressions from external market drift.
 
-## CI workflow
+```mermaid
+flowchart TD
+    subgraph Harbor["Harbor Eval (Offline Deterministic CI Gate)"]
+        H1["mcp_server.search_remote_jobs"] --> H2["Frozen API Fixtures<br/>6 sources in Docker<br/>network_mode: none"]
+        H2 --> H3["Artifacts:<br/>prefilter.json and output.json"]
+        H3 --> H4["test_outputs.py pytest<br/>5 deterministic assertions"]
+        H4 --> H5["check_reward.py<br/>Exit 0 pass, 1 eval fail, 2 infra error"]
+    end
 
-<!-- openwiki: broken internal link [.github/workflows/eval.yml] file ".github/workflows/eval.yml" does not exist. Fix the href or restore the target, then delete this comment. -->
-Quality is gated in CI by [`.github/workflows/eval.yml`](.github/workflows/eval.yml), the *Filtering eval* workflow. It triggers on `pull_request` and on `push` to `main` whenever the changed paths include `agent.py`, `mcp_server.py`, `evals/**`, or `.github/workflows/eval.yml` (plus `workflow_dispatch` for manual runs).
+    subgraph LangSmith["LangSmith Eval (Live Quality Measurement)"]
+        L1["eval_runner.py<br/>POST localhost:8002/askeval<br/>unique thread_id, EVALS key"] --> L2["Live Job Boards<br/>6 sources queried live"]
+        L2 --> L3["Agent Response<br/>Formatted listings"]
+        L3 --> L4["empty_ok Short-Circuit<br/>1.0 if empty is valid"]
+        L3 --> L5["LLM Judges<br/>Gemini 3.5 Flash-Lite and Jev"]
+        L4 --> L6["Aggregate Score<br/>Evaluated against same-day control"]
+        L5 --> L6
+    end
+```
+*Dual quality assurance architecture: deterministic offline filtering assertions in CI vs. live LLM-judged regression evaluation.*
 
-The job installs Harbor with `uv tool install harbor`, then runs the one Harbor task with `PYTHONPATH` set to the workspace, and converts the Harbor job into a build verdict with `check_reward.py`:
+## Evaluation Strategy Comparison
+
+| Dimension | Harbor Evaluation ([harbor-eval.md](evals/harbor-eval.md)) | LangSmith Evaluation ([langsmith-eval.md](evals/langsmith-eval.md)) |
+|---|---|---|
+| **What it measures** | Filter exclusion logic (`filter_jobs`), seniority gating, and candidate admission invariants | End-to-end relevance, query parsing, and result quality across live job markets |
+| **Target under test** | `mcp_server.search_remote_jobs(query, exclude_keywords)` (unmodified production MCP tool) | `POST /askeval` FastAPI endpoint (unmodified agent graph, memory disabled, cache bypassed) |
+| **Data source** | Static frozen API fixtures (6 sources) captured in repository files | Live job boards (RemoteOK, Himalayas, Remotive, Jobicy, Workable, Getro) |
+| **Execution environment** | Docker container with `network_mode: none` and monkey-patched `requests` stubs | Local process posting to `localhost:8002` with external network and LLM access |
+| **Verifier / Judge** | Deterministic `pytest` assertions in `test_outputs.py` against hand-written `expected.json` | Gemini 3.5 Flash-Lite structured output judge + Jev classifier (OpenRouter) |
+| **Execution frequency** | CI gate on every push/PR touching `agent.py`, `mcp_server.py`, or `evals/**` | On-demand manual runs when modifying ranking algorithms, query parsing, or prompts |
+| **Cost & Dependencies** | 0 tokens, no API keys, no database; requires Docker and `uv` | Consumes LLM API tokens; requires `LANGSMITH_API_KEY`, `GEMINI_API_KEY`, and `EVALS` key |
+| **Pass condition** | Exact set match: reward 1.0 (6 kept, 6 dropped listings) | Precision score ($\text{relevant} / \text{total}$) benchmarked against same-day control (~0.90 baseline) |
+
+---
+
+## Harbor Deterministic Evaluation (Offline CI Gate)
+
+The Harbor evaluation framework lives in `evals/`. It freezes one snapshot of every job source, executes the repository's production MCP tool (`search_remote_jobs`) against those fixtures with all network calls disabled, and evaluates the resulting set. Because there is no LLM and no live network in this path, the test produces the identical verdict every time.
+
+- **Task directory:** `evals/filter-exclusion-senior/`
+- **Standard test query:** `python developer`, with exclusions `["senior", "game", "canonical"]`
+- **Pass condition:** The `apply_url` set in `output.json` matches the hand-written `keep` set in `expected.json` exactly (6 kept, 6 dropped).
+- **CI enforcement:** Executed by `.github/workflows/eval.yml` and validated by `evals/check_reward.py`.
+
+### Six Frozen Sources in `frozen_apis.py`
+
+The evaluation environment routes all HTTP traffic through `evals/filter-exclusion-senior/environment/frozen_apis.py`. The harness supports **six** distinct sources:
+
+```python
+HOSTS = {
+    "remoteok.com": "remoteok.json",
+    "himalayas.app": "himalayas.json",
+    "remotive.com": "remotive.json",
+    "jobicy.com": "jobicy.json",
+}
+WORKABLE = "jobs.workable.com"
+GETRO = "api.getro.com"
+```
+
+1. **JSON API GET sources (`HOSTS`)**: RemoteOK, Himalayas, Remotive, and Jobicy match hostnames directly to captured JSON files in `environment/fixtures/`.
+2. **Workable HTML scraping (`WORKABLE`)**: Workable requires two rounds of requests. `workable_fixture(parts.path)` routes `/search/...` requests to `fixtures/workable/search-python.html` and `/view/<id>/...` detail requests to `fixtures/workable/view-{job_id}.html`. The fixture files are reduced to the schema.org `ItemList` and `JobPosting` JSON-LD blocks that `agent.py` actually parses.
+3. **Getro VC search POST source (`GETRO`)**: Handled via `frozen_post` as described below.
+
+### How Getro Mock Responses are Tested
+
+Getro (`api.getro.com`) searches across portfolio companies of 9 venture capital funds (`GETRO_VCS`). Unlike the other five sources, Getro uses HTTP POST requests with JSON payloads containing search terms and remote filters (`filters: {"work_mode": ["remote"]}`).
+
+In `evals/filter-exclusion-senior/environment/frozen_apis.py`, `frozen_post(url, *args, **kwargs)` implements mock response dispatch:
+
+```python
+def frozen_post(url, *args, **kwargs):
+    parts = urlparse(url)
+    if parts.hostname != GETRO:
+        raise RuntimeError(f"unfrozen host: {parts.hostname}")
+    vc = parts.path.split("/collections/")[1].split("/")[0]
+    query = (kwargs.get("json") or {}).get("query") or ""
+    captured = json.loads((FIXTURES / "getro.json").read_text(encoding="utf-8"))
+    jobs = captured.get(vc, {}).get(query, [])
+    return FrozenResponse(payload={"results": {"jobs": jobs, "count": len(jobs)}})
+```
+
+- **Extraction**: The stub extracts the fund collection ID (`vc`) from the URL path (`/collections/{vc}/search/jobs`) and the query term from `kwargs["json"]["query"]`.
+- **Fixture lookup**: Responses are loaded from `fixtures/getro.json`, which indexes job listings hierarchically by fund ID and query string (`captured.get(vc, {}).get(query, [])`).
+- **Default fallback**: If a fund or query was not captured, `frozen_post` returns `{"results": {"jobs": [], "count": 0}}`, mirroring Getro's live API behavior for non-matching queries.
+- **In-process network blocking**: `frozen_apis.py` patches `requests.get = frozen_get` and `requests.post = frozen_post`. All other HTTP methods (`put`, `patch`, `delete`, `head`, `options`, `requests.Session.request`) are reassigned to `blocked()`, which raises `RuntimeError("live network access is not available in this environment")`.
+- **Invariant on `expected.json`**: When Getro was added as the 6th source, `requests.post` had to be mocked. However, both captured Getro listings score lower than the top 12 listings during `collect_results` ranking (Getro listings provide skill tags rather than full descriptions, generating fewer bonus hits). Because neither listing penetrates the top 12 cut (`MAX_RESULTS = 12`), Getro's integration did not displace any listings in `expected.json`. The test confirms that adding Getro executes cleanly inside the fan-out graph without perturbing existing exclusions.
+
+### Title Match Test Updates ('developer' matching 'engineer')
+
+Technical job listings treat "developer" and "engineer" as equivalent, but exact token matching previously split searches into disjoint sets. To unify them, `agent.py` configures `ALIASES`:
+
+```python
+ALIASES = {
+    ...
+    "developer": "engineer",
+}
+```
+
+This aliasing directly governs candidate admission in `collect_results`:
+
+```python
+wants_engineer = title_hit("engineer", canon(query))
+matched = [pair for pair in scored if pair[0] >= TITLE_WEIGHT and (not wants_engineer or title_hit("engineer", job_title(pair[1])))]
+```
+
+When evaluating the query `python developer`:
+1. `canon("python developer")` normalizes the query to `"python engineer"`.
+2. `wants_engineer` evaluates to `True` (`title_hit("engineer", "python engineer")`).
+3. Candidate jobs must satisfy `title_hit("engineer", job_title(job))`.
+4. Because `job_title(job)` runs `canon()` on listing titles, a posting titled `"Python Developer"` canonicalizes to `"python engineer"` and passes the check. Crucially, postings titled `"Python Engineer"` or `"Senior Software Engineer"` also canonicalize to contain `"engineer"` and pass the admission gate.
+
+#### Role in Harbor Verification
+
+In the Harbor test fixtures, Jobicy provides three listings:
+- `"Python Engineer"` (#149543)
+- `"Python and Kubernetes Software Engineer"` (#149563)
+- `"Senior Software Engineer - Python/MongoDB"` (#149974)
+
+Because `"developer"` matches `"engineer"`, all three Jobicy engineer listings pass the `wants_engineer` admission gate and enter the 12 candidate listings in `prefilter.json`. Inside `filter_jobs`:
+- The senior listing is dropped by the title-only rule (`"senior"` in `SENIORITY`).
+- The two other Jobicy listings are dropped by the full-text rule because `"canonical"` appears in their descriptions.
+
+Without the `'developer'` $\to$ `'engineer'` equivalence, Jobicy's engineer listings would be rejected during admission, causing `prefilter.json` to miss expected listings and failing the environment integrity check in `test_outputs.py`.
+
+### Verifier Assertions and Hand-Written Expected Sets
+
+`evals/filter-exclusion-senior/tests/test_outputs.py` runs under pytest and executes five deterministic checks:
+
+| Assertion | Guarded Invariant |
+|---|---|
+| `test_the_filter_saw_the_frozen_listings` | `urls(prefilter) == set(expected["keep"]) \| set(expected["drop"])`. Guards against environment drift; confirms all 12 expected listings entered the filter. |
+| `test_no_seniority_match_in_a_title_survived` | All output listings have no `"senior"` in `position`. Tests the title-only exclusion branch for `SENIORITY` terms. |
+| `test_no_free_keyword_match_survived` | All output listings have no `"game"` or `"canonical"` in full text (`title + description + location`). Tests full-text exclusions. |
+| `test_nothing_valid_was_dropped` | `set(expected["keep"]) - urls(output) == set()`. Guards against over-filtering valid roles. |
+| `test_exact_result_set` | `urls(output) == set(expected["keep"])`. Verifies exact equality with the 6 kept listings. |
+
+The expected set in `evals/filter-exclusion-senior/tests/expected.json` is written entirely by hand from fixture inspection (6 kept, 6 dropped). The verifier never executes `filter_jobs` to generate expectations, preventing the test from grading the code against itself.
+
+### CI Workflow and Exit Codes
+
+Continuous integration is handled by `.github/workflows/eval.yml`. The workflow triggers on push to `main` and on pull requests when changes touch `agent.py`, `mcp_server.py`, `evals/**`, or `.github/workflows/eval.yml`.
+
+Harbor outputs a reward of `1.0` (all tests passed) or `0.0` (assertion failure) into `result.json`. Because the Harbor runner itself always exits with status code 0, CI invokes `evals/check_reward.py` to translate the trial reward into a build verdict:
+
+- **Exit 0 (Pass)**: All trial rewards equal `1.0`. Build turns green.
+- **Exit 1 (Eval Failed)**: A trial reward was not `1.0` (filter logic regression or over/under-filtering). `check_reward.py` prints failed pytest assertions and stack traces; build turns red.
+- **Exit 2 (Infrastructure Error)**: Container failed to run, trial was cancelled/errored, or `result.json` was never created. Build turns red.
+
+Trial artifacts under `evals/jobs/` are uploaded to GitHub Actions on every run and retained for 14 days.
+
+### Harbor Execution Instructions
+
+To execute the deterministic Harbor evaluation locally:
 
 ```bash
-harbor run \
+# 1. Install Harbor CLI tool via uv
+uv tool install harbor
+
+# 2. Execute the evaluation task inside Docker with network disabled
+PYTHONPATH=$(pwd) harbor run \
   -p evals \
   -i "*filter-exclusion-senior*" \
   -a evals.harbor_agents.pipeline_agent:PipelineAgent \
-  -e docker -o evals/jobs \
-  --extra-docker-compose evals/configs/no-network.yaml \
-  --job-name ci-${{ github.run_id }} -y
-
-python evals/check_reward.py evals/jobs/ci-${{ github.run_id }}
-```
-
-`check_reward.py` distinguishes three outcomes by exit code: **0 pass**, **1 eval failed** (the filter changed behavior — a reward was not 1.0), **2 infrastructure error** (the harness never ran, e.g. errored/cancelled trials or a missing `result.json`). Harbor itself always exits 0 whether the code passed or failed, so this step is what turns a green Harbor run red when the assertion breaks. The run evidence under `evals/jobs/` is uploaded as a build artifact on every run (success or failure) and kept for 14 days.
-
-No LangSmith eval runs in CI — it hits live job boards and costs LLM tokens, so it is run by hand.
-
-## Harbor eval — deterministic
-
-The Harbor eval is the CI gate. It freezes one capture of every job source, runs the repository's own search pipeline against those fixtures with the network disabled, and asserts the output set by hand. A red build means the filter changed behavior — there is no model and no judgement in this path.
-
-- **Task:** `filter-exclusion-senior` — query `python developer`, exclude `["senior", "game", "canonical"]`
-- **Environment:** Docker container with `network_mode: none`, frozen API fixtures, no LLM, no database, no credentials
-- **Entry under test:** `mcp_server.search_remote_jobs(query, exclude_keywords)` — the production MCP tool, chosen over the REST `/ask` path because it takes exclusions as an explicit parameter (no Postgres, no LLM extraction)
-- **Adapter:** `evals/harbor_agents/pipeline_agent.py` uploads `agent.py` and `mcp_server.py` **unmodified** plus `run_pipeline.py`, then records what the pipeline produced
-- **Pass condition:** the `apply_url` set in `output.json` equals the hand-written `keep` set in `expected.json` exactly (7 kept, 5 dropped)
-- **Evidence:** `prefilter.json` (pipeline output *before* `filter_jobs`) + `output.json` (post-filter) + `result.json` (reward)
-- **Verifier:** `evals/filter-exclusion-senior/tests/test_outputs.py` — pytest, run via `tests/test.sh`, never calls `filter_jobs` itself
-
-The verifier asserts four things: it saw the frozen listings at all (`test_the_filter_saw_the_frozen_listings`, which guards the environment against a fan-out or fixture change), no excluded seniority term survived in a title, no excluded free keyword survived anywhere, nothing valid was dropped, and the result set is exact. The expected sets are written by hand from the fixtures — a verifier that recomputed the answer with `filter_jobs` would be grading the code against itself and pass forever.
-
-→ Full details: [Harbor eval](evals/harbor-eval.md)
-
-### Five sources, including Workable
-
-The frozen environment now knows **five** hosts. Four are JSON APIs (`remoteok.com`, `himalayas.app`, `remotive.com`, `jobicy.com`) routed by `evals/filter-exclusion-senior/environment/frozen_apis.py` to one captured response each. Workable is different: it is HTML, fetched in two rounds (one search page for the links, then a page per listing), and its captured pages are kept down to the schema.org `ItemList`/`JobPosting` blocks the parser actually reads.
-
-Adding Workable is what turned the eval red before anything shipped. The frozen environment knew four hosts and refused the fifth, because the fan-out had changed and every assertion after it would have been measuring something else. The expected set was rewritten by hand from the new fixtures: three Workable listings joined the kept set, its senior listing joined the dropped set, and a Jobicy listing left both, because twelve places are still twelve and a fifth source competes for them.
-
-### What it does not cover
-
-One query, one moment in the market, and no listing in the capture carries "senior" in its description alone — so the rule that seniority is judged on titles only is never tested in the one shape that separates it from ordinary matching. The fixtures are real captured data and were not edited to manufacture that case. A useful negative control: deleting `senior` from the seniority list does **not** fail, because the word would still match the same title as an ordinary keyword. The control that does fail is collapsing the branch selection in `filter_jobs` so every keyword is matched against titles only — that takes the reward from 1.0 to 0.0.
-
-### Running locally
-
-```bash
-uv tool install harbor
-
-PYTHONPATH=$(pwd) harbor run -p evals -i "*filter-exclusion-senior*" \
-  -a evals.harbor_agents.pipeline_agent:PipelineAgent \
-  -e docker -o evals/jobs \
+  -e docker \
+  -o evals/jobs \
   --extra-docker-compose evals/configs/no-network.yaml \
   --job-name local -y
 
+# 3. Inspect trial reward and verify exit status
 python evals/check_reward.py evals/jobs/local
 ```
 
-`PYTHONPATH=$(pwd)` is required so Harbor can import `evals.harbor_agents.pipeline_agent:PipelineAgent`. Docker is the only other requirement — no API key, because nothing in this path calls a model.
+`PYTHONPATH=$(pwd)` allows Harbor to import the `evals.harbor_agents.pipeline_agent:PipelineAgent` adapter. Docker is required; no API keys, credentials, or databases are needed.
 
-## LangSmith eval — live quality measurement
+---
 
-The LangSmith eval measures end-to-end quality against live job boards. It is run manually, not in CI, because the data moves: two runs an hour apart can return different listings and individual cases wobble by a lot. The aggregate is the signal, not any single row.
+## LangSmith Live Regression Evaluation
 
-- **Dataset:** `job-search-eval` — 24 queries, each carrying a written `referenceOutput` (what a good answer looks like) and an optional `empty_ok` flag
-- **Harness:** `eval_runner.py` posts each query to `http://localhost:8002/ask` with a fresh UUID `thread_id` (no memory carried between cases), 180s timeout
-- **Judge:** Gemini 2.5 Flash with structured output (`reason`, `relevant`, `total`; `total` must be ≥ 1)
-- **Score:** `relevant / total` per query, averaged — padding a response with weak matches lowers the score
-- **Baseline:** ~0.90 across 24 cases (16 August); before the two real-user queries were added it was ~0.85, and before the judge was fixed it was 0.82 over 22 cases
-- **Port:** `localhost:8002` — start the backend there before running
+The LangSmith evaluation framework measures end-to-end relevance against live job boards. It is executed manually rather than in CI because live job listings shift continuously, meaning individual query scores fluctuate naturally between runs.
 
-→ Full details: [LangSmith eval](evals/langsmith-eval.md)
+- **Dataset:** `job-search-eval` (24 queries in LangSmith).
+- **Harness:** `eval_runner.py` sends POST requests to `http://localhost:8002/askeval`.
+- **Target endpoint:** `/askeval` runs the production agent fan-out graph while bypassing the 4-hour Redis search cache (`jobs:*`) and providing a fresh UUID `thread_id` per query to avoid memory leakage.
+- **Judge models:** Gemini 3.5 Flash-Lite (structured output with `relevant` and `total`) and Jev (OpenRouter classifier scoring per listing, threshold 0.5).
+- **Metric:** Precision score ($\text{relevant} / \text{total}$) averaged across all 24 cases.
 
-### Making the judge repeatable
+### Repeatability and Judge Calibration
 
-The baseline was not trusted until the judge itself was audited and rewritten, because two runs scored the *same* nine listings 0.889 and 0.222 (and the aggregate barely moved, which is worse than an obviously unstable number). Three changes, in order of how much they bought:
+Before judge calibration, identical result sets scored 0.889 and 0.222 on consecutive runs. Three design invariants established judge repeatability:
 
-1. **`empty_ok` short-circuit.** ~five queries have a correct answer of *nothing* (deliberate misspellings like `pyton developer`, niches like `COBOL mainframe developer` the boards may not be advertising). Those examples now carry an `empty_ok` flag, and an empty response short-circuits to 1.0 before the judge is called. Four of the five already said so in their reference text; the model had the instruction and applied it unevenly.
-2. **Explicit grading.** The prompt now states that grading covers only what was returned, that a rejected listing subtracts one and nothing more (it never invalidates the others), and that criteria silent about a listing count in its favour. Both readings had been live, which was exactly the 0.889/0.222 split.
-3. **Decidable reference criteria.** Ten of the cases were rewritten as "a listing is relevant when… and is not relevant when…", resolved against the listings the agent actually returns, so the model is never asked to decide an underspecified case.
+1. **`empty_ok` Short-Circuit**: Five test cases have a correct response of zero listings (intentional typos such as `pyton developer`, or obscure niches like `COBOL mainframe developer`). These examples carry `empty_ok: true` in the dataset. If the agent returns zero listings, `eval_runner.py` immediately awards a score of `1.0` without invoking an LLM judge.
+2. **Strict Grading Constraints**: The prompt instructs the judge that evaluation is strictly confined to returned listings: a non-matching listing subtracts one point without invalidating other matches, and silent reference criteria count in the listing's favor.
+3. **Decidable Criteria Contracts**: Benchmark references are phrased as explicit contracts ("a listing is relevant when... and is not relevant when..."), eliminating subjective judgment on ambiguous roles.
 
-### Control-run methodology
+### Control-Run Methodology
 
-Changes here are judged against a **control run of the unchanged code on the same day**, never against a number from last week. The same code scored 0.765 five days later without a line changing — the job boards had moved — so comparing a new run to a stored baseline measures the market as much as the change, and the market is louder. A single case can swing half a point on its own (`rust` went 1.0 → 0.5 across five days on a query with no moving parts in the code). Treat the ~0.90 figure as a range, not a reading.
+Because external job boards update constantly, changes must **never be evaluated against a historical baseline from a previous week**. The same unchanged code can score 0.82 one morning and 0.765 five days later purely due to external board turnover.
 
-### Running
+When evaluating a change:
+1. Run `python eval_runner.py` on the **unmodified base branch** (control run).
+2. Run `python eval_runner.py` on the **feature branch** on the same day.
+3. Compare the delta between the two same-day runs. An aggregate increase indicates genuine algorithm improvement.
+
+### LangSmith Execution Instructions
+
+To execute the live LangSmith evaluation suite:
 
 ```bash
-# Start the backend on port 8002
+# Terminal 1: Launch backend API server on port 8002
 uvicorn main:app --port 8002
 
-# In another terminal
+# Terminal 2: Run LangSmith evaluation harness
 python eval_runner.py
 ```
 
-Requires `LANGSMITH_API_KEY` and `GEMINI_API_KEY` in the environment. The runner posts to `localhost:8002/ask`; change the port in `eval_runner.py` if your backend runs elsewhere.
+#### Required Environment Variables
 
-## Manual checks after changes
+```bash
+export LANGSMITH_API_KEY="lsv2_pt_..."       # LangSmith tracing and dataset access
+export GEMINI_API_KEY="AIzaSy..."           # Google Gemini judge model
+export EVALS="your-evals-api-key"           # Passed as x-api-key to /askeval
+export OPENROUTER_API_KEY="sk-or-..."       # Optional: required for Jev classifier judge
+```
 
-1. **Search:** `POST /ask` with a basic keyword query (e.g., `python developer`)
-2. **Feedback:** Send `no MERN` and confirm `/feedback` updates memory (check the "Active filters" footer)
-3. **Reset:** Send `reset filters` and confirm `/reset` clears exclusions
-4. **Upload:** Upload a small PDF CV and verify `/upload` returns job listings
-5. **MCP:** Start the MCP server and call `search_remote_jobs` from an MCP client
-6. **n8n:** If in use, confirm `/evaluate` accepts the workflow payload with the correct `x-api-key`
-7. **Harbor:** If `agent.py` or `mcp_server.py` changed, run the Harbor eval
+#### Optional Local Laya Classifier
 
-## Good regression targets
+`eval_runner.py` includes support for `laya_correctness`, a local multilingual classifier:
 
-- `filter_jobs` behavior changes (run Harbor eval)
-- Scoring formula changes (run both evals)
-- Source API changes or removal (re-run LangSmith, update Harbor fixtures if needed)
-- Output format changes that break markdown rendering
-- Memory persistence between requests
-- Eval score drops after scoring or source edits
+```bash
+docker build -t laya laya
+docker run --name laya -p 127.0.0.1:8000:8000 -v laya-hf:/root/.cache/huggingface laya
+```
 
-## Source references
+*(Note: In initial benchmarks, Laya accepted 203 of 225 listings due to excessive leniency; Gemini and Jev remain the authoritative evaluators).*
 
-- `eval_runner.py` — LangSmith harness (posts to `/ask`, Gemini judge, `empty_ok` short-circuit)
-- `evals/` — Harbor task, adapter, verifier, fixtures, CI
-- `evals/check_reward.py` — turns a Harbor job into a build verdict (exit 0/1/2)
-- `evals/filter-exclusion-senior/` — the task: `instruction.md`, `task.toml`, environment, fixtures, tests
-- `evals/harbor_agents/pipeline_agent.py` — adapter that runs the pipeline as the Harbor agent
-- `.github/workflows/eval.yml` — Harbor CI
-- `evals/specs/` — design notes for the harness, environment, and task
+---
+
+## Manual Verification Runbook
+
+In addition to automated evaluations, run these manual validation steps after modifying API integrations or runtime components:
+
+1. **Basic Search:** `POST /ask` with `{"user_input": "python developer", "thread_id": "test-1"}` and confirm formatted markdown listings return.
+2. **Negative Feedback:** Send `{"user_input": "no senior roles", "thread_id": "test-1"}` and confirm `/feedback` updates thread memory (verified in the "Active filters" footer).
+3. **Filter Reset:** Send `{"user_input": "reset filters", "thread_id": "test-1"}` and confirm `/reset` clears thread memory.
+4. **CV Upload:** Upload a PDF resume to `/upload` and ensure parsed skills trigger matching job recommendations.
+5. **MCP Server:** Run `python mcp_server.py` and invoke `search_remote_jobs(query="rust developer")` from Claude Desktop or Claude Code.
+6. **n8n Automation:** Confirm `/evaluate` accepts candidate evaluation payloads when supplied with a valid `x-api-key`.
+7. **Harbor Regression Check:** Run local Harbor evaluation if edits touched `agent.py`, `mcp_server.py`, or ranking heuristics.
+
+---
+
+## Regression Target Matrix
+
+| Changed Component | Primary Risk | Verification Step |
+|---|---|---|
+| `filter_jobs` | Over-filtering or exclusion leakage | Run deterministic Harbor evaluation (`harbor run`) |
+| `collect_results` / Scoring | Ranking distortion or title gate rejection | Run Harbor eval (verifies 12-listing prefilter) and same-day LangSmith control run |
+| `ALIASES` / `canon()` | Disjoint role matches ('developer' vs 'engineer') | Harbor eval prefilter assertion (`urls(prefilter)`) and LangSmith evaluation |
+| Source API fetchers (`fetch_*`) | Schema changes or missing fields | Harbor eval (guards against fan-out errors) and manual endpoint testing |
+| New Job Source Addition | Fan-out crashes or network leaks | Add fixture to `frozen_apis.py`, update `expected.json` if top 12 cut changes, run Harbor eval |
+| Memory / `PostgresSaver` | Filter state persistence breakdown | Manual conversation testing (`/feedback` followed by search) |
+| Output Formatting | Broken markdown links or card layouts | Manual chat UI inspection |
+
+---
+
+## Source & Fixture File Map
+
+- `evals/filter-exclusion-senior/` — Harbor task configuration:
+  - `task.toml` — Harbor task definition, timeouts, and entry commands.
+  - `instruction.md` — Test specification instructing the agent to search `python developer` with exclusions `["senior", "game", "canonical"]`.
+  - `environment/Dockerfile` — Container definition for offline execution.
+  - `environment/frozen_apis.py` — Mock request router patching `requests.get` and `requests.post` with fixtures and blocking all other network access.
+  - `environment/fixtures/` — Static captured responses:
+    - `remoteok.json`, `himalayas.json`, `remotive.json`, `jobicy.json`
+    - `workable/search-python.html` and `workable/view-*.html`
+    - `getro.json` — Nested fund and query responses for VC portfolio search.
+  - `tests/expected.json` — Hand-written 6 kept and 6 dropped listing URLs.
+  - `tests/test_outputs.py` — Deterministic pytest verifier with 5 assertions.
+  - `tests/test.sh` — Pytest test runner writing `1` or `0` to reward file.
+- `evals/harbor_agents/` — Adapters and harnesses:
+  - `pipeline_agent.py` — BaseAgent adapter uploading `agent.py` and `mcp_server.py` unmodified.
+  - `run_pipeline.py` — Container harness invoking `mcp_server.search_remote_jobs` and writing `prefilter.json` and `output.json`.
+- `evals/configs/no-network.yaml` — Docker Compose overlay enforcing `network_mode: none`.
+- `evals/check_reward.py` — Build verdict validator converting Harbor output into exit codes 0, 1, or 2.
+- `.github/workflows/eval.yml` — GitHub Actions CI definition for Harbor evaluation.
+- `eval_runner.py` — LangSmith test harness (posts to `/askeval`, runs Gemini 3.5 Flash-Lite and Jev judges).
+
+---
+
+## Related Documentation
+
+- [Harbor Offline Evaluation](evals/harbor-eval.md) — Exhaustive technical breakdown of the Harbor deterministic evaluation harness, Docker isolation, and verifier logic.
+- [LangSmith Evaluation](evals/langsmith-eval.md) — Comprehensive guide to live regression testing, judge calibration history, and per-listing classifier comparisons.
+- [Domain Heuristics](domains.md) — Specification of token canonicalization, scoring weights, and seniority filtering rules.
+- [Agent Graph](architecture/agent-graph.md) — LangGraph fan-out architecture across the six search sources.
+- [MCP Server](mcp-server.md) — Design and integration of the Model Context Protocol search tool under test.

@@ -1,176 +1,181 @@
 ---
 type: Subsystem
-title: Voice Agent
-description: Voice interface using Pipecat with Deepgram STT, ElevenLabs TTS, and Daily WebRTC transport. Shares the same agent.py graph as REST but uses in-memory MemorySaver, caches last_jobs for local re-filtering, and routes commands by first word.
+title: Voice Agent Architecture
+description: Architecture, real-time audio pipeline, session state, and implementation details of the Pipecat voice interface.
 tags: [voice, pipecat, deepgram, elevenlabs, daily, webrtc, langgraph, voice-agent]
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-10-01T12:03:35.670Z
-sources:
-  - id: openwiki-source-eca60e2ced68ba99bd0ac710
-    resource: repo://agent.py
-  - id: openwiki-source-3a30c14a947fb74b6b9d65b7
-    resource: repo://voice_agent.py
-  - id: openwiki-source-e7dddbd4e6eed740150e85d4
-    resource: repo://voice/server/bot.py
-  - id: openwiki-source-751ee1fc8ed82a7ecfa9c52f
-    resource: repo://voice/server/langgraph_processor.py
-generated: { by: "openwiki/0.6.1", at: "2026-10-01T12:03:35.670Z" }
 ---
 
-# Voice Agent
+# Voice Agent Architecture
 
-A voice interface that lets users talk to the same LangGraph job search agent powering the [REST API](architecture/backend-api.md). Built with [Pipecat](https://pipecat.ai). Runs as a local single-user demo server.
+A real-time voice interface that allows users to interact conversationally with the same LangGraph job search agent powering the [REST API](architecture/backend-api.md). Built with [Pipecat](https://pipecat.ai), the voice subsystem runs as a local demo server connecting browser audio to speech and language models through WebRTC.
 
-`voice_agent.py` imports `graph` directly from `agent.py` and compiles it with its own checkpointer — it is the same five-source fan-out graph (RemoteOK, Himalayas, Remotive, Jobicy, Workable via `fetch_wjobs`) used by REST and MCP, not a copy. See [Agent Graph](architecture/agent-graph.md) for the shared graph topology and [Integrations](integrations.md) for the five job sources.
+`voice_agent.py` imports `graph`, `normalize_jobs`, and `filter_jobs` directly from `agent.py` and compiles the graph with an in-memory `MemorySaver` checkpointer. It runs the exact same six-source fan-out graph (RemoteOK via `fetch_jobs`, Himalayas via `fetch_sjobs`, Remotive via `fetch_tjobs`, Jobicy via `fetch_fjobs`, Workable via `fetch_wjobs`, and Getro VCs via `fetch_gjobs`) used across the REST and MCP entry points, rather than maintaining a separate agent implementation. See [Agent Graph](architecture/agent-graph.md) for full graph topology and [Integrations](integrations.md) for source details.
 
-## Architecture
+## Real-Time Audio Pipeline
 
-```mermaid
-flowchart LR
-    Mic["Microphone"] --> Transport["Daily\nWebRTC transport"]
-    Transport --> STT["Deepgram\nSTT"]
-    STT --> Agg1["User aggregator\n(Silero VAD)"]
-    Agg1 --> Proc["LangGraphProcessor\ncommand routing"]
-    Proc --> VS["VoiceSession\nMemorySaver + last_jobs"]
-    VS --> TTS["ElevenLabs\nTTS"]
-    TTS --> Transport2["Daily\noutput"]
-    Transport2 --> Speaker["Speaker"]
-```
-
-*The Pipecat pipeline: audio in via Daily → Deepgram STT → LangGraphProcessor routes the command → VoiceSession runs the graph → ElevenLabs TTS → audio out via Daily.*
-
-Key design: voice sessions are **stateless and short-lived**, using an in-memory `MemorySaver` checkpointer instead of the PostgreSQL `PostgresSaver` the text agent uses. Each call gets a fresh `VoiceSession` with its own `thread_id`. The session tracks `memory` (exclusion list), `last_query`, and `last_jobs` (cached search results for local re-filtering).
-
-### VoiceSession lifecycle
-
-`voice_agent.py` compiles the shared `graph` once at import time with a module-level `MemorySaver` (`compiled_agent = graph.compile(checkpointer=checkpointer)`) and a Gemini-2.5-flash extraction `chain` (`init_chat_model` → `StrOutputParser`). Each `VoiceSession` then holds:
-
-- `memory: list[str]` — accumulated comma-separated exclusion keywords appended on each `resume`
-- `thread_id` — a fresh `uuid4` per session, passed as the `configurable` LangGraph config so the checkpointer scopes graph state to this call
-- `last_jobs` — the normalized result of the last `run`, reused by `resume` and `reset`
-
-| Method | Action | Re-runs graph? |
-|---|---|---|
-| `run(user_input)` | Invokes `compiled_agent` with `{"user_input", "fetched_jobs": []}`; normalizes `clean_jobs` into `last_jobs`; returns `filter_jobs(last_jobs, memory)` | Yes — a fresh five-source fan-out |
-| `resume(feedback)` | Runs the Gemini `extraction_prompt` to pull avoidance keywords, appends them to `memory`, re-filters `last_jobs` locally | No — local `filter_jobs` over the cache |
-| `reset()` | Clears `memory` to `[]` and re-filters `last_jobs` against the now-empty exclusion list | No — local re-filter |
-
-`run` and `resume` both return `{"type": "jobs", "data": [...]}`; `reset` returns the same shape with the unfiltered cache. Because `memory` is a plain in-process list, all three are safe to call from `asyncio.to_thread` without holding the audio pipeline's event loop.
-
-## Pipeline assembly (bot.py)
+The voice bot is structured around a Pipecat cascade pipeline: audio input via WebRTC, speech-to-text transcription, user aggregation with voice activity detection (VAD), frame processing through LangGraph, text-to-speech synthesis, and WebRTC audio output.
 
 ```mermaid
 flowchart LR
-    TransportIn["transport.input()\nDaily WebRTC"] --> STT["DeepgramSTTService"]
-    STT --> UserAgg["user_aggregator\n(SileroVADAnalyzer)"]
-    UserAgg --> Proc["LangGraphProcessor"]
-    Proc --> TTS["ElevenLabsTTSService"]
-    TTS --> TransportOut["transport.output()\nDaily WebRTC"]
+    TransportIn["transport.input()<br/>Daily WebRTC"] --> STT["DeepgramSTTService<br/>Speech-to-Text"]
+    STT --> UserAgg["user_aggregator<br/>SileroVADAnalyzer"]
+    UserAgg --> Proc["LangGraphProcessor<br/>FrameProcessor"]
+    Proc --> TTS["ElevenLabsTTSService<br/>Text-to-Speech"]
+    TTS --> TransportOut["transport.output()<br/>Daily WebRTC"]
     TransportOut --> AsstAgg["assistant_aggregator"]
 ```
 
-*The full Pipecat cascade pipeline from bot.py: audio in → STT → user aggregator with VAD → LangGraphProcessor → TTS → audio out → assistant aggregator.*
+*The full Pipecat cascade pipeline in bot.py: Daily WebRTC input, Deepgram STT, Silero VAD aggregation, LangGraphProcessor, ElevenLabs TTS, and Daily WebRTC output.*
 
-`bot.py` assembles the pipeline using `LLMContextAggregatorPair` with a `SileroVADAnalyzer` for voice activity detection on the user aggregator. The Daily transport is configured with `audio_in_enabled=True` and `audio_out_enabled=True`. On `on_client_disconnected`, the worker is cancelled (`worker.cancel()`). The entry point is `pipecat.runner.run.main()` via `WorkerRunner`.
+### Service Configuration
 
-## How feedback differs from the text agent
+In `voice/server/bot.py`, pipeline services are instantiated and linked within `run_bot`:
 
-The text agent's `/feedback` → `/ask` flow re-filters cached results because conversations persist across days and queries may change. In a voice call the query almost never changes mid-conversation, so the voice agent:
+- **WebRTC Transport (`DailyParams`)**: Configured with `audio_in_enabled=True` and `audio_out_enabled=True` to stream bidirectional audio with the client.
+- **Speech-to-Text (`DeepgramSTTService`)**: Consumes incoming raw audio frames and produces transcripts using `DEEPGRAM_API_KEY`.
+- **User Aggregator (`LLMContextAggregatorPair`)**: Couples the user context aggregator with `SileroVADAnalyzer` to detect speech boundaries and user turn completion.
+- **Agent Processor (`LangGraphProcessor`)**: Custom frame processor acting as the LLM step in the pipeline, orchestrating `VoiceSession` actions.
+- **Text-to-Speech (`ElevenLabsTTSService`)**: Synthesizes spoken output from `TTSSpeakFrame` text using `ELEVENLABS_API_KEY` and `ELEVENLABS_VOICE_ID` (which must be a Premade voice on standard tiers).
+- **Assistant Aggregator**: Tracks assistant utterances within the shared `LLMContext`.
 
-1. **Caches the last search results** in `VoiceSession.last_jobs`
-2. Extracts avoidance keywords from user feedback via a Gemini call (`VoiceSession.resume`)
-3. **Filters the cached results locally** — no repeated API calls, no re-running the graph
+The pipeline is wrapped in a `PipelineWorker` with metrics enabled (`enable_metrics=True`, `enable_usage_metrics=True`). Transport event hooks handle connection lifecycle:
+- `@transport.event_handler("on_client_connected")` logs connection initiation.
+- `@transport.event_handler("on_client_disconnected")` immediately halts processing by awaiting `worker.cancel()`.
 
-The text agent works the same way (feedback re-filters what is already cached). The difference is only in where preferences live: the text agent persists them in Postgres across days, a voice session keeps them in memory and forgets them when the call ends.
+Execution is managed by `WorkerRunner(handle_sigint=False)` via `pipecat.runner.run.main()`.
 
-## Command routing
+## VoiceSession Lifecycle and State Management
 
-`langgraph_processor.py` routes spoken commands by examining the message text. All blocking calls (graph invocation, LLM extraction) run via `asyncio.to_thread` to avoid freezing the audio pipeline. A `_last_processed_message` guard deduplicates repeated frames — if the same message text arrives twice (common in Pipecat frame processing), only the first is acted on.
+Unlike the primary text agent which maintains conversation state across sessions in PostgreSQL via `PostgresSaver`, voice sessions are **stateless and short-lived**. `voice_agent.py` initializes a module-level `MemorySaver` checkpointer:
+
+```python
+checkpointer = MemorySaver()
+compiled_agent = graph.compile(checkpointer=checkpointer)
+```
+
+At module import time, `voice_agent.py` also initializes a dedicated exclusion extraction chain:
+
+```python
+llm = init_chat_model(
+    model="google_genai:gemini-3.5-flash-lite",
+    api_key=os.getenv("GEMINI_API_KEY"),
+    max_retries=10
+)
+chain = llm | StrOutputParser()
+```
+
+Each instantiated `VoiceSession` manages its own isolated state:
+- `memory: list[str]` — accumulated comma-separated keyword exclusion strings extracted from feedback.
+- `thread_id: str` — a fresh `uuid4` string generated per session, supplied in `{"configurable": {"thread_id": self.thread_id}}` so LangGraph scopes checkpointer state per call.
+- `last_query: str` — placeholder for session query tracking.
+- `last_jobs: list[dict]` — normalized job results cached from the most recent graph search run, reused during feedback filtering and filter resets.
+
+### Lifecycle Methods
+
+| Method | Graph Invocation | Underlying Mechanism | Output |
+|---|---|---|---|
+| `run(user_input)` | Yes (6-source fan-out) | Invokes `compiled_agent.invoke({"user_input": user_input, "fetched_jobs": []}, config=config)`. Normalizes raw results with `normalize_jobs` and stores them in `self.last_jobs`. Evaluates `filter_jobs(self.last_jobs, self.memory)`. | `{"type": "jobs", "data": [...]}` |
+| `resume(feedback)` | No (local cache re-filter) | Executes `chain.invoke(extraction_prompt)` with `gemini-3.5-flash-lite` to extract avoidance keywords. Appends keywords to `self.memory`. Re-evaluates `filter_jobs(self.last_jobs, self.memory)` over existing `last_jobs`. | `{"type": "jobs", "data": [...]}` |
+| `reset()` | No (local cache re-filter) | Clears `self.memory` to `[]`. Re-evaluates `filter_jobs(self.last_jobs, self.memory)` against the empty exclusion list. | `{"type": "jobs", "data": [...]}` |
+
+### Voice vs. Text Agent Filtering
+
+In a voice session, a user typically explores one query per call while iteratively pruning results (e.g., "no PHP", "skip junior roles"). Rather than re-querying external job APIs or re-running the 6-source LangGraph fan-out, `VoiceSession` caches normalized search results in `last_jobs` and performs fast local filtering via `filter_jobs`. The text agent similarly avoids repeated external fetches during `/feedback`, but stores preferences durably in PostgreSQL; the voice agent retains exclusions only in memory for the duration of the WebRTC session.
+
+## Command Routing and Frame Processing
+
+`LangGraphProcessor` (in `voice/server/langgraph_processor.py`) bridges Pipecat pipeline frames with `VoiceSession`. It subclasses `FrameProcessor` and inspects incoming `LLMContextFrame` messages to route spoken user turns.
 
 ```mermaid
 flowchart TD
-    Msg["User message"] --> Check{"Starts with?"}
-    Check -->|"tell me more, details, what about"| Detail["_describe\nordinal or company fallback"]
-    Check -->|"reset"| Reset["session.reset\nclear memory"]
-    Check -->|"no, skip, without, not, exclude"| Feedback["session.resume\nGemini keyword extraction\nre-filter last_jobs"]
-    Check -->| Anything else | Search["session.run\nfresh graph invocation"]
-    Detail --> TTS["TTSSpeakFrame\nspoken response"]
+    Msg["User message frame"] --> Check{"Prefix or first word?"}
+    Check -->|"tell me more, details, what about"| Detail["_describe<br/>ordinal or company lookup"]
+    Check -->|"reset"| Reset["VoiceSession.reset<br/>clear memory"]
+    Check -->|"no, skip, without, not, exclude"| Feedback["VoiceSession.resume<br/>gemini-3.5-flash-lite extraction<br/>re-filter cached last_jobs"]
+    Check -->|"other search query"| Search["VoiceSession.run<br/>compiled 6-source graph invocation"]
+    Detail --> TTS["TTSSpeakFrame<br/>spoken response"]
     Reset --> TTS
     Feedback --> TTS
     Search --> TTS
 ```
 
-*Voice command routing: detail prefixes are checked first, then the first word decides the action. Detail requests use ordinal or company/role name matching. Feedback and search both produce job lists.*
+*Voice command routing in LangGraphProcessor: detail prefixes trigger spoken descriptions, reset clears exclusions, feedback triggers extraction and re-filtering, and other queries invoke the 6-source graph.*
 
-### Routing constants
+### Frame Invariants and Offloading
 
-| Constant | Value | Purpose |
-|---|---|---|
-| `FEEDBACK_WORDS` | `{"no", "skip", "without", "not", "exclude"}` | First-word triggers for feedback |
-| `DETAIL_PREFIXES` | `("tell me more", "more about", "details", "what about")` | Prefix triggers for listing detail |
-| `ORDINALS` | `first/one/1 → 0, second/two/2 → 1, ... fifth/five/5 → 4` | Ordinal-to-index mapping for "tell me more about the first one" |
+1. **Non-LLM Frame Passthrough**: Any frame that is not an `LLMContextFrame` is pushed downstream immediately via `await self.push_frame(frame, direction)`.
+2. **Deduplication Guard**: Pipecat context updates frequently send repeated frames. `_last_processed_message` tracks the last user utterance; duplicate identical inputs are discarded immediately.
+3. **Async Event-Loop Protection**: Graph execution, external API requests, and Gemini keyword extraction are synchronous blocking calls. To prevent freezing audio frames, VAD analysis, and real-time interruption handling, all `VoiceSession` methods run inside worker threads via `await asyncio.to_thread(...)`.
 
-### `_describe` fallback
+### Routing Rules and Dispatches
 
-When the user asks "tell me more about the first one", `_describe` first checks `ORDINALS` for an ordinal word. If none is found, it falls back to matching a company or role name the user said against `shown_jobs`. If still no match: "I didn't catch which one."
+The processor strips and lowercases the incoming message, dispatching actions according to prefix and first-word rules:
 
-### `_speakable` sentence cutting
+- **Detail Requests (`DETAIL_PREFIXES`)**: Triggers if the message begins with `"tell me more"`, `"more about"`, `"details"`, or `"what about"`. Calls `_describe(command)` and emits `TTSSpeakFrame`.
+- **Filter Reset**: Triggers if the first token is `"reset"`. Awaits `asyncio.to_thread(self.session.reset)`.
+- **Avoidance Feedback (`FEEDBACK_WORDS`)**: Triggers if the first token is in `{"no", "skip", "without", "not", "exclude"}`. Whole-word matching ensures phrases like `"notion developer"` continue to trigger fresh searches rather than exclusion feedback. Awaits `asyncio.to_thread(self.session.resume, last_user_message)`.
+- **Search Query**: Any other command is treated as a job search query and awaits `asyncio.to_thread(self.session.run, last_user_message)`.
 
-Job descriptions arrive truncated mid-word with a trailing `...`. `_speakable` cuts back to the last finished sentence so the TTS doesn't sound like the bot lost its train of thought. If no sentence break exists early enough, it drops the dangling last word instead.
+### Spoken Detail Lookup (`_describe`)
 
-### Terminal print vs spoken summary
+When a user inquires about a specific listing:
+1. It parses ordinal words using `ORDINALS` (`"first"`, `"one"`, `"1"` → index 0; `"second"`, `"two"`, `"2"` → index 1; up to `"fifth"` → index 4).
+2. If no ordinal is present, it falls back to substring matching against `company` or `position` fields in `self.shown_jobs`.
+3. If no match is found, it prompts: `"I didn't catch which one. Try 'tell me more about the first one'."`
+4. On match, it formats job title, company, location, salary, sanitized description, and notes the apply link index in the terminal.
 
-Full job lists with apply links are printed to the terminal (`_print_jobs`) — a URL is useless read aloud. The spoken response (`TTSSpeakFrame`) is a short summary: "{N} jobs. Top two: {position} at {company}; {position} at {company}. The full list with links is on your screen."
+### Sentence Cutting Hygiene (`_speakable`)
 
-## Key files
+Raw job descriptions from aggregators often truncate mid-sentence or end with `...`. The helper function `_speakable`:
+- Trims trailing `"..."`.
+- Finds the last sentence terminator (`.`, `!`, `?`). If the index occurs beyond character 40, it truncates at that punctuation boundary.
+- If no sentence boundary appears late enough, it strips the trailing dangling word and appends a period, preventing the TTS engine from vocalizing incomplete fragments.
 
-| File | Responsibility |
+### Dual Output Strategy
+
+Voice interactions require concise audio combined with actionable links:
+- **Terminal Display (`_print_jobs`)**: Spoken URLs are impractical. The processor prints full listing details, salaries, companies, and direct `apply_url` links directly to stdout.
+- **Spoken Audio Summary (`TTSSpeakFrame`)**: If listings are returned, TTS speaks a concise summary: `"{N} jobs. Top two: {position} at {company}; {position} at {company}. The full list with links is on your screen. Ask me for details, or tell me what to skip."` If no jobs match, it speaks: `"Nothing matched. Say reset to clear your filters, or try another search."`
+
+## File Organization and Dependencies
+
+| File | Purpose |
 |---|---|
-| `voice_agent.py` | `VoiceSession` class — `MemorySaver` checkpointer, `last_jobs` cache, `run`/`reset`/`resume` methods |
-| `voice/server/bot.py` | Pipecat pipeline wiring: Daily transport, Deepgram STT, ElevenLabs TTS, `LangGraphProcessor` |
-| `voice/server/langgraph_processor.py` | `LangGraphProcessor` — bridges Pipecat frames to `VoiceSession`, routes commands |
-| `voice/server/pyproject.toml` | Dependencies managed with `uv` (Pipecat, LangChain, Gemini) |
-| `voice/README.md` | Setup instructions and known limitations |
+| `voice_agent.py` | Defines `VoiceSession`, compiles `graph` from `agent.py` with `MemorySaver`, initializes `gemini-3.5-flash-lite` extraction chain, and implements `run`/`reset`/`resume`. |
+| `voice/server/bot.py` | Sets up Pipecat pipeline components (Daily transport, Deepgram STT, ElevenLabs TTS, `LangGraphProcessor`), worker params, and event callbacks. |
+| `voice/server/langgraph_processor.py` | `LangGraphProcessor` frame processor, command parsing, ordinal lookup, `_speakable` text cleanup, and terminal formatting. |
+| `voice/server/pyproject.toml` | Server dependencies managed with `uv` (`pipecat-ai`, `langchain`, `langgraph`, `langchain-google-genai`). |
+| `voice/README.md` | Operational instructions, environment setup, and developer notes. |
 
-`voice_agent.py` sits at the repo root and imports `graph` directly from `agent.py` — no duplication. `langgraph_processor.py` adds the repo root to `sys.path` to reach it.
+`voice_agent.py` lives at the project root alongside `agent.py`. `voice/server/langgraph_processor.py` adds `../../` to `sys.path` to import `VoiceSession` directly, ensuring zero graph duplication across the project.
 
-## Running
+## Configuration and Operations
+
+### Environment Configuration
+
+The voice subsystem requires the following environment variables configured in `.env`:
+
+| Variable | Description |
+|---|---|
+| `DEEPGRAM_API_KEY` | Deepgram speech-to-text API credentials. |
+| `ELEVENLABS_API_KEY` | ElevenLabs text-to-speech API credentials. |
+| `ELEVENLABS_VOICE_ID` | Voice identifier (must use a Premade voice on standard ElevenLabs tier). |
+| `GEMINI_API_KEY` | Google Gemini API key used by `voice_agent.py` for keyword extraction and `agent.py`. |
+| `DAILY_API_KEY` | Daily.co WebRTC room and transport authentication key. |
+
+### Running the Server
 
 ```bash
 cd voice/server
 uv sync
-cp .env.example .env   # add API keys
+cp .env.example .env   # configure API keys
 uv run bot.py
 ```
 
-Starts a local server at `http://localhost:7860` with the Pipecat Playground UI.
+The server listens on `http://localhost:7860` and hosts the Pipecat Playground UI for browser testing.
 
-### Required environment variables
+### Operational Considerations
 
-| Variable | Purpose |
-|---|---|
-| `DEEPGRAM_API_KEY` | Speech-to-text |
-| `ELEVENLABS_API_KEY` | Text-to-speech |
-| `ELEVENLABS_VOICE_ID` | Must be a Premade voice (Library/Community voices require a paid plan) |
-| `GOOGLE_API_KEY` | Same Gemini key used by the main agent |
-| `DAILY_API_KEY` | WebRTC transport |
-
-> **Windows note:** `daily-python` has no native Windows build. Run the voice server from WSL2 (Ubuntu), not native Windows. Everything else in this repo runs fine on Windows.
-
-> **Performance note:** Loading LangChain through `/mnt/c` costs ~2 minutes on first import. From ext4 (the Linux filesystem) the same call takes ~1 second.
-
-## Known limitations
-
-- Local, single-user demo — not deployed
-- No conversation memory across calls (by design — each call is a fresh session)
-- Filtering is keyword-based, not semantic — "no backend roles" won't catch "Server Engineer" unless word overlap exists
-- No listing in the frozen eval set carries "senior" in its description only, so the title-only rule's distinction is not tested in the voice path either
-
-## Source references
-
-- `voice_agent.py` — the entire file (51 lines)
-- `voice/server/bot.py` — Pipecat pipeline (138 lines)
-- `voice/server/langgraph_processor.py` — command routing (135 lines)
-- `voice/README.md` — setup and limitations
-- Commit `64f458d` (voice interface), `2834675` (rewire for interrupt-free graph)
+- **WSL2 Requirement for Windows**: `daily-python` does not provide native Windows binaries. Windows developers must execute the voice server within WSL2 (Ubuntu).
+- **Filesystem Mount Overhead**: Importing LangChain across Windows mount points (`/mnt/c`) incurs significant I/O latency (~2 minutes initial import). Running directly within the ext4 Linux root filesystem reduces this overhead to approximately 1 second.
+- **Session Isolation**: Sessions are completely ephemeral. Each browser connection instantiates a fresh `VoiceSession` with an empty `memory` exclusion list and unique `thread_id`. Memory does not survive disconnection.

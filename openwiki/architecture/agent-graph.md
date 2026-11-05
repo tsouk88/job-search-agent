@@ -1,24 +1,19 @@
 ---
 type: Subsystem
-title: Agent Graph
-description: The LangGraph state machine in agent.py — fan-out to five job API fetchers via the Send API, collect_results with company+title deduplication, location and age filtering, and title-weighted scoring with alias normalization and frequency-based description scoring.
+title: Agent Graph & Scoring
+description: The LangGraph state machine in agent.py — parallel fan-out to six job sources via the Send API, collect_results with company+title deduplication, location and age filtering, and title-weighted scoring with alias normalization.
 tags: [agent, langgraph, graph, scoring, filtering, normalization, fan-out]
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T15:48:11.877Z
-sources:
-  - id: openwiki-source-eca60e2ced68ba99bd0ac710
-    resource: repo://agent.py
-  - id: openwiki-source-185f850c083bac055a13cd37
-    resource: repo://helper.py
-generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
 ---
 
-# Agent Graph
+# Agent Graph & Scoring
 
-`agent.py` defines the single computational core shared by all three interfaces. It is a LangGraph `StateGraph` that fans out to five job APIs in parallel, deduplicates, scores, ranks, and caps at 12 results. No LLM is involved anywhere in this path.
+`agent.py` defines the deterministic computational core shared by all three application interfaces: the FastAPI web backend ([Backend API](backend-api.md)), the Model Context Protocol server ([System Overview](overview.md#mcp-server)), and the LiveKit voice assistant. It is implemented as a LangGraph `StateGraph` that fans out across six remote job sources in parallel, normalizes and deduplicates listings, scores candidates using title-weighted keyword matching and frequency heuristics, and aggregates up to 12 top-ranked listings.
 
-## State definition
+No Large Language Model (LLM) is used in the search, scoring, or ranking pipeline. The search pipeline is fully deterministic, zero-cost, and reproducible. LLMs are reserved strictly for external tasks: parsing spoken voice input, extracting structured keywords from uploaded CVs, and running offline evaluation judges.
+
+## State Definition and Reducers
+
+The graph operates over a central `State` TypedDict defined in `agent.py`:
 
 ```python
 class State(TypedDict):
@@ -31,9 +26,34 @@ class State(TypedDict):
     memory: Annotated[list[str], add_or_reset]
 ```
 
-`add_or_reset` is the reducer: it appends new items to the existing list, or returns `[]` if `new` is `None` (used by `/reset` to clear memory). `fetched_jobs` and `memory` both use this reducer — `fetched_jobs` because the five parallel fetchers each return a partial list that must be merged, and `memory` so a reset wipes it in one step. `country` (default `""`) is the two-letter / slug country the caller asked about; it flows into the country-aware fetchers and the location filter.
+### State Fields and the add_or_reset Reducer
 
-## Graph topology
+The state fields carry both execution inputs and accumulated job collections:
+
+- `user_input`: The user's raw search query string (e.g., `"python developer"`).
+- `country`: The ISO country code or slug selected by the user (default `""` for worldwide/all locations).
+- `fetched_jobs`: Raw listings gathered across all parallel fetcher nodes.
+- `clean_jobs`: The final ranked, scored, deduplicated, and truncated listings produced by `collect_results`.
+- `last_fetch_time`: ISO 8601 timestamp written when a query produces matching jobs.
+- `current_job`: Holds a selected job dictionary during detail inspection.
+- `memory`: Accumulated user exclusion filters (e.g., negative keywords like `"no senior"`, `"no php"`).
+
+`fetched_jobs` and `memory` use the `add_or_reset` reducer:
+
+```python
+def add_or_reset(existing: list, new: list | None) -> list:
+    if new is None:
+        return []
+    return existing + new
+```
+
+Because the six fetcher nodes execute concurrently, each returns a partial dictionary `{"fetched_jobs": [...]}`. LangGraph applies the reducer to merge each incoming list into `existing`. Once the collector finishes processing, `collect_results` returns `{"fetched_jobs": None}`, triggering the `if new is None` branch to reset the accumulated list to empty, preventing cross-turn memory leaks.
+
+When executed via `run_agent()` in `helper.py`, the graph is called with `durability="exit"`. This instructs LangGraph to write a checkpoint to Postgres (or in-memory store) only upon run completion rather than after every individual node step, reducing checkpoint storage overhead from ~3.7MB to ~41KB per search.
+
+## Graph Topology and Fan-Out Execution
+
+The state graph uses a fan-out / fan-in architecture. A single conditional edge dispatches six parallel worker nodes using LangGraph's `Send` API, and all six worker nodes point directly to `collect_results`.
 
 ```mermaid
 flowchart TD
@@ -43,17 +63,20 @@ flowchart TD
     fan_out -->|Send| fetch_tjobs["fetch_tjobs\nRemotive"]
     fan_out -->|Send| fetch_fjobs["fetch_fjobs\nJobicy"]
     fan_out -->|Send| fetch_wjobs["fetch_wjobs\nWorkable"]
-    fetch_jobs --> collect_results["collect_results\ndedup, score, rank"]
+    fan_out -->|Send| fetch_gjobs["fetch_gjobs\nGetro (9 VC boards)"]
+    fetch_jobs --> collect_results["collect_results\ndeduplicate, score, rank"]
     fetch_sjobs --> collect_results
     fetch_tjobs --> collect_results
     fetch_fjobs --> collect_results
     fetch_wjobs --> collect_results
+    fetch_gjobs --> collect_results
     collect_results --> END([END])
 ```
+*LangGraph state transitions: parallel fan-out to six fetcher nodes via the Send API and convergence at collect_results.*
 
-*The fan-out graph: five parallel fetchers dispatched via LangGraph's Send API, then collected into a single ranked result set.*
+### Fan-Out Wiring
 
-### fan_out
+The graph is constructed and registered in `agent.py`:
 
 ```python
 def fan_out(state: State):
@@ -63,114 +86,146 @@ def fan_out(state: State):
         Send("fetch_tjobs", state),
         Send("fetch_fjobs", state),
         Send("fetch_wjobs", state),
+        Send("fetch_gjobs", state),
     ]
+
+graph = StateGraph(State)
+graph.add_node("fetch_jobs", fetch_jobs)
+graph.add_node("fetch_sjobs", fetch_sjobs)
+graph.add_node("fetch_tjobs", fetch_tjobs)
+graph.add_node("fetch_fjobs", fetch_fjobs)
+graph.add_node("fetch_wjobs", fetch_wjobs)
+graph.add_node("fetch_gjobs", fetch_gjobs)
+graph.add_node("collect_results", collect_results)
+
+graph.add_conditional_edges(START, fan_out)
+graph.add_edge("fetch_jobs", "collect_results")
+graph.add_edge("fetch_sjobs", "collect_results")
+graph.add_edge("fetch_tjobs", "collect_results")
+graph.add_edge("fetch_fjobs", "collect_results")
+graph.add_edge("fetch_wjobs", "collect_results")
+graph.add_edge("fetch_gjobs", "collect_results")
+graph.add_edge("collect_results", END)
 ```
 
-Uses LangGraph's `Send` API to dispatch five parallel node executions, each receiving the full state. The graph is registered with `graph.add_conditional_edges(START, fan_out)`, and each fetcher node has a plain edge to `collect_results`, which has an edge to `END`.
+Each `Send` object receives a copy of the root `State`. The graph runner executes all six fetchers concurrently on thread workers. Network failures or timeouts in individual fetchers are caught locally and return `{"fetched_jobs": []}`, ensuring that failure in any one external API does not abort the graph run.
 
-## Tokenization and aliasing
+## Job Source Fetchers
 
-Three small functions decide which words in the user's query are *signal* and how the rest of the pipeline matches them. They exist because the job boards spell the same role many ways — "machine learning engineer" and "ml engineer" are the same job, and without normalizing them they were two disjoint result sets (4 vs 10, none shared).
+The graph delegates fetching across six source-specific nodes tailored to different API semantics and caching behaviors:
+
+### 1. fetch_jobs (RemoteOK)
+
+RemoteOK exposes `https://remoteok.com/api`. Key characteristics:
+- **Distinctive token queries**: Iterates over tags generated by `distinctive_tokens(state["user_input"])` (capped at `TAG_LIMIT = 3`). If no distinctive tokens exist, it makes an untagged request.
+- **Short-circuiting**: Halts tag iteration as soon as a single tag yields `>= ENOUGH` (50) results.
+- **Deduplication**: Merges responses into a `raw` dictionary keyed by URL or ID (`raw.setdefault(job.get("url") or job.get("id"), job)`).
+- **Title verification**: RemoteOK listing tags often contain SEO filler (e.g., healthcare jobs tagged with `python` and `postgres`). To prevent false positives, `fetch_jobs` discards any listing whose title does not match at least one signal token via `title_hit(token, job_title(job))`.
+
+### 2. fetch_sjobs (Himalayas)
+
+Queries `https://himalayas.app/jobs/api/search?q={query}&worldwide=true&sort=recent`.
+- Returns the list under `data.get("jobs", [])`.
+- Returns `{"fetched_jobs": []}` on HTTP 429 (rate limit) or `RequestException`.
+
+### 3. fetch_tjobs (Remotive)
+
+Remotive is treated as an in-memory cached feed rather than an active search API:
+- **Cache mechanism**: Remotive's edge cache does not vary on search query parameters; different queries return identical listings with Cloudflare cache hits. Consequently, `remotive_feed()` stores listings in a module-level dictionary `_REMOTIVE = {"at": 0.0, "jobs": []}` with a TTL of 6 hours (`REMOTIVE_TTL = 6 * 3600`).
+- **Fail-safe refresh**: If a refresh request fails or encounters a non-200 status, the previous feed is retained instead of cleared.
+- **Filtering**: `fetch_tjobs` filters the cached feed locally, keeping only listings where `title_hit(token, job_title(job))` matches at least one query `signal_token`.
+
+### 4. fetch_fjobs (Jobicy)
+
+Jobicy supports both keyword tags and geographic filtering:
+- Uses `distinctive_tokens` and appends `geo={country}` when a country is selected.
+- **400 retry logic**: An unrecognized country code causes Jobicy to return HTTP 400. On 400, the fetcher strips the `geo` parameter and retries the request without geographic constraints, delegating country filtering to the downstream `location_ok` check in `collect_results`.
+- Halts iteration when a tag returns `>= ENOUGH` (50) results. If all tagged attempts yield zero listings, it falls back to an untagged request.
+
+### 5. fetch_wjobs (Workable)
+
+Workable represents the applicant tracking system used widely by European companies. It uses a specialized two-round crawl:
+1. **Search Crawl (`workable_urls`)**: Requests `https://jobs.workable.com/search/{country}/remote-{token}-jobs` using path-based URLs (since `robots.txt` disallows query parameters on `/search`). The country segment is required; when empty, `worldwide` is substituted. The page HTML contains a schema.org `ItemList` in `<script type="application/ld+json">`. URLs are extracted and deduplicated by `workable_key(url)` (slug combining job title and company token). Only links whose slug title matches query signal tokens via `title_hit` are kept.
+2. **Detail Extraction (`workable_job`)**: Crawls individual posting pages for surviving URLs up to `WORKABLE_DETAILS = 6`. Parses schema.org `JobPosting` LD+JSON to extract `title`, `hiringOrganization.name`, `applicantLocationRequirements.name`, `description`, `datePosted`, and apply URL.
+
+### 6. fetch_gjobs (Getro VC Portfolio Boards)
+
+Getro hosts job boards for venture capital funds, aggregating startup roles that rarely appear on standard job boards:
+- **Fund Portfolio IDs**: Searches 9 VC funds configured in `GETRO_VCS = [1680, 53552, 617, 222, 4350, 1518, 7715, 178, 29066]` (Point Nine, Creandum, Earlybird, General Catalyst, Backed, Smartfin, Antler, firstminute, and Theory).
+- **Internal ThreadPoolExecutor**: Queries all 9 VC boards concurrently using `ThreadPoolExecutor(max_workers=len(GETRO_VCS))`, preventing sequential network waits and keeping node latency close to the slowest fund board (~1.4 seconds).
+- **Two-phase search (`vcsearch`)**: For each fund, posts to `https://api.getro.com/api/v2/collections/{VC}/search/jobs` with `work_mode: ["remote"]` and the canon-normalized query. If fewer than 10 jobs are returned, it falls back to querying each distinctive token tag.
+- **Schema Mapping**: Normalizes Getro's JSON structure:
+  - `organization.name` -> `job["company"]`
+  - `locations` list -> `job["location"]` (joined with commas)
+  - `created_at` -> `job["epoch"]`
+  - `skills` list -> `job["description"]` (joined with commas, serving as description text)
+- **Deduplication and Title Verification**: Merges results across all 9 funds into `raw` keyed by URL or ID (`raw.setdefault(job.get("url") or job.get("id"), job)`), and retains only listings satisfying `any(title_hit(token, job_title(job)) for token in signal)`.
+
+*(Note: An additional node, `fetch_fijobs` for Arbeitnow, remains commented out in `agent.py` and is not wired into the graph).*
+
+## Tokenization, Aliasing, and Equivalence
+
+Query parsing and matching rely on four targeted helper functions designed to prevent synonym mismatches:
 
 ### canon and ALIASES
 
+Different job boards write equivalent role and skill names differently (e.g., "ml engineer" vs. "machine learning engineer"). The `ALIASES` dictionary standardizes terms before any matching occurs:
+
 ```python
 ALIASES = {
-    "large language models": "llm", "large language model": "llm",
-    "natural language processing": "nlp", "artificial intelligence": "ai",
-    "machine learning": "ml", "full-stack": "fullstack", "full stack": "fullstack",
-    "back-end": "backend", "back end": "backend",
-    "front-end": "frontend", "front end": "frontend",
-    "postgresql": "postgres", "kubernetes": "k8s", "javascript": "js",
+    "large language models": "llm",
+    "large language model": "llm",
+    "natural language processing": "nlp",
+    "artificial intelligence": "ai",
+    "machine learning": "ml",
+    "full-stack": "fullstack",
+    "full stack": "fullstack",
+    "back-end": "backend",
+    "back end": "backend",
+    "front-end": "frontend",
+    "front end": "frontend",
+    "postgresql": "postgres",
+    "javascript": "js",
     "developer": "engineer",
 }
-def canon(text: str) -> str:
-    text = text.lower()
-    for phrase, short in ALIASES.items():
-        text = text.replace(phrase, short)
-    return text
 ```
 
-`canon` spells the synonyms one way *before* matching, so a single token can match every spelling. It is applied by `signal_tokens`, `job_title`, and inside `score_job` (to both the description and the query words). `distinctive_tokens` is the one exception: it tokenizes the raw query (`query.lower()`) without alias normalization, so a multi-word alias like "machine learning" yields the literal words `machine` and `learning` as tag candidates rather than `ml`.
+The function `canon(text: str) -> str` converts input text to lowercase and replaces each alias phrase with its canonical short form. It is applied when parsing query tokens (`signal_tokens`), extracting job titles (`job_title`), normalizing descriptions in `score_job`, and querying Getro in `fetch_gjobs`.
 
-### signal_tokens
+### 'Engineer' and 'Developer' Equivalence
 
-```python
-def signal_tokens(query: str) -> list[str]:
-    tokens = re.findall(r'\w+', canon(query).lower())
-    return [t for t in tokens if t not in GENERIC] or tokens
-```
+A critical mapping in `ALIASES` is `"developer": "engineer"`. Job boards treat these terms as interchangeable, but raw string matching previously split searches into disjoint sets. Under this alias:
+- When a user searches for `"python developer"`, `canon(query)` transforms the query to `"python engineer"`.
+- When a job listing has the title `"Python Developer"`, `job_title(job)` runs `canon()` and produces `"python engineer"`.
+- In `collect_results`, the admission check tests `wants_engineer = title_hit("engineer", canon(query))`. Because `"developer"` canonicalizes to `"engineer"`, both developer and engineer searches trigger the requirement that the job title must also contain `"engineer"`. This guarantees identical search coverage across both titles while filtering out unrelated roles (such as "Engineering Manager" or non-technical roles).
 
-The words of the query that carry meaning, after `canon` normalization. `GENERIC` (`developer`, `engineer`, `remote`, `role`, `position`, `specialist`, `manager`, …) is stripped. If the query is nothing but generic words, they are used anyway, so "developer job" still matches.
+### signal_tokens and distinctive_tokens
 
-### distinctive_tokens
+- **`signal_tokens(query: str) -> list[str]`**: Extracts words from `canon(query)` that carry semantic meaning, removing words in `GENERIC`:
+  ```python
+  GENERIC = frozenset({
+      "engineering", "software", "developer", "dev", "engineer",
+      "remote", "job", "jobs", "work", "role", "position",
+      "specialist", "expert", "manager"
+  })
+  ```
+  If all words in the query are generic (e.g., `"developer job"`), `signal_tokens` falls back to the full token list so generic queries still return results.
+- **`distinctive_tokens(query: str) -> list[str]`**: Selects up to `TAG_LIMIT = 3` non-generic tokens in appearance order, deduplicated. Crucially, it tokenizes the raw query `query.lower()` without alias substitution, preserving literal terms (e.g., `react`, `python`) required by tag-based external APIs (RemoteOK, Jobicy, and Getro fallbacks).
 
-```python
-TAG_LIMIT = 3
-def distinctive_tokens(query: str) -> list[str]:
-    seen = []
-    for token in re.findall(r'\w+', query.lower()):
-        if token not in GENERIC and token not in seen:
-            seen.append(token)
-    return seen[:TAG_LIMIT]
-```
-
-Picks the non-generic tokens in order, deduplicated, capped at `TAG_LIMIT = 3`. Unlike `signal_tokens`, this tokenizes the raw query (`query.lower()`) rather than `canon(query)`, so it sees the literal words of the query, not the aliased forms. These are the tag-based API queries (RemoteOK, Jobicy). Picking the wrong word costs almost every result (`?tags=fullstack` returns 1 listing where `?tags=react` returns 101), so the fetchers try these in order and stop as soon as one comes back full. Empty means no word narrows anything, and the caller should ask without a tag. `fetch_wjobs` falls back to `signal[:1]` when `distinctive_tokens` is empty.
-
-### title_hit
+### title_hit Matching Heuristic
 
 ```python
 def title_hit(token: str, title: str) -> bool:
     return re.search(rf'\b{re.escape(token)}(?:js|s|\d+)?\b', title) is not None
 ```
 
-A token matches a whole word, optionally with a plural, version, or `js` suffix. There is no longer a `< 4` char special case: the same word-boundary rule applies to every token. Substring matching was the earlier rule for longer tokens, which let "rust" fire on "anti-trust" and would let "java" fire on "javascript". Only prefixes were ever the problem, so suffixes stay allowed: "python" hits "python3", "react" hits "reactjs", "agent" hits "agents".
+`title_hit` enforces word-boundary matching with permitted suffixes:
+- Suffixes allowed: Plurals (`s`), version numbers (`\d+`), and technology suffixes (`js`). For example, `"python"` matches `"python3"`, `"react"` matches `"reactjs"`, and `"agent"` matches `"agents"`.
+- Prefixes prohibited: Word-boundary `\b` prevents prefix substrings from matching unrelated words. For example, `"rust"` cannot match `"anti-trust"`, and `"java"` cannot match `"javascript"`.
 
-## Fetchers
+## Candidate Scoring Algorithm
 
-Each fetcher queries one job API and handles errors gracefully — a dead or rate-limited API is survivable (every fetcher returns `{"fetched_jobs": []}` on `RequestException`).
-
-### fetch_jobs (RemoteOK)
-
-```python
-ENOUGH = 50
-```
-
-Uses `distinctive_tokens` (not just the first keyword) and tries the tags in order. For each tag it calls `https://remoteok.com/api?tags={tag}`, and breaks as soon as a page returns `>= ENOUGH` (50) results. Results are deduplicated by URL/id via `raw.setdefault(...)` across tag attempts. Finally it **re-checks every listing against its own title** with `title_hit`, because RemoteOK's tags are SEO filler — so a listing must match the query in its title to survive. Returns the full filtered list (not capped at 10).
-
-### fetch_sjobs (Himalayas)
-
-Queries `https://himalayas.app/jobs/api/search?q={full_query}&worldwide=true&sort=recent`. Returns `data["jobs"]`. Returns empty on 429.
-
-### fetch_tjobs (Remotive)
-
-```python
-_REMOTIVE = {"at": 0.0, "jobs": []}
-REMOTIVE_TTL = 6 * 3600
-```
-
-Remotive is a **cached feed, not a search**. `remotive_feed()` holds a module-level `_REMOTIVE` dict refreshed at most every `REMOTIVE_TTL` (6 hours). The edge cache in front of the Remotive API does not vary on the query string — two unrelated searches return the same titles in the same order, every response carrying `Cf-Cache-Status: HIT` — so there is one feed held between calls. A failed refresh (non-200 or `RequestException`) keeps the previous list rather than emptying it. `fetch_tjobs` then filters that feed by `title_hit` against `signal_tokens(query)`, so only titles matching the query are returned.
-
-### fetch_fjobs (Jobicy)
-
-Uses `distinctive_tokens` and a `geo={country}` parameter. For each tag it builds `https://jobicy.com/api/v2/remote-jobs?tag={tag}&geo={country}`. A country Jobicy does not know returns HTTP 400 (not an empty answer), so on 400 the fetcher retries the same URL without `geo` and lets `location_ok` do the filtering. Results are deduplicated by URL/id across tag attempts, and if a page returns `>= ENOUGH` (50) the loop breaks. If every tagged attempt came back empty (`len(raw) == 0`), it falls back to an untagged request and merges those jobs in. Returns the merged list.
-
-### fetch_wjobs (Workable)
-
-The only two-round fetcher. Workable is the ATS most companies here run, so a role in a specific country appears on its public board and almost nowhere else.
-
-1. **`workable_urls(token, country)`** — the search page. The page renders client-side but also carries a schema.org `ItemList` in `<script type="application/ld+json">`, which is plain JSON and enough to extract the links. The URL is the **path form** `https://jobs.workable.com/search/{country}/remote-{token}-jobs` because `robots.txt` allows `/search/*` and disallows the query-string form. The country segment is **mandatory** — drop it and the board stops reading the keyword, answering `remote-python-jobs` with commercial representatives in Rome; `worldwide` is the slug that means no country. A country Workable does not recognise answers 200 with an **empty list** rather than an error, so an empty result with a country is retried worldwide.
-2. **`workable_job(url)`** — each surviving posting's page. Parses the schema.org `JobPosting` LD+JSON block and extracts title, company (`hiringOrganization.name`), location (`applicantLocationRequirements.name`), description, `publication_date`, and the URL.
-
-`fetch_wjobs` collects links across `distinctive_tokens(state["user_input"])` (falling back to `signal[:1]`), deduplicating by `workable_key` (title + employer, since a role open in six cities is posted six times) and pre-filtering by `title_hit` on the title encoded in the link slug (`workable_title`) — so the per-posting requests only open postings that already matched. `WORKABLE_DETAILS = 6` caps the number of per-posting fetches.
-
-### fetch_fijobs (Arbeitsnow) — disabled
-
-A `fetch_fijobs` for the arbeitnow.com feed is defined but commented out and not registered in the graph.
-
-## Scoring
-
-### score_job
+The `score_job` function assigns a numerical relevance score to a job against the user query:
 
 ```python
 def score_job(job: dict, query: str) -> float:
@@ -193,16 +248,27 @@ def score_job(job: dict, query: str) -> float:
     return hits
 ```
 
-The score is no longer just `title_hits * 10 + desc_hits`. It combines four signals:
+### Scoring Components and Invariants
 
-- **`title_hits`** — how many `signal_tokens` match the title via `title_hit`, weighted by `TITLE_WEIGHT = 10`. The title itself is already `canon`-normalized by `job_title`.
-- **`desc_hits`** — how many signal words appear in the description at all. The description is `canon`-normalized before this word list is built, so aliased spellings match there too.
-- **`gen_hits`** — a generic-word tie-breaker: if the query had non-generic words, how many of its `GENERIC` words appear in the *title*. When the whole query is generic, `gen_hits` is forced to 0 so a query of pure generic words does not inflate scores.
-- **`bonus = freq / 8`** — frequency-based description scoring: the total count of signal-word occurrences in the description divided by 8, rewarding descriptions that mention the query terms repeatedly.
+Scoring synthesizes four signals:
+1. **Title Matches (`title_hits * TITLE_WEIGHT`)**: Number of signal tokens matching `job_title(job)` via `title_hit`, multiplied by `TITLE_WEIGHT = 10`.
+2. **Description Vocabulary Matches (`desc_hits`)**: Number of distinct signal tokens that appear at least once in the canonicalized description word list.
+3. **Generic Word Title Bonus (`gen_hits`)**: Counts how many generic query words (e.g., `"developer"`, `"software"`) appear in the job title. If the user query consists entirely of generic words, `gen_hits` is forced to 0 to prevent artificial inflation.
+4. **Description Frequency Bonus (`bonus = freq / 8`)**: Total count of all signal token occurrences in `desc_words` divided by 8, rewarding descriptions that discuss the target technology extensively.
 
-The description contribution (`desc_hits + gen_hits + bonus`) is **capped at 9**, which is below `TITLE_WEIGHT = 10`. This is the invariant: a description match can only *reorder* results within the admitted set, never admit a job the title did not match. `collect_results` keeps only `score >= TITLE_WEIGHT`, so admission still means "at least one title hit."
+### Strict Title-Match Admission Invariant
 
-## collect_results
+The description and generic components are clamped:
+
+$$\text{description\_score} = \min(\text{desc\_hits} + \text{gen\_hits} + \text{bonus},\; 9)$$
+
+$$\text{total\_score} = \text{description\_score} + (\text{title\_hits} \times 10)$$
+
+Because the description contribution is strictly capped at **9**, and admission in `collect_results` requires `score >= TITLE_WEIGHT` (10), **a listing cannot qualify without at least one title match**. Description hits can only reorder and rank candidates that have already matched the query in their title; body text mentions cannot admit an irrelevant role.
+
+## Deduplication and Result Collection
+
+`collect_results` serves as the convergence node that aggregates, deduplicates, filters, ranks, and truncates listings:
 
 ```python
 def collect_results(state: State):
@@ -222,59 +288,101 @@ def collect_results(state: State):
                and (not wants_engineer or title_hit("engineer", job_title(pair[1])))]
     matched.sort(key=lambda pair: pair[0], reverse=True)
     matched = matched[:MAX_RESULTS]
-    ...
+    correct_jobs = []
+    for _, job in matched:
+        description = job.get("jobDescription", "") or job.get("description", "")
+        job["description"] = strip_html(description)[:2000]
+        correct_jobs.append(job)
+    if len(correct_jobs) == 0:
+        return {"clean_jobs": correct_jobs, "fetched_jobs": None}
+    else:
+        return {
+            "clean_jobs": correct_jobs,
+            "fetched_jobs": None,
+            "last_fetch_time": datetime.now().isoformat()
+        }
 ```
 
-The dedup key is the **company + title hash** (`re.sub(r'[^a-z0-9]', '', company.lower() + title)`), not the apply URL. The same role is often posted once per city — six identical "Senior Backend Engineer" listings with six different links — so identity is employer and title, or duplicates take places in the twelve and the reader is handed seven.
+### Deduplication Heuristics
 
-Each surviving job must also pass two filters before scoring:
+Job boards frequently cross-post identical roles across different cities or platforms, each generating a distinct application URL. Deduplicating on application URL would allow five or six identical listings for the same opening to crowd out valid results.
 
-- **`location_ok(job, country)`** — the single place for the country, whether the source filtered on its own or not. Empty `country` means no filtering. Otherwise a listing is open if it names the country, names a region containing it (via `REGIONS`), says it is worldwide (`GLOBAL_WORDS`), or says nothing about location (most boards, when the answer is "anywhere").
-- **`job_is_recent(job)`** — `MAX_AGE_DAYS = 120`. Workable in particular keeps filled roles on its board; a listing older than 120 days is dropped. Sources spell the date as an ISO string or epoch seconds; a listing with no date is kept (absence is not age), and an unparseable date is kept too (the `try/except` returns `True`).
-
-Then: score → keep `score >= TITLE_WEIGHT` → sort by score descending → cap at `MAX_RESULTS = 12`. There is one extra admission gate beyond the score threshold: a **`wants_engineer` special case**. When the query itself asks for an "engineer" (`title_hit("engineer", canon(query))`), a job is only kept if its title also contains "engineer" — so an "engineering manager" or "director of engineering" that matched on other signal words is excluded, because the user asked for an engineer, not someone who runs them.
-
-After capping, `collect_results` cleans each kept job's description with `strip_html` and truncates it to **2000 characters** (this is the graph's own representation, separate from the interface layer — `normalize_jobs` does not truncate, and `format_jobs_markdown` in `helper.py` re-truncates the already-shortened text to a 150-character `textwrap.shorten` preview for display).
-
-`fetched_jobs` is set to `None` (clears the accumulated list via `add_or_reset`). **`last_fetch_time` is only written when results exist** — an empty result set does not update the cache timestamp, so a subsequent retry re-runs the graph.
-
-## filter_jobs
-
-The [exclusion filter](../domains.md#thread-memory-avoid-keywords) is called by all three interfaces after the graph completes. It is **not** a graph node — it runs in the interface layer.
-
+Instead, `collect_results` deduplicates using a **company + title sanitization hash**:
 ```python
-def filter_jobs(jobs: list, memory: list, title_only=SENIORITY) -> list:
+key = re.sub(r'[^a-z0-9]', '', f"{job_company(job).lower()}{job_title(job)}")
 ```
+- `job_company(job)` extracts employer names across divergent source keys (`company`, `companyName`, `company_name`).
+- `job_title(job)` extracts the role title and passes it through `canon()`.
+- `re.sub(r'[^a-z0-9]', '', ...)` strips all whitespace, punctuation, and casing differences.
 
-Key behavior:
+Deduplication occurs **before** scoring and truncation to ensure duplicates do not consume any of the top 12 slots.
 
-- Flattens memory entries (comma-separated keyword lists) into a flat list of keywords.
-- For each job, checks each keyword: if any word in the keyword is in `SENIORITY`, match against **title words only**; otherwise match against **title + description + location** (full text). A job is blocked if any keyword matches.
-- Also removes jobs without a valid `apply_url` or with empty / `Unknown` position.
+### Location Filtering (`location_ok`)
 
-The `SENIORITY` frozenset now includes more terms: `senior`, `sr`, `junior`, `júnior`, `jr`, `lead`, `principal`, `staff`, `mid`, `entry`, `pleno`, `sênior`, `estágio`, `head`, `director`, `vp`, `chief`.
+Filters listings against the selected `country`:
+- If `country` is empty, all jobs pass (`True`).
+- If the listing's location text (`job_location(job)`) is blank, it passes (most remote boards leave location blank when open worldwide).
+- Matches against the requested country name, mapped broader regions in `REGIONS` (e.g., Greece/Cyprus/Germany map to Europe, EMEA, EU; US maps to Americas, USA; Australia maps to APAC, Oceania), or global keywords in `GLOBAL_WORDS` (`"worldwide"`, `"anywhere"`, `"global"`, `"world wide"`).
+- The token `"remote"` alone is deliberately excluded from `GLOBAL_WORDS`; a listing stating `"Remote, US only"` specifies how work is performed, not candidate eligibility.
 
-## normalize_jobs
+### Recent Date Filtering (`job_is_recent`)
 
-Called by all three interfaces after the graph. Unifies source-specific field names into a canonical shape (`company`, `position`, `location`, `description`, `salary`, `apply_url`), repairs mojibake via `fix_mojibake` (on company, position, location, and description), strips HTML from the description via `strip_html`, cleans salary (a salary that reduces to only spaces/hyphens/zeroes after `re.sub(r'[\s\-0]', '', ...)` is reported as `"Salary not listed"`), and deduplicates by a **company + position hash** (`re.sub(r'[^a-z0-9]', '', company.lower() + position.lower())`). `normalize_jobs` does **not** truncate the description — that happens earlier in `collect_results` (2000 chars). See [domain concepts](../domains.md#normalization-and-mojibake-repair).
+Stale listings degrade search quality, especially on platforms like Workable that keep filled vacancies indexed for months:
+- Cutoff window: `MAX_AGE_DAYS = 120` days.
+- Extracts date fields from `date`, `pubDate`, `publication_date`, `datePosted`, or `epoch`.
+- Accepts integer/float epoch timestamps (`fromtimestamp(..., tz=timezone.utc)`) or ISO 8601 datestamps (`fromisoformat(...)`).
+- Unparseable or missing dates return `True`: absence of a date field is treated as unknown age rather than staleness.
 
-## Constants
+### wants_engineer Admission Gate
 
+Beyond meeting `score >= TITLE_WEIGHT` (10), listings must satisfy the role check:
 ```python
-TITLE_WEIGHT = 10
-MAX_RESULTS = 12
-MAX_AGE_DAYS = 120
-TAG_LIMIT = 3
-ENOUGH = 50
-REMOTIVE_TTL = 6 * 3600
-WORKABLE_DETAILS = 6
+wants_engineer = title_hit("engineer", canon(query))
+matched = [pair for pair in scored
+           if pair[0] >= TITLE_WEIGHT
+           and (not wants_engineer or title_hit("engineer", job_title(pair[1])))]
 ```
+When `wants_engineer` is true (due to the query containing `"engineer"` or `"developer"`), the listing's title must also match `"engineer"` (which includes canon-normalized `"developer"`). This blocks listings like "Director of Product" or "Engineering Manager" that score high on keyword hits but represent management rather than engineering roles.
 
-All live at the top of `agent.py`. `TITLE_WEIGHT` is the admission threshold (title match required); `MAX_RESULTS` caps the returned list; `MAX_AGE_DAYS` is the freshness cutoff; `TAG_LIMIT` caps `distinctive_tokens`; `ENOUGH` is the "stop trying more tags" threshold; `REMOTIVE_TTL` is the Remotive cache lifetime; `WORKABLE_DETAILS` caps per-posting Workable fetches.
+### Description Truncation and State Cleanup
 
-## Source references
+- **Truncation**: For each surviving job in `matched[:MAX_RESULTS]`, HTML tags and entities are stripped via `strip_html`, and the description is truncated to 2000 characters.
+- **Cache Timestamp**: `last_fetch_time` is updated with `datetime.now().isoformat()` only when `correct_jobs` is non-empty. An empty search result does not advance the timestamp, ensuring retries re-trigger graph execution.
+- **Memory Cleanup**: `fetched_jobs` is returned as `None`, clearing accumulated raw jobs via `add_or_reset`.
 
-- `agent.py` — the entire file (`State`, `add_or_reset`, `filter_jobs`, `canon`/`ALIASES`, `signal_tokens`, `distinctive_tokens`, `job_title`, `title_hit`, `score_job`, `normalize_jobs`, the five fetcher nodes `fetch_jobs`/`fetch_sjobs`/`fetch_tjobs`/`fetch_fjobs`/`fetch_wjobs`, `collect_results`, `fan_out`, and the `graph` wiring)
-- `main.py` — imports `graph`, `normalize_jobs`, `filter_jobs`; compiles the graph with a PostgresSaver checkpointer (or InMemorySaver for evals)
-- `mcp_server.py` — imports `graph`, `normalize_jobs`, `filter_jobs`; compiles the graph with no checkpointer and caches results for `CACHE_TTL = 14400` seconds
-- `voice_agent.py` — imports `graph`, `normalize_jobs`, `filter_jobs`; compiles the graph with a MemorySaver checkpointer
+## Downstream Pipeline (Interface Layer)
+
+After the LangGraph graph finishes, the calling interface layer runs two additional processing stages:
+
+### filter_jobs (Thread Memory Exclusion)
+
+Defined in `agent.py` and called before presenting results:
+- Flattens user exclusion keywords stored in `state["memory"]`.
+- Categorizes keywords: words present in `SENIORITY` are checked against **job title tokens only**; all other keywords (e.g., `"php"`, `"react"`) are checked across **title, description, and location**.
+- `SENIORITY` terms include: `senior`, `sr`, `junior`, `júnior`, `jr`, `lead`, `principal`, `staff`, `mid`, `entry`, `pleno`, `sênior`, `estágio`, `head`, `director`, `vp`, `chief`. Matching seniority against titles only prevents dropping mid-level roles whose job description mentions "reporting to a senior engineer".
+- Removes listings lacking an `apply_url` or having an empty / `"Unknown"` position.
+
+### normalize_jobs and format_jobs_markdown
+
+- **`normalize_jobs`**: Canonicalizes field names to `company`, `position`, `location`, `description`, `salary`, and `apply_url`. Repairs Latin-1/UTF-8 mojibake with `fix_mojibake`, removes placeholder salaries (e.g. `"$0 - $0"` becomes `"Salary not listed"`), and performs a final deduplication pass using a sanitized `company + position` hash.
+- **`format_jobs_markdown`** (`helper.py`): Formats clean jobs into Markdown cards for display, shortening descriptions with `textwrap.shorten(..., width=150)` and appending active filter tags and source attribution.
+
+## Constants and Configuration Reference
+
+| Constant | Value | Purpose |
+|---|---|---|
+| `TITLE_WEIGHT` | `10` | Score weight per title match; minimum score threshold for admission |
+| `MAX_RESULTS` | `12` | Maximum number of top-ranked jobs returned by `collect_results` |
+| `MAX_AGE_DAYS` | `120` | Cutoff age in days for `job_is_recent` filtering |
+| `TAG_LIMIT` | `3` | Maximum number of distinctive tokens extracted from query for tag-based queries |
+| `ENOUGH` | `50` | Result count threshold to stop querying subsequent tag variants |
+| `REMOTIVE_TTL` | `21600` (6h) | Cache lifetime for in-memory Remotive feed in seconds |
+| `WORKABLE_DETAILS` | `6` | Maximum number of individual Workable posting pages fetched per search |
+| `GETRO_VCS` | 9 fund IDs | List of Getro fund collection IDs searched by `fetch_gjobs` |
+
+## Related Pages
+
+- [System Overview](overview.md) — Architectural overview, three caller interfaces, Redis caching, and LangGraph checkpointing.
+- [Backend API](backend-api.md) — FastAPI endpoint lifecycle, `/search`, `/feedback`, and `/reset` request handling.
+- [Domain Concepts](../domains.md) — Detail on thread memory filters, mojibake repair, and location mapping.
+- [Integrations](../integrations.md) — Third-party job boards, ATS scrapers, and external API specifications.
