@@ -430,7 +430,6 @@ LANGSMITH_ENDPOINT=https://eu.api.smith.langchain.com  # if outside US
 DATABASE_URL=postgresql://postgres:yourpassword@localhost:5432/jobsearch_memory
 ALLOWED_ORIGINS=http://localhost:3000  # comma-separated list of browser origins allowed to call the API
 REDIS_URL=redis://localhost:6379/0  # rate limiter, Gemini budget, Celery and the search cache
-EVALUATE_TOKEN=      # x-api-key for /evaluate (the n8n workflow)
 EVALS=               # x-api-key for /askeval, used by eval_runner.py
 N8N_DEDUPE=          # x-api-key for /digest and /digest/sent (the n8n digest)
 OPENROUTER_API_KEY=  # only for the Jev judge in eval_runner.py
@@ -516,13 +515,12 @@ n8n's own workflow static data was tried first and dropped: it never persisted b
 | `/reset` | POST | no | Clear all stored filters and return the unfiltered results |
 | `/feedback` | POST | yes | Turn feedback ("no MERN", "no senior") into filter keywords. Input capped at 100 characters |
 | `/upload` | POST | yes | Upload PDF resume — agent extracts skills and finds matching jobs. Max 5MB, first 5 pages |
-| `/evaluate` | POST | yes | AI scoring of job listings. Requires the `x-api-key` header |
 | `/digest` | POST | no | Search, minus the listings already mailed. Returns `{md, links}`. Requires the `x-api-key` header |
 | `/digest/sent` | POST | no | Record `links` as mailed. Requires the `x-api-key` header |
 
 Every endpoint is rate limited to 10 requests per minute per IP.
 
-**On the LLM surface.** Search costs nothing: since the scoring became deterministic, `/ask` and `/reset` make no model calls at all. Three endpoints still do, and they are constrained differently. `/evaluate` accepts arbitrary text and is therefore closed — set `EVALUATE_TOKEN` in `.env` and send the same value as `x-api-key`; the exported workflow carries a `YOUR_EVALUATE_TOKEN` placeholder, and without it the endpoint answers 401. `/feedback` and `/upload` stay open because the public demo needs them, so they are bounded by size instead: 100 characters of feedback, 5MB and 5 pages of PDF. Bounded is not the same as free — if you deploy this somewhere that matters, put a budget alert on the API key.
+**On the LLM surface.** Search costs nothing: since the scoring became deterministic, `/ask` and `/reset` make no model calls at all. Two endpoints still do. `/feedback` and `/upload` stay open because the public demo needs them, so they are bounded by size: 100 characters of feedback, 5MB and 5 pages of PDF. Bounded is not the same as free — if you deploy this somewhere that matters, put a budget alert on the API key.
 
 ---
 

@@ -41,7 +41,7 @@ The adapter contains no answer, no expected set, and no filtering logic.
 
 ## Credentials
 
-None. `GEMINI_API_KEY`, `DATABASE_URL` and `EVALUATE_TOKEN` are not read on
+None. `GEMINI_API_KEY` and `DATABASE_URL` are not read on
 this path and must not be present in the container.
 
 ## Reconstruction differences from production
