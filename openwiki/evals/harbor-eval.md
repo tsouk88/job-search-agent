@@ -1,31 +1,78 @@
 ---
 type: Subsystem
-title: Harbor Offline Evaluation
-description: Deterministic offline evaluation framework testing filtering and exclusion invariants against frozen API captures without live network or LLM dependencies.
+title: Harbor Deterministic Evaluation
+description: Hermetic Harbor offline benchmark testing filter persistence, exclusion matching, and seniority filtering invariants against frozen HTTP mock fixtures.
 tags: [evals, harbor, deterministic, frozen-fixtures, ci, filtering, regression]
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-05T16:18:10.477Z
+sources:
+  - id: openwiki-source-9ea7004cd60fc78ed888a032
+    resource: repo://.github/workflows/eval.yml
+  - id: openwiki-source-eca60e2ced68ba99bd0ac710
+    resource: repo://agent.py
+  - id: openwiki-source-1d64a0979a354ad458b3519a
+    resource: repo://evals/check_reward.py
+  - id: openwiki-source-a68f947821d6952a6d4a07df
+    resource: repo://evals/configs/no-network.yaml
+  - id: openwiki-source-597a4e7dcad9a5fbf0ac25d9
+    resource: repo://evals/filter-exclusion-senior/environment/fixtures/jobicy.json
+  - id: openwiki-source-08c99c4c450a668727fdd901
+    resource: repo://evals/filter-exclusion-senior/environment/fixtures/workable/view-hrFtaRqbZsYCPcCVeEr4Q2.html
+  - id: openwiki-source-4ea2d16d70ad274641c7935e
+    resource: repo://evals/filter-exclusion-senior/environment/frozen_apis.py
+  - id: openwiki-source-d77027360dd6f5a844fd6f0d
+    resource: repo://evals/filter-exclusion-senior/instruction.md
+  - id: openwiki-source-2945aba9c5ae6f9af2da7155
+    resource: repo://evals/filter-exclusion-senior/task.toml
+  - id: openwiki-source-ab20f2fabcf9dffc06e9a9a7
+    resource: repo://evals/filter-exclusion-senior/tests/expected.json
+  - id: openwiki-source-6f3a365387ad1dfc55a94d24
+    resource: repo://evals/filter-exclusion-senior/tests/test_outputs.py
+  - id: openwiki-source-18837785d6eee548467c07ac
+    resource: repo://evals/harbor_agents/pipeline_agent.py
+  - id: openwiki-source-1691a76fbd7a6781b3420f6c
+    resource: repo://evals/harbor_agents/run_pipeline.py
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T16:18:10.477Z" }
 ---
 
-# Harbor Offline Evaluation
+# Harbor Deterministic Evaluation
 
-The Harbor offline evaluation is a deterministic regression test harness located in `evals/` that verifies the agent's exclusion logic in `filter_jobs`. While the live [LangSmith Evaluation](langsmith-eval.md) tests semantic relevance against external job boards that drift hourly, Harbor freezes API responses into static fixtures and executes within a network-isolated environment to assert exact output sets.
+The Harbor deterministic evaluation is an offline regression test benchmark located in `evals/filter-exclusion-senior/` that verifies the agent's exclusion logic in `filter_jobs` ([Agent Graph](../architecture/agent-graph.md)). While the live [LangSmith Evaluation](langsmith-eval.md) monitors semantic relevance against external job boards that drift over time, Harbor freezes API responses into static fixtures and executes within a network-isolated environment to assert exact output sets.
 
-Harbor ensures that any changes to the [Agent Graph](../architecture/agent-graph.md), ranking rules, or exclusion logic preserve filtering correctness without incurring token costs or relying on external API availability. For broader testing strategies, see [Testing Overview](../testing.md).
+Harbor ensures that any changes to the [Agent Graph](../architecture/agent-graph.md), candidate ranking rules in `collect_results`, or exclusion logic in `filter_jobs` preserve filtering correctness without incurring token costs or relying on external API availability. For broader testing strategies, see [Testing Overview](../testing.md) and [Domain Reference](../domains.md).
 
-## What it tests
+## What it Tests
 
-The evaluation tests the agent's ability to apply exclusion keywords to a pre-ranked result set: dropping listings whose **title** matches an excluded seniority term or whose **full text** matches any general exclusion keyword, while keeping every valid listing. Over-inclusion (an excluded job survives) and over-filtering (a valid job is dropped) both fail the test.
+The evaluation asserts the agent's ability to apply exclusion keywords to a pre-ranked result set: dropping listings whose **title** matches an excluded seniority term or whose **full text** matches any general exclusion keyword, while keeping every valid listing. Over-inclusion (an excluded job survives) and over-filtering (a valid job is dropped) both fail the test.
 
-The standard evaluation query is `python developer` with exclusions `["senior", "game", "canonical"]`. These exclusions evaluate both branches of `filter_jobs` in `agent.py`:
+The standard evaluation query configured in `evals/filter-exclusion-senior/instruction.md` is `python developer` with exclusions `["senior", "game", "canonical"]`. These exclusions evaluate both branches of `filter_jobs` in `agent.py`:
 
 | Term | What it drops | Matching rule & `filter_jobs` branch |
 |---|---|---|
-| `senior` | "Senior Software Engineer - Python/MongoDB" (Jobicy), "Senior Backend Engineer (Python)" (Workable) | **Title-only match** (`SENIORITY` frozenset). Scans `title_words` only; descriptions and locations are ignored. |
+| `senior` | "Senior Software Engineer - Python/MongoDB" (Jobicy #149974), "Remote Senior Backend Engineer (Python)" (Workable) | **Title-only match** (`SENIORITY` frozenset). Scans `title_words` only; descriptions and locations are ignored. |
 | `game` | Two Panda3D game developer listings (Himalayas) | **Full-text match** (general keyword). Scans `full_words` (`title + description + location`). |
-| `canonical` | One Jobicy listing ("Python Engineer") and one Jobicy listing ("Python and Kubernetes Software Engineer") | **Full-text match** (general keyword). In the "Python Engineer" (149543) listing, the keyword appears only in the description body, verifying full-text reach. |
+| `canonical` | One Jobicy listing ("Python Engineer" #149543) and one Jobicy listing ("Python and Kubernetes Software Engineer" #149563) | **Full-text match** (general keyword). In the "Python Engineer" (149543) listing, the keyword appears only in the description body and company metadata, verifying full-text reach. |
+
+### How Canonical Software Engineer Listings Match "python developer"
+
+In `agent.py`, the candidate collection and ranking node `collect_results` determines which listings enter the top result set:
+
+1. **Signal Extraction**: For the query `"python developer"`, `signal_tokens` strips `"developer"` because it belongs to `GENERIC`. The extracted signal token list is `["python"]`.
+2. **Title Scoring**: In `score_job(job, query)`, any listing containing `"python"` in its title scores `title_hits * TITLE_WEIGHT` (where `TITLE_WEIGHT = 10`), easily passing the qualification threshold `score >= TITLE_WEIGHT`.
+3. **Engineering Role Check**: The `wants_engineer` flag in `collect_results` is computed as `title_hit("engineer", canon(query))`. Because the query is `"python developer"` rather than `"python engineer"`, `wants_engineer` evaluates to `False`. The gating condition `(not wants_engineer or title_hit("engineer", job_title(pair[1])))` therefore passes for all qualified listings, allowing Canonical's "Software Engineer" postings to qualify despite having "engineer" rather than "developer" in their titles.
+4. **Top 12 Selection**: The qualified candidates are sorted by score and capped at `MAX_RESULTS = 12`. Three Canonical listings from Jobicy score in the top 12:
+   - "Senior Software Engineer - Python/MongoDB" (#149974)
+   - "Python and Kubernetes Software Engineer - Data, Workflows, AI/ML & Analytics" (#149563)
+   - "Python Engineer" (#149543)
+
+When `filter_jobs` executes, Canonical's listings are evaluated against the exclusions:
+- Listing #149974 is dropped by `"senior"` (title-only branch, since `"senior"` is in the title).
+- Listings #149563 and #149543 are dropped by `"canonical"` (full-text branch). Crucially, listing #149543's title is simply `"Python Engineer"`; `"canonical"` appears solely in its employer field (`Canonical Ltd.`) and description body, verifying that general keyword exclusions operate across full text rather than titles alone.
 
 ### Expected Test Results: 6 Kept and 6 Dropped
 
-The MCP pipeline caps results at 12 listings (`MAX_RESULTS = 12`) during ranking in `collect_results`. Against the frozen test query fixtures, exactly 12 listings enter `filter_jobs`:
+The pipeline caps pre-filtered results at 12 listings (`MAX_RESULTS = 12`). Against the frozen fixtures, exactly 12 listings enter `filter_jobs`:
 
 - **6 listings kept**:
   - Remote Mid-Level Python Developer at EUROPEAN DYNAMICS (Workable)
@@ -42,7 +89,9 @@ The MCP pipeline caps results at 12 listings (`MAX_RESULTS = 12`) during ranking
   - Senior Software Engineer - Python/MongoDB #149974 (Jobicy) — dropped by `senior` in title
   - Remote Senior Backend Engineer (Python) at EUROPEAN DYNAMICS (Workable) — dropped by `senior` in title
 
-Leaving an excluded listing in or dropping a valid listing results in an eval reward of 0.
+Notice that "Junior" and "Mid-Level" listings survive in the kept set: `filter_jobs` only drops seniority tiers explicitly present in the user's exclusion list. Because the user only requested exclusions for `"senior"`, `"game"`, and `"canonical"`, unexcluded seniority levels remain untouched.
+
+Leaving an excluded listing in or dropping a valid listing results in a reward of 0.
 
 ## Architecture
 
@@ -77,7 +126,7 @@ This dual-artifact structure provides an environment guard: `test_outputs.py` as
 
 ## Mock API Dispatch: frozen_apis.py
 
-Inside the evaluation container, `environment/frozen_apis.py` replaces entry points in the `requests` library before `agent.py` or `mcp_server.py` load. The harness supports six job sources across GET, HTML scraping, and POST search endpoints:
+Inside the evaluation container, `environment/frozen_apis.py` intercepts entry points in the `requests` library before `agent.py` or `mcp_server.py` load. The harness supports six job sources across GET, HTML scraping, and POST search endpoints:
 
 ```python
 HOSTS = {
@@ -95,17 +144,17 @@ GETRO = "api.getro.com"
 `frozen_get(url, *args, **kwargs)` inspects the destination hostname:
 
 - **JSON sources (`HOSTS`)**: RemoteOK, Himalayas, Remotive, and Jobicy map their hostname directly to a JSON fixture in `environment/fixtures/`. The payload is deserialized and wrapped in a `FrozenResponse(payload=payload)`.
-- **Workable (`jobs.workable.com`)**: Workable serves HTML pages rather than a JSON API, and its scraper makes two rounds of requests: an initial search page for listing links, followed by detail requests for each posting. `workable_fixture(parts.path)` maps `/search/` requests to `fixtures/workable/search-python.html` and `/view/<job_id>/...` to `fixtures/workable/view-{job_id}.html`. The response is wrapped in `FrozenResponse(text=fixture.read_text(encoding="utf-8"))`.
+- **Workable (`jobs.workable.com`)**: Workable serves HTML pages rather than a JSON API, and its scraper makes two rounds of requests: an initial search page for listing links (`workable_urls`), followed by detail requests for each posting (`workable_job`). `workable_fixture(parts.path)` maps `/search/` requests to `fixtures/workable/search-python.html` and `/view/<job_id>/...` to `fixtures/workable/view-{job_id}.html`. The response is wrapped in `FrozenResponse(text=fixture.read_text(encoding="utf-8"))`.
 
 ### POST Dispatch (Getro VC Search)
 
-Getro (`api.getro.com`) hosts jobs across venture capital portfolio boards and requires HTTP POST requests. In `agent.py`, `getrosearch` sends POST requests to `https://api.getro.com/api/v2/collections/{VC}/search/jobs` with a JSON payload specifying query terms and remote work mode filters across 9 VC funds (`GETRO_VCS`).
+Getro (`api.getro.com`) hosts jobs across venture capital portfolio boards and requires HTTP POST requests. In `agent.py`, `fetch_gjobs` sends POST requests to `https://api.getro.com/api/v2/collections/{VC}/search/jobs` with a JSON payload specifying query terms and remote work mode filters across 9 VC funds (`GETRO_VCS`).
 
 `frozen_post(url, *args, **kwargs)` handles these calls:
 
 1. Extracts the VC collection ID from the URL path (`/collections/{vc}/search/jobs`).
-2. Extracts the search query from the JSON body (`kwargs.get("json", {}).get("query", "")`).
-3. Loads `environment/fixtures/getro.json`, which indexes responses by VC ID and query string: `captured.get(vc, {}).get(query, [])`.
+2. Extracts the search query from the JSON body (`(kwargs.get("json") or {}).get("query") or ""`).
+3. Loads `environment/fixtures/getro.json`, which indexes captured responses by VC ID and query string: `captured.get(vc, {}).get(query, [])`.
 4. Wraps results in a `FrozenResponse(payload={"results": {"jobs": jobs, "count": len(jobs)}})`. If a VC or query combination was not captured, it returns an empty job list (`count: 0`), mirroring Getro's live behavior.
 
 ### In-Process Network Blocking
@@ -115,7 +164,7 @@ Getro (`api.getro.com`) hosts jobs across venture capital portfolio boards and r
 To ensure complete network isolation, `frozen_apis.py` patches:
 - `requests.get = frozen_get`
 - `requests.post = frozen_post`
-- `requests.put`, `requests.patch`, `requests.delete`, `requests.head`, `requests.options`, `requests.request`, and `requests.Session.request` are mapped to a `blocked` function that raises `RuntimeError("live network access is not available in this environment")`.
+- `requests.put`, `requests.patch`, `requests.delete`, `requests.head`, `requests.options`, `requests.request`, `requests.Session.request`, and `requests.sessions.Session.request` are mapped to a `blocked` function that raises `RuntimeError("live network access is not available in this environment")`.
 
 Any attempt to access an unmapped hostname, unfrozen Workable path, or unhandled HTTP method immediately raises a `RuntimeError`.
 
@@ -200,9 +249,9 @@ harbor run \
 python evals/check_reward.py evals/jobs/ci-${{ github.run_id }}
 ```
 
-### Local Execution
+### Local Execution via Docker
 
-Run locally using `harbor` and `uv`:
+To run the evaluation locally with Docker and verify rewards:
 
 ```bash
 uv tool install harbor

@@ -1,12 +1,22 @@
 ---
 type: Subsystem
-title: Agent Graph & Scoring
-description: The LangGraph state machine in agent.py — parallel fan-out to six job sources via the Send API, collect_results with company+title deduplication, location and age filtering, and title-weighted scoring with alias normalization.
+title: Agent Graph Architecture
+description: Deterministic LangGraph state machine in agent.py executing a 6-source parallel fan-out, Getro VC portfolio thread pool search, deduplication, seniority/location filtering, and title-weighted scoring.
 tags: [agent, langgraph, graph, scoring, filtering, normalization, fan-out]
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-05T16:18:10.477Z
+sources:
+  - id: openwiki-source-eca60e2ced68ba99bd0ac710
+    resource: repo://agent.py
+  - id: openwiki-source-185f850c083bac055a13cd37
+    resource: repo://helper.py
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T16:18:10.477Z" }
 ---
 
-# Agent Graph & Scoring
+# Agent Graph Architecture
 
+<!-- openwiki: broken internal link [overview.md#mcp-server] heading anchor "mcp-server" does not exist in "overview.md". Fix the href or restore the target, then delete this comment. -->
 `agent.py` defines the deterministic computational core shared by all three application interfaces: the FastAPI web backend ([Backend API](backend-api.md)), the Model Context Protocol server ([System Overview](overview.md#mcp-server)), and the LiveKit voice assistant. It is implemented as a LangGraph `StateGraph` that fans out across six remote job sources in parallel, normalizes and deduplicates listings, scores candidates using title-weighted keyword matching and frequency heuristics, and aggregates up to 12 top-ranked listings.
 
 No Large Language Model (LLM) is used in the search, scoring, or ranking pipeline. The search pipeline is fully deterministic, zero-cost, and reproducible. LLMs are reserved strictly for external tasks: parsing spoken voice input, extracting structured keywords from uploaded CVs, and running offline evaluation judges.
@@ -53,26 +63,35 @@ When executed via `run_agent()` in `helper.py`, the graph is called with `durabi
 
 ## Graph Topology and Fan-Out Execution
 
-The state graph uses a fan-out / fan-in architecture. A single conditional edge dispatches six parallel worker nodes using LangGraph's `Send` API, and all six worker nodes point directly to `collect_results`.
+The state graph uses a fan-out / fan-in architecture. The execution path transitions strictly from `START` to `fan_out`, parallelizes across 6 fetch nodes via LangGraph's `Send` API, converges on `collect_results`, and terminates at `END`.
 
 ```mermaid
 flowchart TD
-    START([START]) --> fan_out{fan_out}
+    graph_start([START]) --> fan_out{fan_out}
+
     fan_out -->|Send| fetch_jobs["fetch_jobs\nRemoteOK"]
     fan_out -->|Send| fetch_sjobs["fetch_sjobs\nHimalayas"]
-    fan_out -->|Send| fetch_tjobs["fetch_tjobs\nRemotive"]
+    fan_out -->|Send| fetch_tjobs["fetch_tjobs\nRemotive cached feed"]
     fan_out -->|Send| fetch_fjobs["fetch_fjobs\nJobicy"]
-    fan_out -->|Send| fetch_wjobs["fetch_wjobs\nWorkable"]
-    fan_out -->|Send| fetch_gjobs["fetch_gjobs\nGetro (9 VC boards)"]
-    fetch_jobs --> collect_results["collect_results\ndeduplicate, score, rank"]
+    fan_out -->|Send| fetch_wjobs["fetch_wjobs\nWorkable ATS scraper"]
+    fan_out -->|Send| fetch_gjobs_entry["fetch_gjobs\nGetro VC search"]
+
+    subgraph gjobs_pool ["fetch_gjobs: ThreadPoolExecutor (max_workers=9)"]
+        fetch_gjobs_entry --> vc_exec["Concurrent vcsearch across 9 VC portfolios\nPoint Nine, Creandum, Earlybird, General Catalyst, Backed, Smartfin, Antler, firstminute, Theory"]
+        vc_exec --> vc_fb["Query canon(query) with distinctive_tokens fallback if fewer than 10 jobs"]
+        vc_fb --> vc_norm["Normalize schema, deduplicate by URL/ID, and filter by title_hit"]
+    end
+
+    fetch_jobs --> collect_results["collect_results\nDeduplicate, location and recency filter, score, rank"]
     fetch_sjobs --> collect_results
     fetch_tjobs --> collect_results
     fetch_fjobs --> collect_results
     fetch_wjobs --> collect_results
-    fetch_gjobs --> collect_results
-    collect_results --> END([END])
+    vc_norm --> collect_results
+
+    collect_results --> graph_end([END])
 ```
-*LangGraph state transitions: parallel fan-out to six fetcher nodes via the Send API and convergence at collect_results.*
+*LangGraph state transitions: 6-source parallel fan-out via Send, concurrent thread pool execution in fetch_gjobs, and convergence on collect_results.*
 
 ### Fan-Out Wiring
 
@@ -112,7 +131,7 @@ Each `Send` object receives a copy of the root `State`. The graph runner execute
 
 ## Job Source Fetchers
 
-The graph delegates fetching across six source-specific nodes tailored to different API semantics and caching behaviors:
+The graph delegates fetching across six source-specific nodes tailored to different API semantics, caching behaviors, and scraping patterns:
 
 ### 1. fetch_jobs (RemoteOK)
 
@@ -142,7 +161,7 @@ Jobicy supports both keyword tags and geographic filtering:
 - **400 retry logic**: An unrecognized country code causes Jobicy to return HTTP 400. On 400, the fetcher strips the `geo` parameter and retries the request without geographic constraints, delegating country filtering to the downstream `location_ok` check in `collect_results`.
 - Halts iteration when a tag returns `>= ENOUGH` (50) results. If all tagged attempts yield zero listings, it falls back to an untagged request.
 
-### 5. fetch_wjobs (Workable)
+### 5. fetch_wjobs (Workable ATS Scraper)
 
 Workable represents the applicant tracking system used widely by European companies. It uses a specialized two-round crawl:
 1. **Search Crawl (`workable_urls`)**: Requests `https://jobs.workable.com/search/{country}/remote-{token}-jobs` using path-based URLs (since `robots.txt` disallows query parameters on `/search`). The country segment is required; when empty, `worldwide` is substituted. The page HTML contains a schema.org `ItemList` in `<script type="application/ld+json">`. URLs are extracted and deduplicated by `workable_key(url)` (slug combining job title and company token). Only links whose slug title matches query signal tokens via `title_hit` are kept.
@@ -153,7 +172,7 @@ Workable represents the applicant tracking system used widely by European compan
 Getro hosts job boards for venture capital funds, aggregating startup roles that rarely appear on standard job boards:
 - **Fund Portfolio IDs**: Searches 9 VC funds configured in `GETRO_VCS = [1680, 53552, 617, 222, 4350, 1518, 7715, 178, 29066]` (Point Nine, Creandum, Earlybird, General Catalyst, Backed, Smartfin, Antler, firstminute, and Theory).
 - **Internal ThreadPoolExecutor**: Queries all 9 VC boards concurrently using `ThreadPoolExecutor(max_workers=len(GETRO_VCS))`, preventing sequential network waits and keeping node latency close to the slowest fund board (~1.4 seconds).
-- **Two-phase search (`vcsearch`)**: For each fund, posts to `https://api.getro.com/api/v2/collections/{VC}/search/jobs` with `work_mode: ["remote"]` and the canon-normalized query. If fewer than 10 jobs are returned, it falls back to querying each distinctive token tag.
+- **Two-phase search (`vcsearch`)**: For each fund, posts to `https://api.getro.com/api/v2/collections/{VC}/search/jobs` with `work_mode: ["remote"]` and `canon(query)`. If fewer than 10 jobs are returned, it falls back to querying each distinctive token tag from `distinctive_tokens(query)`.
 - **Schema Mapping**: Normalizes Getro's JSON structure:
   - `organization.name` -> `job["company"]`
   - `locations` list -> `job["location"]` (joined with commas)

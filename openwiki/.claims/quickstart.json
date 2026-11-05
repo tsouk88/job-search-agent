@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:0df74371f530a2e381910d67a311eb516ce0003a886fd27de4fee6ab7f630892",
+  "pageVersion": "sha256:658f332d205987264eafba51a59339c9a5c8bcf4649ca1ece38b6f48773e37a0",
   "claims": [
     {
       "id": "claim_82e3608ab15d4a5b9a043efbe4ed301f",
@@ -8,11 +8,11 @@
       "evidence": [
         {
           "resource": "repo://agent.py",
-          "version": "repo-file-v1:sha256:772d2a1d86f71495365d3cbe847a3a75293ec1e113805def745156e02a16940b"
+          "version": "repo-file-v1:sha256:8632d172f575ba848eece1eb955d196cd7a709d08f6abf67253e0e7b62ad5cb6"
         },
         {
           "resource": "repo://main.py",
-          "version": "repo-file-v1:sha256:40f8adafe7bff77a76fb933b9dfbca59384933e7f246bc2804176f46fe524365"
+          "version": "repo-file-v1:sha256:07db7f72fae52d204e78cdf20e789d28d50a05b56f2a9bfc691a730a21cdec7a"
         },
         {
           "resource": "repo://mcp_server.py",
@@ -20,7 +20,7 @@
         },
         {
           "resource": "repo://voice_agent.py",
-          "version": "repo-file-v1:sha256:69f51fbba2d05acc91a1535ad2dbcaf9751c6ade0cbb29574ace88de65fd7433"
+          "version": "repo-file-v1:sha256:0dcbff84da0778b56a03d6a42a96b8a880e96a6471991ac1e9af562c3ef9b838"
         }
       ]
     },
@@ -30,7 +30,7 @@
       "evidence": [
         {
           "resource": "repo://agent.py",
-          "version": "repo-file-v1:sha256:772d2a1d86f71495365d3cbe847a3a75293ec1e113805def745156e02a16940b"
+          "version": "repo-file-v1:sha256:8632d172f575ba848eece1eb955d196cd7a709d08f6abf67253e0e7b62ad5cb6"
         }
       ]
     },
@@ -40,17 +40,45 @@
       "evidence": [
         {
           "resource": "repo://eval_runner.py",
-          "version": "repo-file-v1:sha256:6cceb0c235817ce412e15aa97cd3625c00b458a3f35ee0978f7ed40637f6035a"
+          "version": "repo-file-v1:sha256:35cd1bd8e0eace49f331b6606d9ab0db3a12aff8abb07252700bf4ae0fc40c3d"
         },
         {
           "resource": "repo://evals/check_reward.py",
           "version": "repo-file-v1:sha256:506f81084e5dc47627622cf566213f676453b1a3aee9c615ee84a5ea604343dc"
         }
       ]
+    },
+    {
+      "id": "claim_56605ef607984590b6321b56b2018ac3",
+      "statement": "The agent executes parallel retrieval across six distinct job sources in a LangGraph fan-out architecture: RemoteOK, Himalayas, Remotive, Jobicy, Workable, and VC portfolio boards via Getro.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L615-L646",
+          "version": "repo-lines-v1:sha256:09044f3a5d6672b8b188bbbb73a01009f3401a0147fd73e633f847313e33512f:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNzkzOTZkM2FhM2ZhYzkwYTZjMTc0NzcxYjliOTNkMDI1ZDI2ZTNlODIxZDQwMmMwZDM4NDhhYzk3OWFkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZjE5MjFjOWJjNGY5MGI4NzQwNThkNGQ5MTFmMjAxNWQ1MzU4ZWUwODRlNDZhNDAwYWEwMTM5YjczNDdhOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhM2NmNTE5MjM1NGY3MTYxNWFjNTEwMzRiM2U5N2MyMGVkYTk5NjQzZmNhZjViYmU2ZDQxYWQ1OWJkMTIxNjcifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_d7ac27cef9a9456182206b7f16df171b",
+      "statement": "The system uses google_genai:gemini-3.5-flash-lite strictly outside the search path for extracting exclusion keywords from feedback, structured keyword extraction from CV PDFs, and offline evaluation.",
+      "evidence": [
+        {
+          "resource": "repo://eval_runner.py#L22-L26",
+          "version": "repo-lines-v1:sha256:6b735e2cdaa2b972dff0d894788204d45b133e891d0349c706090108a29aa972:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzZlNmQ4NDYxZGI5MjM4NzdjYWQwYzMyNDM3OTQzMGMwNTVmZGEyMjhlZDVhZWNhMGI4NWViYzk4MDYyODE1ZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzc4YzgzYWU2NTRkMDgyZjlhYWIyOGE5Nzg2ZTQ1NzI3MjU0NTRkMzBjYWVlODkyYmI1MjhkZmI5YjFkNzAyMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTE3YTEyZTljMDAwMzcwNmQzZTU2NTJlN2Y3YmRiYzczZGE1M2U0YTcxNmMxMmMzNTVhNTdkYWFmM2RhZWZkMyJ9"
+        },
+        {
+          "resource": "repo://helper.py#L20-L31",
+          "version": "repo-lines-v1:sha256:1e275dc324a688748a51bf507e3182c9f0ce61e67067f47d86088057d6e293a2:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1OTQ4OTQwNTFhYTU4NTQzODdmZTY0MDZkNzdjY2U3ZjIwZjVkZmNiMjM2YjEwMzM2MzZiNjgwNGI2MzM3MDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY2ZDRmZDkzMTM5OTVlYjcwZjZkMGFlODliZTZkYzQ4NTZjMzcxOTg1NzJlMGZjNGE4NGY2ZTRhMTQzNTFmMmUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxY2QyNDA4ZjMwOTI0NWIyZjU2Mjk4ODcxNGNmNjYzZWQ1M2MwZjNjYzU4ZTIwYzUwMmNkNWM4MzJiYzNmMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYxZDM2YWJmOTJjYWFmNDVmY2M0ZDM3ZTFjNWE4ODEzYmY1MGM3NjRkZDk2N2EwOGY3MDg1ZmQ4OThkNGY3MTIifQ"
+        },
+        {
+          "resource": "repo://tasks.py#L16-L24",
+          "version": "repo-lines-v1:sha256:bab5c700d1621020c5b01f4da73e8cb4104655a16000c661571915f4161e3cdc:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjRhZGQ5YzNlZjVkMGM2YjBhMTIzODZjNTQ1OWFhYWRlMzljMjEzOWY3N2UzZTZlMWZlY2E4OTcwNWM2YjdhYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTYyMWJmZjc0YWIyMGEyOGQ3ZTMwMjhmODY2ZmJlOWYzM2NiMzQyNWY2M2Y1Zjg1MmZmMTM0MzMwMzM1ZDRlOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzVlOTlkNGEzMzU3OTlkY2ZjZmIzOTgzYWMxYjJhMDEyMTYyNWJmOWU3YWM0NTVjNWQ0MTQ0N2FhMTMzZTQ4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOTY4YThkYzk3ZWQwZDc5ZWYwMDgwNTU0YjJmY2NhMjQ2NWZiNmI0M2Q2MWMwMTY2ZTM0YTYyZDhlM2Y3YmU0ZCJ9"
+        }
+      ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.1",
-    "at": "2026-11-01T15:48:11.877Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T16:18:10.477Z"
   }
 }

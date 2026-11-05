@@ -1,8 +1,31 @@
 ---
 type: Reference
 title: Domain Concepts & Scoring Models
-description: Core domain concepts including six-source job aggregation, query canonicalization, title-weighted scoring, country slug filtering and All locations fallback, memory exclusion mechanics, and evaluation metrics using Gemini 3.5 Flash-Lite.
-tags: [domain, concepts, agent, memory, evaluation, scoring, filtering, canonicalization]
+description: Core domain entities, data schemas, multi-source job aggregation, deterministic scoring heuristics, location filtering, memory exclusion semantics, and correctness evaluation models.
+tags: [domain, concepts, schemas, scoring, filtering, canonicalization, memory, evaluation]
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-05T16:18:10.477Z
+sources:
+  - id: openwiki-source-eca60e2ced68ba99bd0ac710
+    resource: repo://agent.py
+  - id: openwiki-source-f1644da1c1a64a6a6567706b
+    resource: repo://eval_runner.py
+  - id: openwiki-source-ab20f2fabcf9dffc06e9a9a7
+    resource: repo://evals/filter-exclusion-senior/tests/expected.json
+  - id: openwiki-source-6f3a365387ad1dfc55a94d24
+    resource: repo://evals/filter-exclusion-senior/tests/test_outputs.py
+  - id: openwiki-source-18837785d6eee548467c07ac
+    resource: repo://evals/harbor_agents/pipeline_agent.py
+  - id: openwiki-source-1691a76fbd7a6781b3420f6c
+    resource: repo://evals/harbor_agents/run_pipeline.py
+  - id: openwiki-source-185f850c083bac055a13cd37
+    resource: repo://helper.py
+  - id: openwiki-source-833e692518af9eeaf8564cc6
+    resource: repo://main.py
+  - id: openwiki-source-3ea4f69fcc0222dbd310ddfc
+    resource: repo://tasks.py
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T16:18:10.477Z" }
 ---
 
 # Domain Concepts & Scoring Models
@@ -35,6 +58,81 @@ flowchart TD
     MemoryFilter --> OutputMarkdown["format_jobs_markdown\nActive filters & attribution"]
 ```
 *Figure: Remote job listing lifecycle from concurrent multi-source aggregation through relevance scoring and thread memory exclusion.*
+
+---
+
+## Core Domain Models & Data Schemas
+
+The system coordinates search, state persistence, and evaluation across several structured domain models:
+
+### 1. LangGraph State (`State`)
+Defined in `agent.py`, `State` is the TypedDict schema passed through graph nodes:
+
+```python
+class State(TypedDict):
+    fetched_jobs: Annotated[list[dict], add_or_reset]
+    clean_jobs: list[dict]
+    last_fetch_time: str
+    current_job: dict
+    user_input: str = ""
+    country: str = ""
+    memory: Annotated[list[str], add_or_reset]
+```
+
+- **`user_input` (`str`)**: The search query string submitted by the user or derived from CV keywords.
+- **`country` (`str`)**: The geographic constraint, represented as a country slug (such as `"united-states"`, `"germany"`, `"greece"`) or `""` for "All locations".
+- **`fetched_jobs` (`Annotated[list[dict], add_or_reset]` treated with `add_or_reset`)**: Raw listings collected concurrently across the six fetcher nodes during graph fan-out. In `collect_results`, once listings are filtered, deduplicated, and scored into `clean_jobs`, `fetched_jobs` is reset to `None` so that `add_or_reset` clears the raw list to `[]`. This prevents unneeded payloads from bloating PostgreSQL checkpoints.
+- **`clean_jobs` (`list[dict]`):** The top admitted listings (capped at `MAX_RESULTS = 12`) with descriptions truncated to 2,000 characters for graph state persistence.
+- **`memory` (`Annotated[list[str], add_or_reset]` treated with `add_or_reset`)**: User feedback exclusion terms accumulated across conversation turns. Each turn appends comma-separated exclusion strings (e.g., `["junior, intern"]`). Passing `None` resets the list to `[]`.
+- **`last_fetch_time` (`str`)**: An ISO-formatted timestamp (`datetime.now().isoformat()`) recorded when a fetch yields results.
+- **`current_job` (`dict`)**: A placeholder slot for single-job inspection.
+
+```python
+def add_or_reset(existing: list, new: list | None) -> list:
+    if new is None:
+        return []
+    return existing + new
+```
+
+### 2. Job Representations (Raw vs. Normalized)
+Heterogeneous remote job boards return wildly different JSON structures:
+- RemoteOK, Jobicy, and Himalayas provide flat or semi-nested JSON records.
+- Remotive provides an API feed of remote jobs.
+- Getro returns startup portfolio company listings with a `skills` array rather than long descriptions.
+- Workable returns schema.org `JobPosting` and `ItemList` nodes embedded in `<script type="application/ld+json">` tags.
+
+`normalize_jobs` maps these heterogeneous raw source fields into a canonical job dictionary:
+
+| Canonical Field | Source Fields Resolved | Processing & Invariants |
+|---|---|---|
+| `company` | `company`, `companyName`, `company_name`, `organization.name` | Mojibake fixed via `fix_mojibake`, whitespace collapsed |
+| `position` | `title`, `position`, `jobTitle` | Mojibake fixed via `fix_mojibake`, whitespace collapsed |
+| `location` | `location`, `jobGeo`, `candidate_required_location`, `locationRestrictions`, `locations` | Comma-separated string, mojibake fixed |
+| `description` | `description`, `jobDescription`, `excerpt`, `jobExcerpt`, `skills` | HTML stripped (`strip_html`), HTML entities unescaped, mojibake fixed |
+| `salary` | `salary`, `salary_min` & `salary_max`, `minSalary` & `maxSalary` | Formatted range or raw string; defaults to `"Salary not listed"` if empty or zeroed |
+| `apply_url` | `apply_url`, `url`, `applicationLink` | Direct application link |
+
+- **Mojibake Repair (`fix_mojibake`)**: Resolves double-encoded UTF-8 strings common in web-scraped feeds by attempting `text.encode("latin-1").decode("utf-8")`. On failure, it returns the original string unmodified.
+- **Deduplication Key**: Job listings often duplicate across cities (e.g., six postings for the same employer and position). A composite alphanumeric hash `re.sub(r'[^a-z0-9]', '', f"{company.lower()}{position.lower()}")` deduplicates postings before scoring so identical roles do not occupy multiple slots in the top twelve results.
+
+### 3. Resume Keyword Schema (`CVKeywords`)
+Defined in `helper.py`, `CVKeywords` guides structured keyword extraction by Gemini 3.5 Flash-Lite during PDF resume uploads:
+
+```python
+class CVKeywords(BaseModel):
+    keywords: list[str] = Field(
+        description=(
+            "Search keywords for this candidate's job hunt, most important first. "
+            "Start with the role title (e.g. 'backend developer', 'data analyst', "
+            "'graphic designer', 'accountant'), then the core skills or tools "
+            "(e.g. 'python', 'figma', 'excel'). "
+            "One or two words each, lowercase. No filler words like 'and', 'with', "
+            "'skilled', 'experience', 'years'."
+        )
+    )
+```
+
+During asynchronous resume ingestion (`tasks.py`), Gemini extracts up to 10 prioritized keywords, which are joined into a search query string (`" ".join(response.keywords)`) executed against the standard graph pipeline.
 
 ---
 
@@ -72,13 +170,13 @@ Populating `description` with comma-separated skills enables downstream subsyste
 
 Geographic filtering operates through country slugs (such as `united-states`, `germany`, or `greece`) or an empty string (`""`):
 
-### Source-Level Handling
+### Source-Level Handling & Geo-Tags
 - **Workable**: Embeds the country slug directly into the path: `https://jobs.workable.com/search/{where}/remote-{token}-jobs`. When country is empty, `where` defaults to `worldwide`. If an explicit country slug returns zero URLs, `workable_urls` retries with `worldwide`.
-- **Jobicy**: Appends `geo={country}` to the query string. If Jobicy rejects the country with HTTP 400, `fetch_fjobs` strips the `geo` parameter and retries.
+- **Jobicy Fallback**: Appends `geo={country}` to the query string. When Jobicy encounters an unrecognized country name, it answers with HTTP 400 rather than an empty list. `fetch_fjobs` catches `response.status_code == 400 and country`, strips the `geo` parameter, and requests the endpoint again without geography, deferring filtering to `location_ok`. If no jobs are returned across the supplied tags, it falls back to the untagged feed (`https://jobicy.com/api/v2/remote-jobs`).
 - **RemoteOK, Himalayas, Remotive, Getro**: Query remote listings globally and rely on downstream filtering.
 
 ### Post-Filtering in `collect_results` via `location_ok`
-In `collect_results`, every job must pass `location_ok(job, country)`:
+In `collect_results`, every candidate job must pass `location_ok(job, country)`:
 - **Empty Country ("All locations")**: Returns `True` unconditionally, bypassing geographic filtering.
 - **Unspecified Location**: If a job listing has an empty or blank location string, `location_ok` returns `True`. Across remote job boards, absence of location indicates worldwide eligibility.
 - **Country Name**: Matches `country.replace("-", " ")` against the job's location string using whole-word `title_hit`.
@@ -87,9 +185,9 @@ In `collect_results`, every job must pass `location_ok(job, country)`:
 - **Remote Alone Is Not Sufficient**: A listing stating solely `"Remote"` does **not** satisfy a specific country search. "Remote" specifies work modality, not candidate residency or hiring eligibility.
 
 ### Interface Fallback Display
-In `helper.py`, `active_filters_line` formats the active search location for the footer:
+In `helper.py`, `active_filters_line` formats the active search location for the markdown footer:
 - If `country` is non-empty: `"Showing: {country.replace('-', ' ').title()}"` (e.g., `Showing: United States`).
-- If `country` is empty: `"Showing: All locations"`.
+- If `country` is empty: `"Showing: All locations"` (renamed from "Worldwide").
 
 ---
 
@@ -145,7 +243,7 @@ $$\text{score} = (\text{title\_hits} \times \text{TITLE\_WEIGHT}) + \min(\text{d
 - **Description Contribution**:
   - `desc_hits`: Number of distinct signal tokens appearing in the description text.
   - `bonus`: Token frequency bonus calculated as $\text{freq} / 8$, where `freq` is the total count of all signal token occurrences in the description.
-  - `gen_hits`: Generic tokens from `GENERIC` (`engineering`, `software`, `developer`, `engineer`, `remote`, `job`, `role`, etc.) that appear in the title add 1 tie-breaking point. If the query consists *entirely* of generic words, `gen_hits` is forced to 0.
+  - `gen_hits`: Generic tokens from `GENERIC` (`engineering`, `software`, `developer`, `dev`, `engineer`, `remote`, `job`, `jobs`, `work`, `role`, `position`, `specialist`, `expert`, `manager`) that appear in the title add 1 tie-breaking point. If the query consists *entirely* of generic words, `gen_hits` is forced to 0.
   - **The 9-Point Description Cap**: The entire non-title term $(\text{desc\_hits} + \text{gen\_hits} + \text{bonus})$ is strictly capped at `9`.
 
 ### Admission Invariant
@@ -156,15 +254,6 @@ $$\text{score} = (\text{title\_hits} \times \text{TITLE\_WEIGHT}) + \min(\text{d
 ## Normalization & Mojibake Repair
 
 `normalize_jobs` maps heterogeneous source fields into a canonical representation:
-
-| Canonical Field | Source Fields Resolved | Processing |
-|---|---|---|
-| `company` | `company`, `companyName`, `company_name` | Mojibake fixed, whitespace collapsed |
-| `position` | `title`, `position`, `jobTitle` | Mojibake fixed, whitespace collapsed |
-| `location` | `location`, `jobGeo`, `candidate_required_location`, `locationRestrictions` | Comma-separated, mojibake fixed |
-| `description` | `description`, `excerpt`, `jobExcerpt` | HTML stripped, entities unescaped |
-| `salary` | `salary`, `salary_min - salary_max`, `minSalary - maxSalary` | Cleaned; defaults to "Salary not listed" if empty after removing whitespace, zeros, and hyphens |
-| `apply_url` | `apply_url`, `url`, `applicationLink` | Direct application URL |
 
 - **Mojibake Repair (`fix_mojibake`)**: Attempts `text.encode("latin-1").decode("utf-8")` to fix double-encoded UTF-8 strings common in web-scraped feeds, falling back silently on failure.
 - **Deduplication**: Deduplicated on `company + position` hash (`re.sub(r'[^a-z0-9]', '', f"{company.lower()}{position.lower()}")`). Duplicate job postings for the same role across multiple cities share the same hash and are dropped before scoring.
@@ -178,9 +267,19 @@ $$\text{score} = (\text{title\_hits} \times \text{TITLE\_WEIGHT}) + \min(\text{d
 
 ---
 
-## Memory Exclusion Mechanics
+## User Feedback Exclusion Semantics & Memory Mechanics
 
 Thread memory allows users to exclude unwanted job types, seniority levels, technologies, or companies across a conversation session. Exclusions are accumulated as comma-separated strings in LangGraph state and reduced via `add_or_reset` (cleared when passed `None`).
+
+### Avoiding False Exclusions
+In `/feedback`, user feedback is converted to exclusion keywords with clear prompt boundaries:
+```
+Extract the job keywords to avoid from this user feedback.
+Return only a comma-separated list of keywords, nothing else.
+IMPORTANT: Only extract what to AVOID, not what the user wants to find.
+Do not include terms like "AI engineer", "python developer" etc.
+```
+This protects against erroneously transforming positive user criteria into negative exclusions.
 
 ### The Seniority vs. Full-Text Split
 `filter_jobs(jobs, memory, title_only=SENIORITY)` applies hard exclusions. Each memory entry is split into keywords on commas. Each keyword is split into constituent words:
@@ -191,7 +290,7 @@ if any(w in target for w in keyw):
     blocked = True
 ```
 
-- **Seniority Keywords** (`SENIORITY = {"senior", "sr", "junior", "júnior", "jr", "lead", "principal", "staff", "mid", "entry", "pleno", "sênior", "estágio", "head", "director", "vp", "chief"}`):
+- **Seniority Keywords** (`SENIORITY = frozenset({"senior", "sr", "junior", "júnior", "jr", "lead", "principal", "staff", "mid", "entry", "pleno", "sênior", "estágio", "head", "director", "vp", "chief"})`):
   If any token in the exclusion keyword belongs to `SENIORITY`, the keyword is matched **strictly against the job title tokens** (`title_words`). This prevents phrases like "collaborate with senior engineers" or "reports to engineering director" in job descriptions from accidentally excluding junior or mid-level postings.
 - **Full-Text Keywords**:
   All other exclusions (technologies like `react`, locations like `usa`, or company names) are matched against the combined text: `title + description + location` (`full_words`).
@@ -249,6 +348,8 @@ The Harbor evaluation (`filter-exclusion-senior`) verifies deterministic behavio
 
 ### Related Pages
 - [Agent Graph](architecture/agent-graph.md) — LangGraph state nodes, fan-out execution, and PostgreSQL checkpoint persistence.
+- [Harbor Evaluation](evals/harbor-eval.md) — Harbor evaluation test execution, test fixtures, and expected outputs.
+- [LangSmith Evaluation](evals/langsmith-eval.md) — LangSmith benchmarks, LLM correctness grading, and dataset runner.
 - [Integrations](integrations.md) — External HTTP APIs, headers, rate limit handling, and ATS endpoints.
 - [Testing](testing.md) — Harbor evaluation test execution, test fixtures, and LangSmith benchmarks.
 - [Workflows](workflows.md) — Async resume upload pipeline, Celery worker processing, and feedback loops.
