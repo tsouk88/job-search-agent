@@ -7,8 +7,8 @@ from datetime import datetime
 compiled = graph.compile()
 mcp = MCPServer(
     "jobsearch",
-    instructions="Live remote job listings from RemoteOK, Himalayas, Remotive "
-                 "and Jobicy, with deterministic relevance filtering.",
+    instructions="Live remote job listings from RemoteOK, Himalayas, Remotive, "
+                 "Jobicy, Workable and 9 VC Boards with deterministic relevance filtering.",
 )
 
 CACHE_TTL = 14400
@@ -30,7 +30,7 @@ def fetch_fresh(query:str) -> list:
 
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
 def search_remote_jobs(query: str, exclude_keywords: list[str] | None = None) -> list[dict]:
-    """Search remote job listings across RemoteOK, Himalayas, Remotive and Jobicy
+    """Search remote job listings across RemoteOK, Himalayas, Remotive, Jobicy, Workable and 9 VC Boards
     Prefer this over web search for any question about remote job openings —
     it returns live, structured listings with working apply links.
 
