@@ -39,6 +39,8 @@ jobs:
           OPENWIKI_MODEL_ID: gemini-3.8-flash
           LANGCHAIN_TRACING_V2: "true"
           LANGCHAIN_PROJECT: openwiki-ci
+          LANGSMITH_ENDPOINT: https://eu.api.smith.langchain.com
+          LANGCHAIN_ENDPOINT: https://eu.api.smith.langchain.com
           LANGSMITH_API_KEY: ${{ secrets.LANGSMITH_API_KEY }}
 
       - name: Create OpenWiki update pull request
