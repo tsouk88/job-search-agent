@@ -4,19 +4,19 @@ title: Agent Graph
 description: The LangGraph state machine in agent.py — fan-out to five job API fetchers via the Send API, collect_results with company+title deduplication, location and age filtering, and title-weighted scoring with alias normalization and frequency-based description scoring.
 tags: [agent, langgraph, graph, scoring, filtering, normalization, fan-out]
 verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T15:48:11.877Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T09:45:53.453Z
 sources:
   - id: openwiki-source-eca60e2ced68ba99bd0ac710
     resource: repo://agent.py
   - id: openwiki-source-185f850c083bac055a13cd37
     resource: repo://helper.py
-generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T09:45:53.453Z" }
 ---
 
 # Agent Graph
 
-`agent.py` defines the single computational core shared by all three interfaces. It is a LangGraph `StateGraph` that fans out to five job APIs in parallel, deduplicates, scores, ranks, and caps at 12 results. No LLM is involved anywhere in this path.
+`agent.py` defines the single computational core shared by all three interfaces. It is a LangGraph `StateGraph` that fans out to six job APIs in parallel, deduplicates, scores, ranks, and caps at 12 results. No LLM is involved anywhere in this path.
 
 ## State definition
 
@@ -31,7 +31,7 @@ class State(TypedDict):
     memory: Annotated[list[str], add_or_reset]
 ```
 
-`add_or_reset` is the reducer: it appends new items to the existing list, or returns `[]` if `new` is `None` (used by `/reset` to clear memory). `fetched_jobs` and `memory` both use this reducer — `fetched_jobs` because the five parallel fetchers each return a partial list that must be merged, and `memory` so a reset wipes it in one step. `country` (default `""`) is the two-letter / slug country the caller asked about; it flows into the country-aware fetchers and the location filter.
+`add_or_reset` is the reducer: it appends new items to the existing list, or returns `[]` if `new` is `None` (used by `/reset` to clear memory). `fetched_jobs` and `memory` both use this reducer — `fetched_jobs` because the six parallel fetchers each return a partial list that must be merged, and `memory` so a reset wipes it in one step. `country` (default `""`) is the two-letter / slug country the caller asked about; it flows into the country-aware fetchers and the location filter.
 
 ## Graph topology
 
@@ -43,15 +43,17 @@ flowchart TD
     fan_out -->|Send| fetch_tjobs["fetch_tjobs\nRemotive"]
     fan_out -->|Send| fetch_fjobs["fetch_fjobs\nJobicy"]
     fan_out -->|Send| fetch_wjobs["fetch_wjobs\nWorkable"]
+    fan_out -->|Send| fetch_gjobs["fetch_gjobs\nGetro"]
     fetch_jobs --> collect_results["collect_results\ndedup, score, rank"]
     fetch_sjobs --> collect_results
     fetch_tjobs --> collect_results
     fetch_fjobs --> collect_results
     fetch_wjobs --> collect_results
+    fetch_gjobs --> collect_results
     collect_results --> END([END])
 ```
 
-*The fan-out graph: five parallel fetchers dispatched via LangGraph's Send API, then collected into a single ranked result set.*
+*The fan-out graph: six parallel fetchers dispatched via LangGraph's Send API, then collected into a single ranked result set.*
 
 ### fan_out
 
@@ -63,10 +65,11 @@ def fan_out(state: State):
         Send("fetch_tjobs", state),
         Send("fetch_fjobs", state),
         Send("fetch_wjobs", state),
+        Send("fetch_gjobs", state),
     ]
 ```
 
-Uses LangGraph's `Send` API to dispatch five parallel node executions, each receiving the full state. The graph is registered with `graph.add_conditional_edges(START, fan_out)`, and each fetcher node has a plain edge to `collect_results`, which has an edge to `END`.
+Uses LangGraph's `Send` API to dispatch six parallel node executions, each receiving the full state. The graph is registered with `graph.add_conditional_edges(START, fan_out)`, and each fetcher node has a plain edge to `collect_results`, which has an edge to `END`.
 
 ## Tokenization and aliasing
 

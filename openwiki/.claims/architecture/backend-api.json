@@ -1,17 +1,17 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:823c416f9e217e544699eaa5431435ca83a5b157e7497caa72badc95ddfdc8ae",
+  "pageVersion": "sha256:04580f77077dd1d06f94835bcce62fc1e4a314f8944e6a6dfedb34540737d904",
   "claims": [
     {
       "id": "claim_7051b663c5c0415f825ae67f152ca335",
       "statement": "SearchInput carries user_input (1-200 chars), thread_id (UUID), and country (default '', meaning worldwide), so the /ask and /askeval frontend HTTP contract is {user_input, thread_id, country}; /reset also accepts this model (only thread_id is used) for its config.",
       "evidence": [
         {
-          "resource": "repo://main.py#L288-L297",
+          "resource": "repo://main.py#L289-L298",
           "version": "repo-lines-v1:sha256:f1c1ff0c95950e95e1e19f06114b1b51e9aa238c191528781dd42d03a58b87a0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkZWIyNDY0ZWFlODFkOWU0YzMxZTM3NDhjMDE5NmRhZjU5MjBjZjI5NzU2ODk4Y2Y4ZTc4NDNlZGIwZTdmMjEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFhNDk5Y2I4NzkxZjE5OTY4NmQ0NWZjOTI4OWEwY2M2MGZmYzAwMGFkMDYyOTNlZWNmYzE2MDBkYmYzNzVjZjEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjRkNjdlZjEzM2Q1MmZlOTc1N2YxMmY3YThmMGM5NjI5OGEwZDNlYWY3ZWNmZThmZGJkMmFlYjE5NmZiNjlmMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlmYTkxNzAyMDIwNjA3OGI5OTY3ZTBmM2Q1ZDJkNzFmNDlmNTg4Y2U2OTJmNTUyOWM2OWUyOTM0NTQ3NDNhZGMifQ"
         },
         {
-          "resource": "repo://main.py#L96-L99",
+          "resource": "repo://main.py#L97-L100",
           "version": "repo-lines-v1:sha256:f8fd2ad659cb3692e16bd24f107da6e0a1c433a5dcd692e73f675e09ef0b5213:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDRjMjE1NTg4MjY3YzVmYjZmMWJiNTExM2Y2ZGQzOTQzMGNhMzcxNDAwZTRhNDdmOTE3MjJhZDljYmI3MzNjYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNWZhMDFmYWQyZjE1ZDc1YzNiYmQ3YTUzY2Y2MjMzMzJjYjZlYTBmMGUyMDIyMmQyMzY3N2FlYTM5N2IxOTc0ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiM2M2MDA3MjE0Nzg1NTUzY2IwMzRhZGM5YzI3NWVjMWFkMzM2MDI0ZjQ2NjQzZDdkNWMyNGI5ZjcxZDU2MzA2YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWVlODU5NjQ1NWQ4Y2U1Y2VhYzlmYWM2NGM5MDlmNGExOGRjZjNhOGIxZjZlOWJjYzc0ODBiNDdmMDMzMTQ1YyJ9"
         }
       ]
@@ -21,7 +21,7 @@
       "statement": "The /evaluate prompt includes an injection guard instructing the model to ignore any instructions embedded within job posting content and treat it strictly as data to evaluate, never as commands, because the endpoint accepts arbitrary untrusted job-posting text.",
       "evidence": [
         {
-          "resource": "repo://main.py#L203-L218",
+          "resource": "repo://main.py#L204-L219",
           "version": "repo-lines-v1:sha256:6c98e1138164d4c75a8350de6bf19a60534c3bf524cb4bf95f18a550e9db44d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY3MWI1MzE1NWI3OWVmY2MwZDg2MjUwNDY1YTA4OGEzODI0OTZkZTdhZGFhNjZhZTc1NDE1YjZkNWI3MjU2OTIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjkxYTRlOWFhMGI4YzNkY2EzMWU0MDY2NmZlYzViYzc3NzlkMjNkZTBkMjU5ODkwYjAyOGJmODM2ZTc2MGVkY2YiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNhMDJlZjk5MTU0ZDMxNzFlMTZhYzFiZDU5NDc5OWE2ZmIxZmYzZmFiMGQyYzI5YmYxNzhlYWFjMjA1MzljZjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhkYjViNzBmNDVhODg1NzEwNzA4NmI5ZGJmYThiNGUwYTM0N2E1YmFmN2JlMmQ1ODBlMTI5Yjg1NmRmMzBhMjUifQ"
         }
       ]
@@ -31,7 +31,7 @@
       "statement": "The /ask staleness threshold of 14400 seconds matches mcp_server.CACHE_TTL, applying the same freshness policy across the Postgres checkpointer state and the in-process cache.",
       "evidence": [
         {
-          "resource": "repo://main.py#L123-L123",
+          "resource": "repo://main.py#L124-L124",
           "version": "repo-lines-v1:sha256:a90f1213e10f9eead442d1f7f56fe4dbbeca5d6c16afdebbb1c8f0e0cbb1f300:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTkwZjEyMTNlMTBmOWVlYWQ0NDJkMWY3ZjU2ZmU0ZGJiZWNhNWQ2YzE2YWZkZWJiYjFjOGYwZTBjYmIxZjMwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTkwZjEyMTNlMTBmOWVlYWQ0NDJkMWY3ZjU2ZmU0ZGJiZWNhNWQ2YzE2YWZkZWJiYjFjOGYwZTBjYmIxZjMwMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTI5ZDMzYTkwNDkxNDI2OWU4NDYzMjRiZTg1M2I5ZjZhNDg2MjhiZTdmOWFhOTk5ZjUzZTg0MDhiYTUzMDRmMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2Y4NzRmNGJlNDhiNTg5ODEyMDc5OGI2ZWRhZTBjNzA4YmM0NmYyNmQxYjNkZjQwNjczMjhiMTM2YWEzNzRjZiJ9"
         },
         {
@@ -49,18 +49,18 @@
           "version": "repo-lines-v1:sha256:3f414034d505e63244dd465006cdf1b8647fb869468ee45fead8d13743fbc910:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmFiYzRlMmUwZTFkYmYxMDQ2MmJhMzhmYWMxNDUzZjBhNmEzZGM5ZmNmYmQwZjk4MmMwY2YyZWE4M2I0ZjlkMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGM2ZjNiZTcxNmZkODllMmFjMDU5MDZiODI1Y2UzZmE4MTcyNWY3Zjk5NDI3MzU4NjNmNjY3NTFjZTM2OTE1NiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzgxN2UzMzc3ZGY5YjllZjBjZmU5ODZiZTQzYTc2ODM5YzI3NzlkN2FjYmFhYWQ4ZjRjMDBkNDUwZThkYmRhOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWI0M2Y0Y2M0OTliZTUzYTJjMzJlYWM4M2VlYTJiMWM2NGQ4NTMwMGZiZTRmMmRmMzJhNzdiMjY1M2Q4YjNiNiJ9"
         },
         {
-          "resource": "repo://main.py#L36-L44",
+          "resource": "repo://main.py#L37-L45",
           "version": "repo-lines-v1:sha256:c22b02525c76526c0b486dd3217608faeb7d0e93bcd0a8b19bc7328c51e29bbc:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODdjZmYzZjE3ODQyZGVjNmU3ZTkxYzNlM2I4ZmNlMGE4MjJmYzMxMTI3MzgxYjAwZjQ0YTlmMTMzMzMwM2EyZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMmI0NDYwZGI5MDQ0NjdjZTU1ZGEwNmVhNTdhNjhiMWE3ZDMwOWU3MzAzMGIwMTkwZWFkNDc1NzBmOTc2ZjE1NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZDdhMGQ3ODkwN2U2NDc5MGZlOTg2YWVkYzBkMGZlNDYzYzIxNTc5ZGEyNWFlNzU1ODZhOTZlNTMzYmVmNjMzNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjRlMDc3MWFlMDUxNTliODJlYzExMTliNmQ0MjVlOGViNDJiODUwM2I3YzJkYzJhZmJiY2NhZDRkMWRkMmE2ZiJ9"
         }
       ]
     },
     {
       "id": "claim_86cc0d8651c041eb9cafbc12f0f0e136",
-      "statement": "helper.llmchain(gemini_key, for_upload=False) builds gemini-2.5-flash at temperature=0.1 with max_retries=2 and timeout=10; the default chain is `llm | StrOutParser()` (built once at import, used by /feedback and /evaluate), and with for_upload=True it returns `llm.with_structured_output(CVKeywords)` — the variant built inside the Celery filework task, not at import. The retry count is 2, not the older 10.",
+      "statement": "helper.llmchain(gemini_key, for_upload=False) builds gemini-3.5-flash-lite at max_retries=2 and timeout=10; the default chain is `llm | StrOutParser()` (built at import, used by /feedback and /evaluate), and with for_upload=True it returns `llm.with_structured_output(CVKeywords)` — the variant built inside the Celery filework task. The retry count is 2.",
       "evidence": [
         {
-          "resource": "repo://helper.py#L20-L33",
-          "version": "repo-lines-v1:sha256:3c110117c13cfa89f6ccd1d42689d5cbab883ed0330f7a4cf216bb7855920ab4:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1OTQ4OTQwNTFhYTU4NTQzODdmZTY0MDZkNzdjY2U3ZjIwZjVkZmNiMjM2YjEwMzM2MzZiNjgwNGI2MzM3MDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYThjNTk4MmI0MzZkMzllMDMxYjFjMmYwN2E2NGNkMWIzOWZhNWM5Nzc0NDQzZjlkYmY1YzE5YTQ0M2VjZjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxY2QyNDA4ZjMwOTI0NWIyZjU2Mjk4ODcxNGNmNjYzZWQ1M2MwZjNjYzU4ZTIwYzUwMmNkNWM4MzJiYzNmMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzZDY0ZGI2OTRkNzAxMGFmMWY1ZTEzNDZlN2ZiODEwN2MxOGYwZDAwYjkwYzczZTg4NjcyYzhkNmFiYzJkZjAifQ"
+          "resource": "repo://helper.py#L20-L32",
+          "version": "repo-lines-v1:sha256:6cdda29bf147bdb8d5596c4cbf079d028d507223a7d7ae13b0304453c3536573:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU1OTQ4OTQwNTFhYTU4NTQzODdmZTY0MDZkNzdjY2U3ZjIwZjVkZmNiMjM2YjEwMzM2MzZiNjgwNGI2MzM3MDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYThjNTk4MmI0MzZkMzllMDMxYjFjMmYwN2E2NGNkMWIzOWZhNWM5Nzc0NDQzZjlkYmY1YzE5YTQ0M2VjZjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQxY2QyNDA4ZjMwOTI0NWIyZjU2Mjk4ODcxNGNmNjYzZWQ1M2MwZjNjYzU4ZTIwYzUwMmNkNWM4MzJiYzNmMDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImYzZDY0ZGI2OTRkNzAxMGFmMWY1ZTEzNDZlN2ZiODEwN2MxOGYwZDAwYjkwYzczZTg4NjcyYzhkNmFiYzJkZjAifQ"
         },
         {
           "resource": "repo://tasks.py#L20-L22",
@@ -73,32 +73,32 @@
       "statement": "helper.run_agent(agent, user_input, thread_id, country, metadata=None) resets fetched_jobs to [] and invokes agent.invoke({user_input, country, fetched_jobs: []}, config with thread_id + metadata, durability=exit), returning (clean_jobs, memory, last_fetch_time); it is called by searchhelper and by the Celery filework task with a freshly compiled PostgresSaver-backed agent.",
       "evidence": [
         {
-          "resource": "repo://helper.py#L35-L43",
+          "resource": "repo://helper.py#L34-L42",
           "version": "repo-lines-v1:sha256:8098c447f07836c4fd641a834ef57b48e38a980d08c339b6f5dc298c72d6654f:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDJlMzhlMDgyNDUzMjdlY2EwZGZmZTQ0Y2UyNGM0MDJhYmVmODQwNjBiY2EwNTU5NmI0MDRkMzdjZDhlYjU4NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjU0MTc0NzFmMmZiNzk3Yjg5NDRhNTM1MzhmZDliY2E2ZjU5M2ZhMWM1M2NmNWUzOTJhOTMxZjc2YWJiZDk5ZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTFiMjNlMGZlN2NmYTk1MTdlMWQxMjkyODliODNlMmUxZTZjNmVlNzUwZWNhZGMxNGFiNjNmZDBlOWI1YTU3YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTRkYzM4NzcyZGE1OTVmNzhhMDEwMWQ4NTg2MjU4NjU4NjM3NGJiZDZhNjI2ZjE3Zjk5MWEyZGE2MTExNjUzMiJ9"
         }
       ]
     },
     {
       "id": "claim_f2ac14b031f24c8d9ae4adfcec2b992b",
-      "statement": "searchhelper is the cache core shared by /ask, /digest, and /askeval. On a state miss it consults the Redis jobcache (jobcache(query,country) = jobs:{querylow}:{country}) only on non-eval calls: a hit loads cached {jobs, fetched_at} and update_states the thread without running the graph; a miss runs run_agent then r.set(savedjobs, json, ex=14400). Eval calls (metadata set) skip Redis entirely. The Redis key is query+country, so the cache is cross-thread; RedisError is caught and treated as a miss.",
+      "statement": "searchhelper is the cache core shared by /ask, /digest, and /askeval. On a state miss it consults the Redis jobcache (jobs:{querylow}:{country}) only on non-eval calls: a hit loads cached {jobs, fetched_at} and updates the thread state; a miss runs run_agent then r.set(savedjobs, json, ex=14400). Eval calls (metadata set) skip Redis entirely. RedisError is treated as a cache miss.",
       "evidence": [
         {
-          "resource": "repo://main.py#L116-L154",
-          "version": "repo-lines-v1:sha256:0dfcbe781f6665f0745a2216a2b170002adbe89318a34e099cad964af58d6403:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmODY3NzAyMWJkYTBiZDM5Y2Q3MTgyMWIyNzBlZTM3MzZhOGMwMDVhNzI5ZjA2NjlkN2RjNDQ2YzMxYjNlM2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1YzVlMjFhNzZlNTUxN2MwNmY4MmEwM2VkYmU2MTIzNjNhMTg4ZGNlNTZmMmEyMjAyYmQyOTVhNTdkMzc1ZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4ZjU3YjI1ZDc0YWRlMjQ1NzA3ZjZhOGE4MzkyYmQzNjJkNTE3MGJhMTgxNWIzZjViOWI3YzJkZWRlYTJiMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmMjU5MjkzMjA0NzZmOTMzYjllZGQwNzU1ZjY3NTc5ZTMwYjgwYzI1MTkwYTE0YTBkZGYzNjA4ZTk4MjJmYTUifQ"
+          "resource": "repo://main.py#L117-L155",
+          "version": "repo-lines-v1:sha256:ef0c4cceb793e2a1184f275af3b749b41dcc19a40d8211ba4670aa59b910e475:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmODY3NzAyMWJkYTBiZDM5Y2Q3MTgyMWIyNzBlZTM3MzZhOGMwMDVhNzI5ZjA2NjlkN2RjNDQ2YzMxYjNlM2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1YzVlMjFhNzZlNTUxN2MwNmY4MmEwM2VkYmU2MTIzNjNhMTg4ZGNlNTZmMmEyMjAyYmQyOTVhNTdkMzc1ZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4ZjU3YjI1ZDc0YWRlMjQ1NzA3ZjZhOGE4MzkyYmQzNjJkNTE3MGJhMTgxNWIzZjViOWI3YzJkZWRlYTJiMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmMjU5MjkzMjA0NzZmOTMzYjllZGQwNzU1ZjY3NTc5ZTMwYjgwYzI1MTkwYTE0YTBkZGYzNjA4ZTk4MjJmYTUifQ"
         },
         {
-          "resource": "repo://main.py#L82-L85",
+          "resource": "repo://main.py#L83-L86",
           "version": "repo-lines-v1:sha256:5b606dcff9d0693b430dc49075f25b3fe71e5b242e1c2a9dc609d73b37575d59:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2U3MTJlMjk3ZGNiOThlODdhNmU2N2ZkZDgzNTJjYThhMDQ5NDdlYzkwN2VhZWEwMTY3YWYzZjY2MDM4NWFmYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjkwOWNkOTExOGYzMDNlMjcxZDJjMTczZDhmYzc4ODhlMDA1MjZkNGE1Yzg2N2ZjM2MyNTc3YjQ1M2UyYzQ1NSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzBjYmVlZGIxNzQ2YWMyYjAyMWQ0M2NmMjQ4ZTYzNDMzODZhNzM2YWU4MDE2ZjYwYzc5ZmViNWM0ZTk5ZjcxZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzA4MWNkZWM4Yzk1Zjk5NzNmNGQwMzliYWY0MWFjNjUwMjkxZTkxNjRkZWYzODIyOWJkZDI1NDc1MGM4ZTI2MCJ9"
         }
       ]
     },
     {
       "id": "claim_90ad77046d7f4f1da4f039269b3428f4",
-      "statement": "searchhelper re-runs the graph iff any of four conditions hold (no last_fetch_time, query changed, country changed, or over 14400s); country is part of the key because cached clean_jobs belong to the previously searched country. searched_country is input.country on a miss and the state's current_country on a hit, passed to format_jobs_markdown so the footer reports the country the displayed listings were actually searched under.",
+      "statement": "searchhelper re-runs the graph iff: no last_fetch_time, query changed, country changed, or >14400s elapsed. country is part of the key; searched_country is input.country (miss) or state.current_country (hit), passed to format_jobs_markdown.",
       "evidence": [
         {
-          "resource": "repo://main.py#L123-L151",
-          "version": "repo-lines-v1:sha256:76e350f7074d10929b38e20f86b93393636448de67b4dca8f45a5ca930a8bc0e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5MGYxMjEzZTEwZjllZWFkNDQyZDFmN2Y1NmZlNGRiYmVjYTVkNmMxNmFmZGViYmIxYzhmMGUwY2JiMWYzMDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhNWU0ZTA5YWZkZDg0OWE4YTIyYTNiNjk3NzdmMjdiZjVlZWE3NzU4YWUzNThlZjZiZmQ0YTI1MThjMDQwNTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyOWQzM2E5MDQ5MTQyNjllODQ2MzI0YmU4NTNiOWY2YTQ4NjI4YmU3ZjlhYTk5OWY1M2U4NDA4YmE1MzA0ZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwNWNlNjI0OGJhYWVmZTEzNTJmOTdiMGM0Y2Q1OGJkN2U0ZmU4ODM1MjU0M2MxODE4YmQ1MTRkYWI3ZDlkYmYifQ"
+          "resource": "repo://main.py#L124-L152",
+          "version": "repo-lines-v1:sha256:d1731fd8671f0f3f188a786404cd1b483675c8a1f83799d7cc9c1d0fc5e0d9b9:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5MGYxMjEzZTEwZjllZWFkNDQyZDFmN2Y1NmZlNGRiYmVjYTVkNmMxNmFmZGViYmIxYzhmMGUwY2JiMWYzMDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJhNWU0ZTA5YWZkZDg0OWE4YTIyYTNiNjk3NzdmMjdiZjVlZWE3NzU4YWUzNThlZjZiZmQ0YTI1MThjMDQwNTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyOWQzM2E5MDQ5MTQyNjllODQ2MzI0YmU4NTNiOWY2YTQ4NjI4YmU3ZjlhYTk5OWY1M2U4NDA4YmE1MzA0ZjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwNWNlNjI0OGJhYWVmZTEzNTJmOTdiMGM0Y2Q1OGJkN2U0ZmU4ODM1MjU0M2MxODE4YmQ1MTRkYWI3ZDlkYmYifQ"
         }
       ]
     },
@@ -107,7 +107,7 @@
       "statement": "The rate limiter is keyed by my_key, which prefers the CF-Connecting-IP header and falls back to get_remote_address, with storage_uri=REDIS_URL and in_memory_fallback_enabled=True. Most endpoints are 10/min, but /jobs/{job_id} is 60/min and /health is not rate-limited at all; every rate-limited endpoint declares request: Request so slowapi can read the client address.",
       "evidence": [
         {
-          "resource": "repo://main.py#L61-L65",
+          "resource": "repo://main.py#L62-L66",
           "version": "repo-lines-v1:sha256:18f9149e3a0ac768565de303701f304a757d2aa6aec9080eccd75364a4b8f13b:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmU3OTIwNTA1OTBlYWZkYzYwMTZiZWYxZjAxNmQ4MmUwNjRiZWQyOTdlZDRhZjg0ZDYyNTk5YjU0YWUyODBiNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODViMzE0ZDRmNjlkNWNmMTQ4M2MwNzkwMzIxMTI3ODE1YjE0YTRkZDRlMGYwMTMzMDBlYTJkMjM3MzcyNGYyOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWQwNjIzMzMzZjA2NjQzYjgxZTBmMjJlMzkxZGUxOWM2MDNhY2EwMmQ3MjNjYTkyOTIwNjU3NGIxNjIzM2Q5YSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzJmYjA1MjM0ZTI5YjQ2NDI1YThmOWU3ZjZhNmI1MDYyMzlmZTJjMmU1NTBiODQ1Yzg2ZDk0MWEwNDM4YThlOSJ9"
         }
       ]
@@ -117,23 +117,23 @@
       "statement": "keycheck(envname) returns a FastAPI dependency that reads the x-api-key header, loads the named env var, and uses secrets.compare_digest (constant-time), returning 401 if either value is missing or the comparison fails. Four endpoints attach it: /evaluate (EVALUATE_TOKEN), /digest and /digest/sent (N8N_DEDUPE), and /askeval (EVALS).",
       "evidence": [
         {
-          "resource": "repo://main.py#L163-L171",
+          "resource": "repo://main.py#L164-L172",
           "version": "repo-lines-v1:sha256:2af72c175cf7cd799786da486272569e8205e25e286b7b482fd1b7f1b5d8943a:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGU1N2I0ZGFkZTY1YjY2OTRhOTZjNDQxMDNhMzZlMTI1Y2JlMTlhMmQ3M2VhOTlmZTg3OWJkYzEwNGUyZjhkMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTY5NDg4NmI4NzEwMmVmZDc1YjYzNjY2YzRiMWYwYjU1NDk5OWZhN2IxMDI3Nzc4YWMxY2YxY2MwMTU4NzNjMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTIxNDc4ZjVmOTRmZDI2MmJmMmMxNTEyZTRiYzIzNzVjMDRhMzVlYmUwMzA5MzEwYTA4N2ZjMzc2MDFhZGU4YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTg2NDAwZTUwMjUyY2ViY2I4Njc1NWMyNTgxZjczNGM3NmQxZTRhMDI3ODU5ZDcxNGJmZTIzMGZjN2I1YWM4YSJ9"
         },
         {
-          "resource": "repo://main.py#L174-L174",
+          "resource": "repo://main.py#L175-L175",
           "version": "repo-lines-v1:sha256:705f3b03ab1ec0e965ca395e34f2d6c78b1a764287a9b41754a774b11cbc9f73:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzA1ZjNiMDNhYjFlYzBlOTY1Y2EzOTVlMzRmMmQ2Yzc4YjFhNzY0Mjg3YTliNDE3NTRhNzc0YjExY2JjOWY3MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzA1ZjNiMDNhYjFlYzBlOTY1Y2EzOTVlMzRmMmQ2Yzc4YjFhNzY0Mjg3YTliNDE3NTRhNzc0YjExY2JjOWY3MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjg1NTlmNzk0NWQ2NzZlMzM4YWUzYjgwYjQyOTU1Y2RhYmE3Njk2ZjU5N2EwMDFhZjRkMzA3MWJiNGI5ZjM4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTczMmQ0ODNiNjVmZWQ5ZjY5MGY1NTI1ZWI3OGMwMWEwYzdkNjEwMGU4NmJhMTczN2JiMTI4YTNhMDMzZWUwNCJ9"
         },
         {
-          "resource": "repo://main.py#L191-L191",
+          "resource": "repo://main.py#L192-L192",
           "version": "repo-lines-v1:sha256:9e0fc542584d8852c1940bd64d3e2d0d517ae6771d64f51c99638424f8343e08:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWUwZmM1NDI1ODRkODg1MmMxOTQwYmQ2NGQzZTJkMGQ1MTdhZTY3NzFkNjRmNTFjOTk2Mzg0MjRmODM0M2UwOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOWUwZmM1NDI1ODRkODg1MmMxOTQwYmQ2NGQzZTJkMGQ1MTdhZTY3NzFkNjRmNTFjOTk2Mzg0MjRmODM0M2UwOCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjk4MmY5ZGU4MmJkNjNhOTEyNTlmNmIwOTc4M2ZhMzY0NjBlNWYzYzE5ZTQzZTViYzY5MmRjN2RiZWY2NGIyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYjQwZWQwMjk1ZTdhYTRhZTdkYWEzOGEyYzg0YTNmYzliZWFlMGI2ZTI1NTllNTUwNTgwMzdiODI3NjY5NzI4OCJ9"
         },
         {
-          "resource": "repo://main.py#L199-L199",
+          "resource": "repo://main.py#L200-L200",
           "version": "repo-lines-v1:sha256:f966cf3e55e14375629f66e5e5d31ef62896da0e2ba3cfde50697ca18e0b5807:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZjk2NmNmM2U1NWUxNDM3NTYyOWY2NmU1ZTVkMzFlZjYyODk2ZGEwZTJiYTNjZmRlNTA2OTdjYTE4ZTBiNTgwNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjk2NmNmM2U1NWUxNDM3NTYyOWY2NmU1ZTVkMzFlZjYyODk2ZGEwZTJiYTNjZmRlNTA2OTdjYTE4ZTBiNTgwNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMWI4ZGMwMTA1M2M4YTE3MTM5NDQ5YzMzY2MxNWM5M2ViMzQ3YTk5MTE3NTY3ODI4MTI4MWU3NTI5NDM3ZGUzNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTBhNTBlOTI3NjY0NjI1YmM0OWU4MmE0YmYzYWY0YmUxZTk3NzliMDc0NTdiMWFiNzA3NzYzZTA2YjJhOTEwNCJ9"
         },
         {
-          "resource": "repo://main.py#L321-L321",
+          "resource": "repo://main.py#L322-L322",
           "version": "repo-lines-v1:sha256:80fc1fabd389ab03f597e00c90de1010bd33096c1537fe9828742cda62379beb:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODBmYzFmYWJkMzg5YWIwM2Y1OTdlMDBjOTBkZTEwMTBiZDMzMDk2YzE1MzdmZTk4Mjg3NDJjZGE2MjM3OWJlYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODBmYzFmYWJkMzg5YWIwM2Y1OTdlMDBjOTBkZTEwMTBiZDMzMDk2YzE1MzdmZTk4Mjg3NDJjZGE2MjM3OWJlYiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzcwMWExOWJkZDAzODQwM2ZiOTI5ZWE3NzdmZjEwYzI4ZTEyZjE3OTI4MzBkM2RkZjc0OTlmMDY5NzgwNGEzZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYTYyNTkyYzMzNDE5NGM4MDUzNDAyMGEwNTJiMDBiNGExMWFhZThkMTkwNGRhNzIyOTk4NWM5NDMwMzgxY2Q0ZCJ9"
         }
       ]
@@ -143,34 +143,34 @@
       "statement": "check_gemini_budget(name, limit) is a per-name, per-day Redis counter: it incr's gemini_calls:{name}:{date}, sets an 86400s expiry on the first call of the day, and raises 429 once the count exceeds limit. /feedback and /upload share the site budget (check_gemini_budget('site', SITE_LIMIT=100)); /evaluate uses a separate, much smaller budget (check_gemini_budget('eval', 5)).",
       "evidence": [
         {
-          "resource": "repo://main.py#L219-L219",
+          "resource": "repo://main.py#L220-L220",
           "version": "repo-lines-v1:sha256:35a3c2b5ab6ced85ebefb793ba31baddf8491983fdad412cdbfed48a15540907:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzVhM2MyYjVhYjZjZWQ4NWViZWZiNzkzYmEzMWJhZGRmODQ5MTk4M2ZkYWQ0MTJjZGJmZWQ0OGExNTU0MDkwNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzVhM2MyYjVhYjZjZWQ4NWViZWZiNzkzYmEzMWJhZGRmODQ5MTk4M2ZkYWQ0MTJjZGJmZWQ0OGExNTU0MDkwNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTRjZTg1YzgzYjJmNDY2ZDU4ZmIxNGM0YWFlMTM2Zjg0MGNmZDE1NjEyNTg3Y2VmODg5NTgwZGJjYzNhOTlkNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGRiNWI3MGY0NWE4ODU3MTA3MDg2YjlkYmZhOGI0ZTBhMzQ3YTViYWY3YmUyZDU4MGUxMjliODU2ZGYzMGEyNSJ9"
         },
         {
-          "resource": "repo://main.py#L247-L247",
+          "resource": "repo://main.py#L248-L248",
           "version": "repo-lines-v1:sha256:d7c1c0e7996e28b119089e3f99e5431e305cfaf3054115c151f2a95f20931794:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDdjMWMwZTc5OTZlMjhiMTE5MDg5ZTNmOTllNTQzMWUzMDVjZmFmMzA1NDExNWMxNTFmMmE5NWYyMDkzMTc5NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDdjMWMwZTc5OTZlMjhiMTE5MDg5ZTNmOTllNTQzMWUzMDVjZmFmMzA1NDExNWMxNTFmMmE5NWYyMDkzMTc5NCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNThmZDk4YWI5NzBjNTFjMzFmM2M2YmNlYTQzY2RmYzlmMGM1ZTFjNzUxODAwMTY4Y2IxM2QxYjYxMjNiNmM1ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYWZiNGY5M2FlNjBhY2VhYzRjNWRmYmU2NGI3ZjFlYjc0MzMzM2ExZGE1YjZlY2UxYzhkZmJlNjJmN2Q3YzEwZiJ9"
         },
         {
-          "resource": "repo://main.py#L281-L281",
+          "resource": "repo://main.py#L282-L282",
           "version": "repo-lines-v1:sha256:bc1a2a82488812256c62f20fb4c022d7b90bbe8c92ac330b5f6991461c0d4a07:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYmMxYTJhODI0ODg4MTIyNTZjNjJmMjBmYjRjMDIyZDdiOTBiYmU4YzkyYWMzMzBiNWY2OTkxNDYxYzBkNGEwNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmMxYTJhODI0ODg4MTIyNTZjNjJmMjBmYjRjMDIyZDdiOTBiYmU4YzkyYWMzMzBiNWY2OTkxNDYxYzBkNGEwNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTI5N2ZkODlkMTE3MzcyMjc4YmQ1NjJmMzZiYWNlZTU4Mjg4NGE1NmNmMmViYjg1ZDc1ZDljZWFhNWM3NDJhYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzkyNmRlNGI3OGRkZjVhODRjMDY5MmU5OGNjYmFmOTYwZGU2NGRjNTlkYzY4OTYwYTNiZjFmOTE4NThmNjM2YiJ9"
         },
         {
-          "resource": "repo://main.py#L69-L80",
+          "resource": "repo://main.py#L70-L81",
           "version": "repo-lines-v1:sha256:5455f8d51c21d88c81a52ab136a8e8d08e9dcf1703893923c70c9f882c1ddb9a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlMjI1MTA0NjkyYWI0YjhmYWZkNDkzMTQyMzVjYjllNWUxOGNjMTgyMDU5Zjk3NzU4MTQxOTY3MjJhMzRlZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjExZGMyNDc3OWEzNTkxZmQ3ZWQ1MzUyYjNmOWIyZTZhOGZiMzg3NzExNmNkYzE0NTgzNTNmMDg4OTNjNzNmNDAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjcyZmIwNTIzNGUyOWI0NjQyNWE4ZjllN2Y2YTZiNTA2MjM5ZmUyYzJlNTUwYjg0NWM4NmQ5NDFhMDQzOGE4ZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg0OTBjZGEzNTdiYjc1ZjZiMTM1MDUzMjJlNzA0ZjQ1ZGE1ZGNiOGE2OWI3MWQ1MjQ1MDk0Nzc1YTk0YzE1YTEifQ"
         }
       ]
     },
     {
       "id": "claim_3c4e05ebcf324c96a84a1fe496e043f9",
-      "statement": "/upload validates 5MB + PDF, extracts text via pdfread (asyncio.to_thread), checks the site Gemini budget, and enqueues filework.delay(text, thread_id, country) returning {job_id} immediately; the heavy LLM + graph work runs in the Celery worker (tasks.filework builds the for_upload structured chain, compiles its own PostgresSaver-backed agent, runs run_agent, returns format_jobs_markdown). /jobs/{job_id} polls AsyncResult: SUCCESS returns the result, FAILURE maps httpx.TimeoutException to a friendly CV-reader-slow message and other failures to a generic one, else pending (60/min limit).",
+      "statement": "/upload validates 5MB+ PDF, extracts text (asyncio.to_thread), checks Gemini budget, and enqueues filework.delay(text, thread_id, country) returning {job_id} immediately. Celery worker compiles PostgresSaver-backed agent, runs run_agent, returns format_jobs_markdown. /jobs/{job_id} polls AsyncResult: SUCCESS returns result, FAILURE maps httpx.TimeoutException to a friendly message and others to a generic one, else pending (60/min limit).",
       "evidence": [
         {
-          "resource": "repo://main.py#L235-L249",
+          "resource": "repo://main.py#L236-L250",
           "version": "repo-lines-v1:sha256:cfb9bce368e474366de282d38e518e67f5ef1888807efdf8a29958f1c6a6f860:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxNGY0ZTNhNmU5ODk4NmMyMjJiMjU1ZGI1NzdhMGFkNGZmN2M3MzdmNGIwYjY0NGQ0YmVhMTI3NjIyZWMwMzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImMyYTFlOGRjNmYwNGY3MmYzZmRiNmMzNWIzMDRkYmYzNGEwNmVhMGNlNGJiNGZjYzU5YmNiMjMwNzhjZjRhYjAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ0YThmYmJiMDdhNjg1NzEyYTI4MmY5MGJmYzJhYTJhYmY5MmQ3OTRjOTNkMTczOWQwOTAxZTU1M2YzY2ZkYTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMzYTQwNjgyZWFiMGE4ZTBkYWYxYTYzZWM5MWQzYzJhOThiMTM4NmFkOGQxZWZjNGMzZTZiOTIxNWZjMDgyMTEifQ"
         },
         {
-          "resource": "repo://main.py#L251-L263",
-          "version": "repo-lines-v1:sha256:caf43971344a8d84050c455cc901df157da4210bca7e221f074d8e89fb0709b6:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjMWIyMDAyNGFhYjUwZWU0MDZlNDZkNzcxNTk3Nzk0MzAzMjEwZWMyN2I5M2QyNGYwNTJjMWRhNzU5ZmQ1NzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmMDRmNzExNjlhZTRkYWNhMzY5ZmU1Zjk4ZjljZWRkMDliYjE0YTlhYTVlY2EyOTg3MzlhNjRmY2MzMzIwYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFmYjRmOTNhZTYwYWNlYWM0YzVkZmJlNjRiN2YxZWI3NDMzMzNhMWRhNWI2ZWNlMWM4ZGZiZTYyZjdkN2MxMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwNWUxZDljMDliYzE5YjE5MTU4ZTEzNjlhNzNhNDkzZmJlM2MzMzlmZmUzMjEwM2FjMmEzNzhlNDYzNTVjYTgifQ"
+          "resource": "repo://main.py#L252-L264",
+          "version": "repo-lines-v1:sha256:58aa953a7b22ad310a44b7f4e25af76bde4d5dee42d88a43025ea478e4be20e8:eyJzZWxlY3RlZExpbmVDb3VudCI6MTMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjVjMWIyMDAyNGFhYjUwZWU0MDZlNDZkNzcxNTk3Nzk0MzAzMjEwZWMyN2I5M2QyNGYwNTJjMWRhNzU5ZmQ1NzciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJmMDRmNzExNjlhZTRkYWNhMzY5ZmU1Zjk4ZjljZWRkMDliYjE0YTlhYTVlY2EyOTg3MzlhNjRmY2MzMzIwYWEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImFmYjRmOTNhZTYwYWNlYWM0YzVkZmJlNjRiN2YxZWI3NDMzMzNhMWRhNWI2ZWNlMWM4ZGZiZTYyZjdkN2MxMGYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUwNWUxZDljMDliYzE5YjE5MTU4ZTEzNjlhNzNhNDkzZmJlM2MzMzlmZmUzMjEwM2FjMmEzNzhlNDYzNTVjYTgifQ"
         },
         {
           "resource": "repo://tasks.py#L16-L32",
@@ -183,25 +183,25 @@
       "statement": "/digest runs searchhelper then dedups filtered jobs against the Postgres n8njobs table (select joblink), dropping any whose apply_url is already sent and de-duping within the run, returning {md, links} of unsent jobs (N8N_DEDUPE auth). /digest/sent inserts each link into n8njobs with on conflict do nothing, so retried calls are harmless; it is called only after Gmail succeeds so a failed email does not lose a run.",
       "evidence": [
         {
-          "resource": "repo://main.py#L174-L189",
+          "resource": "repo://main.py#L175-L190",
           "version": "repo-lines-v1:sha256:aa4dd5dbbf9c08591ae6c79ab89afd2a00dc98d25d66798deb3e17f77d3b7b74:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwNWYzYjAzYWIxZWMwZTk2NWNhMzk1ZTM0ZjJkNmM3OGIxYTc2NDI4N2E5YjQxNzU0YTc3NGIxMWNiYzlmNzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwYWQwMTFmYjE4YThmMWY3ODAzMjM4MzAxYTUxZGM1YzY2NjdjYTMyNDJhMDE2ZjlmYzkwNWJlZGI1OTc3OGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4NTU5Zjc5NDVkNjc2ZTMzOGFlM2I4MGI0Mjk1NWNkYWJhNzY5NmY1OTdhMDAxYWY0ZDMwNzFiYjRiOWYzODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyZmQ3YTk2MjA3YjUzYzUyZjJjNGQzZjE0NzEwZDMwOTcwZjQ5ZmY1MjU3NWFiYjZmODY3NGE0NWU3M2NjYmQifQ"
         },
         {
-          "resource": "repo://main.py#L191-L197",
+          "resource": "repo://main.py#L192-L198",
           "version": "repo-lines-v1:sha256:712aba82ffd1e27884c7958c60e0844f5b6aa9de4b52df67a6ed2a3a28e540b1:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWUwZmM1NDI1ODRkODg1MmMxOTQwYmQ2NGQzZTJkMGQ1MTdhZTY3NzFkNjRmNTFjOTk2Mzg0MjRmODM0M2UwOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjJhNWQ1YzIyNjI1MzUwZmVlZTlmYzFlODQ1NmQ3MmE0ZTY1Zjg0NTRjNDhhNmZlMmZkMmRlZGI1NjhmNGE3MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjk4MmY5ZGU4MmJkNjNhOTEyNTlmNmIwOTc4M2ZhMzY0NjBlNWYzYzE5ZTQzZTViYzY5MmRjN2RiZWY2NGIyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2QxMjE5OTI3NWQxZTRlNjQ4MmY1NjkyODIyN2Q2YzA1MjJmMWNkNjI3YmIwZTA5NjhiYzQyYzgxZjMzOGQ4YiJ9"
         }
       ]
     },
     {
       "id": "claim_f14f9539f006436e8893f2db9745586c",
-      "statement": "/health (not rate-limited, access logs silenced by HealthCheckFilter) pings Redis and celery_app.control.ping to celery@hostname: a raised exception resets the grace timer and returns ok; a non-empty ping response returns ok; an empty ping response returns 503 Timed Out only after PING_TIME=90s since the last successful ping, otherwise ok within the grace window.",
+      "statement": "/health pings Redis and celery_app.control.ping to celery@hostname: exceptions reset the grace timer and return ok; non-empty ping returns ok; empty ping returns 503 Timed Out after PING_TIME=90s, otherwise ok within the grace window. Access logs are silenced by HealthCheckFilter.",
       "evidence": [
         {
-          "resource": "repo://main.py#L300-L319",
-          "version": "repo-lines-v1:sha256:aa606644a0202ca823e7c398dd9ff6df38fefe8046c4ac8eaeba1701f5e73119:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhNzcyN2I0ODA5OGE1MWQxMDA1OWUxYWQ4ZjdlYjhiYTE4ZDZmMTdiZWQ3ZWQ5ZjM4YjIxYWNjMDI0NWExN2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzYmIwOWE1NzVlNzk0ZGIzOTUxODAxNDQ3NDllNDI1NTA3OWVhMjExM2RlZDNhZmE5ZTQxMTg2YmU3NzI0NTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjODk4OTAzZGVlYWVhNzdhYWVjNDBhZTgwZGU1OGM4NjcyYWRkZmE4YWJiMGRlMTkwYjE1YjZjNDk3ZDBlNDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzOWRjOTJhMWViMmMxZWY5MjM2YzhlOGRhM2NkM2Q5YjE0NDQzZDZlZmU0YzM4ZmU5NjZiMjEzM2ZkNTY4YjAifQ"
+          "resource": "repo://main.py#L301-L320",
+          "version": "repo-lines-v1:sha256:85e3a54656c57e5634734957ca1aeffb9128e0f96a010a997ef833f5141e763c:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjdhNzcyN2I0ODA5OGE1MWQxMDA1OWUxYWQ4ZjdlYjhiYTE4ZDZmMTdiZWQ3ZWQ5ZjM4YjIxYWNjMDI0NWExN2MiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIzYmIwOWE1NzVlNzk0ZGIzOTUxODAxNDQ3NDllNDI1NTA3OWVhMjExM2RlZDNhZmE5ZTQxMTg2YmU3NzI0NTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjhjODk4OTAzZGVlYWVhNzdhYWVjNDBhZTgwZGU1OGM4NjcyYWRkZmE4YWJiMGRlMTkwYjE1YjZjNDk3ZDBlNDYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYzOWRjOTJhMWViMmMxZWY5MjM2YzhlOGRhM2NkM2Q5YjE0NDQzZDZlZmU0YzM4ZmU5NjZiMjEzM2ZkNTY4YjAifQ"
         },
         {
-          "resource": "repo://main.py#L88-L93",
+          "resource": "repo://main.py#L89-L94",
           "version": "repo-lines-v1:sha256:b6635330d9e424118b43514b37bfcb382f559e44f3a6e7cbdfb3226daf775d1c:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDZmZTg2NTlhOGIwMTQ3YTUzZDQyZDFkODk4ZjExMzQ3ZTVkNjUxMmE2ZGEzOTBkNDhkNTc4NTM1MTE4M2QyZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZDBjZjM0ZWMwMDZlZTUxMjY1YWFkMDEwYWRhYWM0NjI1NWQ1YzY4MDdkNTYwMzBmODE2MTMwMjExMjBmYzgyYSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTA4NDdmZGU2NmFjNTliNTllM2YxZDk0MTFmMGY1YWQxZTQyZTI4YzY5YWM2NmJmZDljZjI2NzFhZjc3N2I3MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWNlZmQwMzQ5MDZmMWY1NWU1OGUyODBhMDk5NjU1MjQyZTI3YjhiZThiYTUxNThhMDZlYmMyODgyZGNmNTU3YyJ9"
         }
       ]
@@ -211,11 +211,11 @@
       "statement": "/askeval (EVALS auth) calls searchhelper against the InMemorySaver-backed eval_agent with metadata={run_type: eval}, which forces searchhelper to skip the Redis jobcache and always run the live graph, returning {jobs, md}; eval_runner.py posts here for LangSmith eval runs and uses both the markdown and structured job list.",
       "evidence": [
         {
-          "resource": "repo://main.py#L321-L327",
+          "resource": "repo://main.py#L322-L328",
           "version": "repo-lines-v1:sha256:581b919ef1b079b796f79181ee4f5f5271ede502970814fda404b5ea10871f91:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODBmYzFmYWJkMzg5YWIwM2Y1OTdlMDBjOTBkZTEwMTBiZDMzMDk2YzE1MzdmZTk4Mjg3NDJjZGE2MjM3OWJlYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMWIxNmM0NGQ0MmRlMmRiYmQ4OGI2YmZjOTE2ZDYzZjgwZTMxY2MwN2Q4Njc3OGUwM2M2ZTc3NjNjZDZmMGYyNSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzcwMWExOWJkZDAzODQwM2ZiOTI5ZWE3NzdmZjEwYzI4ZTEyZjE3OTI4MzBkM2RkZjc0OTlmMDY5NzgwNGEzZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNmEzY2Y1MTkyMzU0ZjcxNjE1YWM1MTAzNGIzZTk3YzIwZWRhOTk2NDNmY2FmNWJiZTZkNDFhZDU5YmQxMjE2NyJ9"
         },
         {
-          "resource": "repo://main.py#L38-L43",
+          "resource": "repo://main.py#L39-L44",
           "version": "repo-lines-v1:sha256:db4c1c920f8e184ab229bc2c16bb2d7feec8c179ede98260ac2ff419377d8489:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODBkNDQ4ZmQzOWYzMDI2Y2M3MzI2MTk4NTk5YmUxZDY1NTgzOGU0YTZlMDFlMjQyMjViYmJkOTM3NWIwOWY2NSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNTViNzRmN2E4NmNmM2U2ZTQ4ODVkZTM4ZWYyZGUyZGY0Njg3ZmJlY2I5NGVjMTgyN2QzODU5ZTQ4NTZjNGRhMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWI0M2Y0Y2M0OTliZTUzYTJjMzJlYWM4M2VlYTJiMWM2NGQ4NTMwMGZiZTRmMmRmMzJhNzdiMjY1M2Q4YjNiNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDc3MjViNjdjNjZmMzJiNmE2MWRkOTBkZmVlYzg1YjkxOTgxYzU2ZTQzMjUxZmRlYTRlNTg1NDkzNGNiMTE3OSJ9"
         }
       ]
@@ -225,32 +225,28 @@
       "statement": "format_jobs_markdown and site_of/SITE_NAMES live in helper.py. site_of(apply_url) maps the apply URL's second-to-last domain segment through SITE_NAMES (Workable, RemoteOK, Himalayas, Jobicy, Remotive), falling back to the capitalized domain, so jobs.workable.com labels as Workable. The apply_url is an external link to the job board, not an internal wiki link, so no broken-link remediation applies.",
       "evidence": [
         {
-          "resource": "repo://helper.py#L70-L83",
+          "resource": "repo://helper.py#L69-L82",
           "version": "repo-lines-v1:sha256:20ea44ad1c613a5885ca8d8066cbc09db8c5fc907bc9db48cc98e49ce6fb46a3:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxNTJiODM4MGEwNWY0NzFjMTZmMDI4ZmU3ZjAwYWYwOGM2MTRmZjM0ZmYzZTg5OTU1NDU1Yzk2MWY2MTNhMWYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjUyMWVkZjM5OGY0OWFjMjg4ZjkyNWZjZjcyMWY2NTNmY2Q0ZmM4YTU4YzlmOTc5MGZmODZjNzNlNTkyYmVhZWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVhMDk5YzFiNWI5MGQxZmQxOTU0Mzg1NzY5MWU5ZWI3ZmYxZDNmZjgyOGNiMDVkYTkzMTdiNDk5NDdlNzEwZTkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJkNmMzOWQwZjNiMDU5OTlmN2YwZDNkYzc2M2RmNzFiYjgxMzg1MTAwNWRkNWY2YTNmZTlhNmMzODNhYzE1NmQifQ"
         },
         {
-          "resource": "repo://helper.py#L86-L100",
+          "resource": "repo://helper.py#L85-L99",
           "version": "repo-lines-v1:sha256:943241d17002a7ecfc33d8a519cdda383626668525b9185e5674cb5438b2c5e1:eyJzZWxlY3RlZExpbmVDb3VudCI6MTUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU3NDUzYTdkZTAwODVlMWQ5Y2I3ZTBjYTZjMTQ3NmNjZmYzMmMzYzIwNjEyMTgxMTUwMTYxN2IxNTM2NzM0YTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjZjhiYzc3NmYzZjU0MWQ5ZTFjZmVkNjBkY2Q2N2Y4OTgwN2MyZWJjZTdmZjNhM2ZkMzkyN2FjODZmNzBhMzIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImYxMzE3NTRlN2M3ZTM3ZmU0YTllNmIxNDNhOWZmZTcwYmEyYmM3NGY4YmU5ODk3YTNhNzU2OTk3MzhjZDE4OWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
     {
       "id": "claim_18f55c61297e40bdbd7aa4e89a5a881f",
-      "statement": "active_filters_line(memory, country) (helper.py) builds the footer with a 'Showing: {country}' part (title-cased, 'All locations' when empty) and an 'Active filters' part listing deduplicated exclusion keywords, and is used by all formatting paths so feedback/reset report the searched country of the re-filtered listings. The SOURCES footer string lists Remotive.com, RemoteOK.com, Himalayas.app, Jobicy.com, and jobs.workable.com.",
+      "statement": "active_filters_line(memory, country) builds the footer with a 'Showing: {country}' part (title-cased, 'All locations' when empty) and an 'Active filters' part listing deduplicated exclusion keywords. It is used by all formatting paths so feedback/reset report the searched country of the re-filtered listings. SOURCES footer lists Remotive.com, RemoteOK.com, Himalayas.app, Jobicy.com, and jobs.workable.com.",
       "evidence": [
         {
-          "resource": "repo://helper.py#L45-L45",
-          "version": "repo-lines-v1:sha256:ce9f3c4498d26b8a804d56f737ff7796bce94b31c00764b00dceb9b96f978cbd:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2U5ZjNjNDQ5OGQyNmI4YTgwNGQ1NmY3MzdmZjc3OTZiY2U5NGIzMWMwMDc2NGIwMGRjZWI5Yjk2Zjk3OGNiZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2U5ZjNjNDQ5OGQyNmI4YTgwNGQ1NmY3MzdmZjc3OTZiY2U5NGIzMWMwMDc2NGIwMGRjZWI5Yjk2Zjk3OGNiZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDI5NmI1YzVkNjMwZWI2ZGZmZmFmOTI4YmRiMmEwYTYwMWQ3NDFjZDFjNWZiYzIzMWFkNTBkZTU3NTgzMTk0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjMzYmNlMDcxMzgwM2U5NmI5MjQ1YWZiYmQ5YjcwMDA3YzRmNzg4NTM4NjMwNmIwMGUzYzQ4NDQyOTRiOGIyZiJ9"
-        },
-        {
-          "resource": "repo://helper.py#L50-L66",
-          "version": "repo-lines-v1:sha256:903130cb054e33fc4e09d3880b61a0ecf50baddc6bfe4a47d4b4f63009e7206b:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY4NTI5NzgyZTU5YzMxYjY1MzlmNjc2ZGI0MDFkNmEwNGMxMGY3ODRkNTBkMjEzMzVmMjBhODcxMGI5YjRhMTciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5YzA2YjY2ZTk5YTlkZjBjNGFhYzY0ZWI0ZTBiYjZkNzZiMmJmZmZjNjYxMTlkYjRlODU4NTI5MmMwYjhkNjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIxMGMyZmUzM2M5YjgwOGZmMmRhMjczY2IxMzEyODU1YTAwZTliMTczMGU5OTc2ZTQ1NjRkZDlhODQ2NThmODIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVhMDk5YzFiNWI5MGQxZmQxOTU0Mzg1NzY5MWU5ZWI3ZmYxZDNmZjgyOGNiMDVkYTkzMTdiNDk5NDdlNzEwZTkifQ"
+          "resource": "repo://helper.py#L45-L66",
+          "version": "repo-lines-v1:sha256:f8309ab8e5e483855a9be54e6229e71788f38a6d0115b48656e9471c2382ab7a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg1MmVlZDQyYTk0ZTk0ODE1NzQ4MzA4NjVlNDZjNWMxY2I2YmIwZTFhODJjYTBjZDYzODJmMDU5MzIyM2FmZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjQ3NjIzZGU1OGQ0MjdiNWNiNGI4YmU4MTZlNmYwMDdkN2Q1ZTNkYThhMGQ4MDI1ZGQxYjcwMDZhNDYxNmEwMmUifQ"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.1",
-    "at": "2026-11-01T15:48:11.877Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T09:45:53.453Z"
   }
 }

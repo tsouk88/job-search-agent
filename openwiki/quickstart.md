@@ -4,8 +4,8 @@ title: Job Search AI Agent Quickstart
 description: Primary entry point for the repository; a LangGraph job search agent with REST, MCP, and voice interfaces, deterministic scoring, PostgreSQL memory, and evaluation systems.
 tags: [quickstart, overview, navigation]
 verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T15:48:11.877Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T09:45:53.453Z
 sources:
   - id: openwiki-source-eca60e2ced68ba99bd0ac710
     resource: repo://agent.py
@@ -19,7 +19,7 @@ sources:
     resource: repo://mcp_server.py
   - id: openwiki-source-3a30c14a947fb74b6b9d65b7
     resource: repo://voice_agent.py
-generated: { by: "openwiki/0.6.1", at: "2026-11-01T15:48:11.877Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T09:45:53.453Z" }
 ---
 
 # Job Search AI Agent — Quickstart
@@ -37,7 +37,7 @@ A remote job search assistant that queries four job APIs in parallel, scores and
 | [Voice agent](voice-agent.md) | Pipecat voice interface, command routing, in-memory sessions |
 | [Frontend chat UI](frontend/chat-ui.md) | Next.js single-page app, message routing, streaming reader |
 | [Harbor eval](evals/harbor-eval.md) | Deterministic CI eval with frozen fixtures |
-| [LangSmith eval](evals/langsmith-eval.md) | LLM-judge quality measurement (0.812 baseline) |
+| [LangSmith eval](evals/langsmith-eval.md) | LLM-judge quality measurement |
 | [Operations](operations.md) | Runbook — startup, config, deployment, troubleshooting |
 | [Testing and evals](testing.md) | How to run both eval systems and manual checks |
 | [Source map](source-map.md) | File-level map with responsibilities and edit order |
@@ -56,7 +56,7 @@ A remote job search assistant that queries four job APIs in parallel, scores and
 | File | Role |
 |---|---|
 | `agent.py` | LangGraph graph — fan-out, scoring, filtering, normalization |
-| `main.py` | FastAPI backend — 5 endpoints, PostgresSaver, LLM chain, rate limiting |
+| `main.py` | FastAPI backend — endpoints, PostgresSaver, LLM chain, rate limiting |
 | `mcp_server.py` | MCP stdio server — one read-only tool, in-process cache |
 | `voice_agent.py` | VoiceSession wrapper — in-memory MemorySaver, result caching |
 | `voice/server/bot.py` | Pipecat pipeline — Deepgram STT, ElevenLabs TTS, Daily transport |
@@ -87,7 +87,7 @@ cd frontend
 npm install
 npm run dev
 
-# MCP (optional, no env vars needed)
+# MCP (optional)
 # Add to claude_desktop_config.json with absolute paths to .venv/bin/python and mcp_server.py
 
 # Harbor eval (optional, needs Docker)
@@ -97,6 +97,7 @@ harbor run -p evals -i "*filter-exclusion-senior*" \
   -e docker -o evals/jobs \
   --extra-docker-compose evals/configs/no-network.yaml -y
 python evals/check_reward.py evals/jobs/ci-<run-id>
+```
 
 # LangSmith eval (optional, needs backend on port 8002)
 python eval_runner.py

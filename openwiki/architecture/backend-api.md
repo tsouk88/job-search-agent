@@ -3,6 +3,9 @@ type: Subsystem
 title: Backend API
 description: The FastAPI backend in main.py — lifespan compiling two graphs (PostgresSaver agent + InMemorySaver eval_agent), ten endpoints, Redis-backed rate limiting, Gemini budget, and per-query job cache, Celery async upload with job polling, keycheck header auth, n8n digest dedup, the country-aware searchhelper cache, and markdown response formatting.
 tags: [backend, fastapi, endpoints, caching, llm, cors, rate-limiting, redis, celery]
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-05T09:45:53.453Z
 sources:
   - id: openwiki-source-185f850c083bac055a13cd37
     resource: repo://helper.py
@@ -12,10 +15,7 @@ sources:
     resource: repo://mcp_server.py
   - id: openwiki-source-3ea4f69fcc0222dbd310ddfc
     resource: repo://tasks.py
-generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
-verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T15:48:11.877Z
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T09:45:53.453Z" }
 ---
 
 # Backend API
@@ -24,24 +24,20 @@ verified:
 
 ## Lifespan and checkpointers
 
-```python
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    global agent , eval_agent
-    with PostgresSaver.from_conn_string(os.getenv("DATABASE_URL")) as checkpointer:
-        checkpointer.setup()
-        evalsaver = InMemorySaver()
-        agent = graph.compile(checkpointer=checkpointer)
-        eval_agent= graph.compile(checkpointer=evalsaver)
-        yield
+```mermaid
+graph TD
+    subgraph Lifespan
+        direction TB
+        Init[PostgresSaver from DATABASE_URL] --> Setup[checkpointer.setup]
+        Setup --> CompileProd[Agent = graph.compile]
+        Setup --> CompileEval[Eval_Agent = graph.compile]
+    end
 ```
 
 Two graphs are compiled at startup from the *same* `agent.graph` definition, each with a different checkpointer:
 
 - **`agent`** — the production graph, backed by `PostgresSaver`. `PostgresSaver.setup()` creates the checkpoint tables at startup, so if `DATABASE_URL` is unreachable the app fails to start — this is the first thing to check in troubleshooting. State persists across days, which is how a user's accumulated exclusion filters survive restarts.
 - **`eval_agent`** — a second compiled instance backed by `InMemorySaver`, used only by `/askeval` for LangSmith evaluation runs. Its state is process-local and dies with the process; eval runs are intentionally isolated from the Postgres-backed production threads.
-
-Both globals are module-level (`agent = None`, `eval_agent = None`) and assigned inside the lifespan context manager.
 
 ## LLM chain
 
@@ -50,9 +46,8 @@ The chain is built by `helper.llmchain`:
 ```python
 def llmchain(given_api_key: str | None , for_upload: bool = False) -> Runnable:
     llm = init_chat_model(
-            model="google_genai:gemini-2.5-flash",
+            model="google_genai:gemini-3.5-flash-lite",
             api_key=given_api_key,
-            temperature=0.1,
             max_retries=2,
             timeout=10
         )
@@ -62,42 +57,47 @@ def llmchain(given_api_key: str | None , for_upload: bool = False) -> Runnable:
     return llm | parser
 ```
 
-A single default chain (`chain = llmchain(os.getenv("GEMINI_API_KEY"))`, `llm | StrOutputParser()`) is constructed at import time and used by `/feedback` and `/evaluate`. It is **not** used by the search path (`/ask`, `/reset`, `/digest`, `/askeval`), which is LLM-free. The model is `gemini-2.5-flash` at `temperature=0.1`, with `max_retries=2` and a `timeout=10` seconds — note the retry count is **2**, not 10 (an older version used 10).
+A single default chain (`chain = llmchain(os.getenv("GEMINI_API_KEY"))`) is constructed at import time and used by `/feedback` and `/evaluate`. The model is `gemini-3.5-flash-lite`, with `max_retries=2` and a `timeout=10` seconds.
 
-With `for_upload=True` the chain returns `llm.with_structured_output(CVKeywords)`, a Pydantic model whose `keywords: list[str]` field is documented to start with the role title and then core skills. This structured variant is built inside the Celery `filework` task (see [Upload and async jobs](#post-upload--cv-based-search-async--celery)), not at import time, so the upload path parses the CV into a typed object rather than a free-text string.
+With `for_upload=True` the chain returns `llm.with_structured_output(CVKeywords)`. This structured variant is built inside the Celery `filework` task, not at import time, so the upload path parses the CV into a typed object rather than a free-text string.
 
 ## Redis: rate limiting, Gemini budget, job cache
 
-A single Redis client backs three separate mechanisms:
-
-```python
-r = redis.Redis.from_url(os.getenv("REDIS_URL"), socket_connect_timeout=2, socket_timeout=2)
-```
+A single Redis client (`r`) backs three separate mechanisms:
 
 ### Rate limiter
-
-```python
-def my_key(request: Request) -> str:
-    ip = request.headers.get("CF-Connecting-IP",get_remote_address(request))
-    return ip
-
-limiter = Limiter(key_func=my_key , storage_uri=os.getenv("REDIS_URL") , in_memory_fallback_enabled=True)
-```
-
-The limiter is keyed by `my_key`, which prefers the `CF-Connecting-IP` header (set by Cloudflare) and falls back to `get_remote_address`. Storage is Redis (`storage_uri=REDIS_URL`) with `in_memory_fallback_enabled=True`, so rate limiting still works if Redis is briefly down. Each rate-limited endpoint declares `request: Request` so slowapi can read the client address.
+The limiter is keyed by `my_key`, which prefers the `CF-Connecting-IP` header and falls back to `get_remote_address`. Storage is Redis with `in_memory_fallback_enabled=True`. Each rate-limited endpoint declares `request: Request` so `slowapi` can read the client address.
 
 ### Gemini budget
+`check_gemini_budget` is a per-name, per-day Redis counter (`gemini_calls:{name}:{date}`) with an 86400s expiry. `/feedback` and `/upload` share the site budget (`check_gemini_budget('site', 100)`); `/evaluate` uses a separate, much smaller budget (5).
 
-```python
-SITE_LIMIT = 100
-def check_gemini_budget(name , limit):
-    now=datetime.now()
-    date = f"{now.year}-{now.month}-{now.day}"
-    key = f"gemini_calls:{name}:{date}"
-    n=r.incr(key)
-    if n==1 :
-        r.expire(key , 86400)
-    if n > limit:
+### Job cache
+`searchhelper` is the cache core shared by `/ask`, `/digest`, and `/askeval`. On a state miss it consults the Redis jobcache (`jobs:{querylow}:{country}`) only on non-eval calls:
+1. **Hit**: loads cached `{jobs, fetched_at}` and updates the thread state without running the graph.
+2. **Miss**: runs `run_agent` then `r.set(savedjobs, json, ex=14400)`.
+3. **Eval calls**: skip Redis entirely (metadata is set).
+
+`searchhelper` re-runs the graph if: no `last_fetch_time`, query changed, country changed, or `>14400s` passed.
+
+## Endpoints
+
+| Endpoint | Role | Auth/Authn | Notes |
+| :--- | :--- | :--- | :--- |
+| `/ask` | Search | Rate limited | Main search entrypoint. |
+| `/upload` | CV Upload | Rate limited | Async via Celery; returns `job_id`. |
+| `/jobs/{job_id}` | Poll result | Rate limited (60/m) | Returns `SUCCESS`/`FAILURE`/`PENDING`. |
+| `/feedback` | Refine search | Rate limited | Updates memory filters. |
+| `/reset` | Clear filters | Rate limited | Resets memory. |
+| `/digest` | Digest build | `N8N_DEDUPE` | Dedups against `n8njobs` Postgres table. |
+| `/evaluate` | Job Eval | `EVALUATE_TOKEN` | Uses small Gemini budget. |
+| `/askeval` | Eval search | `EVALS` | Uses `eval_agent` (InMemory). |
+| `/health` | Health Check | None | Pings Redis + Celery. |
+
+## Post-upload: CV-based search (Async/Celery)
+`/upload` validates 5MB + PDF, extracts text, checks the site Gemini budget, and enqueues `filework.delay(text, thread_id, country)` returning `{job_id}` immediately. The heavy LLM + graph work runs in the Celery worker (tasks.filework builds the structured chain, compiles its own PostgresSaver-backed agent, runs `run_agent`, returns `format_jobs_markdown`).
+
+`getstatus` polls `AsyncResult`: `FAILURE` maps `httpx.TimeoutException` to a friendly message.
+
         raise HTTPException(status_code=429, detail="Gemini calls are out")
     return n
 ```
@@ -403,7 +403,6 @@ So `/health` reports unhealthy (503) only when the worker has been silent for mo
 `format_jobs_markdown` (in `helper.py`) formats each job as: position and company in bold, then location, salary, a shortened description (150 chars via `textwrap.shorten`), and an `Apply:` link whose label names the source board. The per-job f-string is:
 
 ```
-<!-- openwiki: broken internal link [{apply_url}] file "{apply_url}" does not exist. Fix the href or restore the target, then delete this comment. -->
 **- {position}** at **{company}** | {location} | {salary} \n {shortened description} \n Apply: [{site_name}]({apply_url})
 ```
 

@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:0df74371f530a2e381910d67a311eb516ce0003a886fd27de4fee6ab7f630892",
+  "pageVersion": "sha256:153999cfccd14d7d6b15afb634283cee7147ee25f4f309f517b4cf6a140368e0",
   "claims": [
     {
       "id": "claim_82e3608ab15d4a5b9a043efbe4ed301f",
@@ -8,11 +8,11 @@
       "evidence": [
         {
           "resource": "repo://agent.py",
-          "version": "repo-file-v1:sha256:772d2a1d86f71495365d3cbe847a3a75293ec1e113805def745156e02a16940b"
+          "version": "repo-file-v1:sha256:8632d172f575ba848eece1eb955d196cd7a709d08f6abf67253e0e7b62ad5cb6"
         },
         {
           "resource": "repo://main.py",
-          "version": "repo-file-v1:sha256:40f8adafe7bff77a76fb933b9dfbca59384933e7f246bc2804176f46fe524365"
+          "version": "repo-file-v1:sha256:07db7f72fae52d204e78cdf20e789d28d50a05b56f2a9bfc691a730a21cdec7a"
         },
         {
           "resource": "repo://mcp_server.py",
@@ -20,7 +20,7 @@
         },
         {
           "resource": "repo://voice_agent.py",
-          "version": "repo-file-v1:sha256:69f51fbba2d05acc91a1535ad2dbcaf9751c6ade0cbb29574ace88de65fd7433"
+          "version": "repo-file-v1:sha256:0dcbff84da0778b56a03d6a42a96b8a880e96a6471991ac1e9af562c3ef9b838"
         }
       ]
     },
@@ -30,7 +30,7 @@
       "evidence": [
         {
           "resource": "repo://agent.py",
-          "version": "repo-file-v1:sha256:772d2a1d86f71495365d3cbe847a3a75293ec1e113805def745156e02a16940b"
+          "version": "repo-file-v1:sha256:8632d172f575ba848eece1eb955d196cd7a709d08f6abf67253e0e7b62ad5cb6"
         }
       ]
     },
@@ -40,7 +40,7 @@
       "evidence": [
         {
           "resource": "repo://eval_runner.py",
-          "version": "repo-file-v1:sha256:6cceb0c235817ce412e15aa97cd3625c00b458a3f35ee0978f7ed40637f6035a"
+          "version": "repo-file-v1:sha256:35cd1bd8e0eace49f331b6606d9ab0db3a12aff8abb07252700bf4ae0fc40c3d"
         },
         {
           "resource": "repo://evals/check_reward.py",
@@ -50,7 +50,7 @@
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.1",
-    "at": "2026-11-01T15:48:11.877Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T09:45:53.453Z"
   }
 }

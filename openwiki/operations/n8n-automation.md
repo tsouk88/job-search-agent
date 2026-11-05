@@ -4,8 +4,6 @@ title: n8n Automation
 description: The optional n8n workflow that runs every 12 hours — schedule trigger, search settings, wake node for Render cold start, POST /digest (returns {md, links} of unmailed listings), If gate, Gmail, then POST /digest/sent. Dedup lives in the backend, not the workflow.
 tags: [n8n, automation, scheduled-digest, gmail, render, cold-start, dedup]
 sources:
-  - id: openwiki-source-eca60e2ced68ba99bd0ac710
-    resource: repo://agent.py
   - id: openwiki-source-833e692518af9eeaf8564cc6
     resource: repo://main.py
   - id: openwiki-source-51016da779816d3057e112d7
@@ -14,8 +12,8 @@ sources:
     resource: repo://README.md
 generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
 verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T15:48:11.877Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T09:45:53.453Z
 ---
 
 # n8n Automation

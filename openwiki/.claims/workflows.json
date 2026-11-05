@@ -1,14 +1,18 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8ee6e99d6f292cd38937b3710778a8eba18db5e7b3ff9878d1bf1e995f5be90e",
+  "pageVersion": "sha256:31e404dbba958ff3dad15b1eeb923ad90197ec4b5798e32824d8fefc1e8943fd",
   "claims": [
     {
       "id": "claim_e453a7e960f745e585a832759d812d14",
-      "statement": "The keyword search agent uses a three-condition cache check (no previous fetch, query changed, or >4 hours elapsed) to decide whether to re-run the agent graph or use cached job results.",
+      "statement": "The keyword search agent uses a four-condition cache check (no previous fetch, query changed, country changed, or >4 hours elapsed) to decide whether to re-run the agent graph or use cached job results.",
       "evidence": [
         {
-          "resource": "repo://agent.py",
-          "version": "repo-file-v1:sha256:772d2a1d86f71495365d3cbe847a3a75293ec1e113805def745156e02a16940b"
+          "resource": "repo://agent.py#L42-L73",
+          "version": "repo-lines-v1:sha256:202dcda8ac4301ff8ae2df23a200cfbef159346d4ef3a59a45fe133f3093acf8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwMTYzNzVhMGRkZTc3ZDY1NmY3OTdhNTU4OWMyZWJmMWZjOWVlNzc4Zjg2NjczNzVlZmFmYzFlNWU1NmUxNmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjYxMTYwMDU3NjRjNzZmMzFlNGNlYjE4OGE0ODk5NzMzYTQ2MmEyNTk0N2FjMzY2ZTU5ZmJhMjlmNzQ5MTk5YjQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAyMzFlN2I5MTUyZjgyYWU4OTg1MDExYTJlODM2YmFhNjAwNDZhZjgwYjRjMjJhYWM2OGUwNzcwZTYwZDkyNTgifQ"
+        },
+        {
+          "resource": "repo://main.py#L112-L135",
+          "version": "repo-lines-v1:sha256:91d3d1e7e3fc1551f846194eaf177ebbbda3c802ff2451d12d71c7158baebe48:eyJzZWxlY3RlZExpbmVDb3VudCI6MjQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc2NWJhZTgzYjA4MGYzN2M0MDc3NzA4OWIwZGFjOTc1MmU2ZDkyNTNhNjYzNzA0MjNhYmMwMjEwYmJlMTNiMGUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZjZjE2MmQ3ZTA1NmE4MTUzYTg5OTMyZGE5NDFhMTk5MjFlYjFjNWVlNjVhZTk5MjdkZjE5YzNmZjU4N2YyMjYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdlMzkyNjYxNjQ4YjE2ZjcyMGVhYWM5NmI0NGFkYmZkYmEwZmRmM2RhOGQ4N2EwNmY4YmMwOTIxNjA2ODIxYmEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjUzYjQ0MTk5NTJkZjU1NWZmMmNiZDZmNzQ4YTBjZGU2ZGQxMTE0MGY1YTUwM2E3ZjYwOGUyZGIwODI0YjMyM2MifQ"
         }
       ]
     },
@@ -17,24 +21,28 @@
       "statement": "The feedback workflow updates thread memory without re-invoking the agent graph, performing a local re-filtering of cached jobs instead.",
       "evidence": [
         {
-          "resource": "repo://main.py",
-          "version": "repo-file-v1:sha256:40f8adafe7bff77a76fb933b9dfbca59384933e7f246bc2804176f46fe524365"
+          "resource": "repo://main.py#L271-L287",
+          "version": "repo-lines-v1:sha256:e517fd806a0355d46e2a0ceabebee07fbff6c9d8f90153cdca40f9e05becd7fb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcxNDgwY2MzNDEzOGY3OWRmYjgwNWM2YTEwN2I5NTAzMTY1ZTYxNWMzMDk3ZTE1NDBiNWMzODkzZWE2ZjIxNGIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NTZkOTEzYjIyODYyOWU0MGZkZDA2NmZhM2M2NjA3ZWZkYzM4NGE5ZmYyYjU5NWUzYjg1NTEzYjgwZTE2NDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkwODgwNjFiYTM3ZDk0Nzc2MmJiY2E1YTljOGIwZGY2YmFmMGI5ZDJkZDA2Mjk4M2E2NDhhMjA5YjYxNjNhODciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4ODU3NWI0MDcwYTY2MTM4ZTQ3MDBlN2NkNTEwNjUxMzE0MDE3YzdhZTI0ZjFlNGYwMjc2MmMyYzA2NWY1ODAifQ"
         }
       ]
     },
     {
       "id": "claim_1f7cea17adf24bbdb80d49314aa7559f",
-      "statement": "The Harbor CI evaluation runs against frozen job API responses to verify the agent's filtering logic in isolation from LLM or network dependencies.",
+      "statement": "The Harbor CI evaluation runs against the /askeval endpoint using an in-memory graph to verify the agent's filtering logic in isolation from persistent or external dependencies.",
       "evidence": [
         {
-          "resource": "repo://eval_runner.py",
-          "version": "repo-file-v1:sha256:6cceb0c235817ce412e15aa97cd3625c00b458a3f35ee0978f7ed40637f6035a"
+          "resource": "repo://eval_runner.py#L65-L73",
+          "version": "repo-lines-v1:sha256:ed9a566091650754da1d7335e521dbb4f40ef18f26c81250360af0d3cc7aeb94:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGNlYmQ0MmEzNmU1NmZiMWQ0ZTdjNDVmMzIxMDRmYzU1ZDEzMWVhOTFhNmNhOGMxOTQ3YTBlNWE2NTY3OGI1YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTk0ODEwMDA4MmY2ZDQ5MzBjNzExY2FmMDFlZWQzZTk1NzliYTZhZWY5MDI3ZjE5NmYzOWVlMmVhMzE3YWY2MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjY3Y2YwNjQ4MjZhMGU2OWNlMDdlNjkwOWUzYzg4MDZlOWZhYmNiYzI2ZDYxMzEwZDMwOGQ3Yzc4OTVmZWNlZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzExMmFjODFjOTlkYzllNGViYWI2MTQ2YTcxZjBmZGJjMjVlM2QzMjA5NTRkNWEwMjkzN2Q3YWUzZWM3MWExMSJ9"
+        },
+        {
+          "resource": "repo://main.py#L320-L325",
+          "version": "repo-lines-v1:sha256:c1976c08fedf2d116bb549a889a6daed87f274ec5b45ea149e8d0fdc6cee31a2:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMjNiYjA5YTU3NWU3OTRkYjM5NTE4MDE0NDc0OWU0MjU1MDc5ZWEyMTEzZGVkM2FmYTllNDExODZiZTc3MjQ1NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M5NzY0YmU3NDVhZTQ0ZjQ1OGI0ODBlOTJkYTdiM2IzODg3MTdkOGI4Y2Y4ZGYxODI1YTdlYjRlNzExMjQ3YSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYzFiNDg4M2UwZmE1YTZiODE0OGRiZTgzMmFhNzQ1NGEzNmMwZTZjNThmZjAzOTljZDBjNTVhY2U0ZTdjOWNkMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDI5NmRlNDE2ZGVlMGRjYzFhMmE0YTZiNWRhYjM2MGE2NTliYWJmMGE4ZWUwMjBjZDRmMmM1M2QwMTRmZTg5YiJ9"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.1",
-    "at": "2026-11-01T15:48:11.877Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T09:45:53.453Z"
   }
 }

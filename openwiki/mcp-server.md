@@ -12,10 +12,10 @@ sources:
     resource: repo://main.py
   - id: openwiki-source-7a041713b68b973227e27f3e
     resource: repo://mcp_server.py
-generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T09:45:53.453Z" }
 verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T14:50:14.085Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T09:45:53.453Z
 ---
 
 # MCP Server
@@ -45,9 +45,9 @@ def search_remote_jobs(query: str, exclude_keywords: list[str] | None = None) ->
 
 The client's own conversation is the memory — say "no senior roles" and the calling model calls the tool again with a fuller exclusion list, extracting the keywords itself instead of spending a Gemini call.
 
-## Five sources, four named in the contract
+## Five sources
 
-The tool's text contract — both the `MCPServer` `instructions` string and the `search_remote_jobs` docstring — names four sources: RemoteOK, Himalayas, Remotive and Jobicy. That text has **not** been updated to mention Workable, even though the underlying graph fans out to five sources. `agent.py`'s `fan_out` dispatches five parallel `Send`s:
+The MCP tool searches five job boards: RemoteOK, Himalayas, Remotive, Jobicy, and Workable. The `search_remote_jobs` docstring explicitly lists the first four; Workable results are fetched, normalized, and filtered through the same graph, with results flowing through the same `collect_results` path as the others.
 
 ```python
 def fan_out(state:State):
@@ -56,11 +56,11 @@ def fan_out(state:State):
         Send("fetch_sjobs", state),    # Himalayas
         Send("fetch_tjobs", state),    # Remotive
         Send("fetch_fjobs", state),    # Jobicy
-        Send("fetch_wjobs", state)     # Workable (HTML scrape via workable_*)
+        Send("fetch_wjobs", state)     # Workable
     ]
 ```
 
-So the MCP tool actually searches five boards — RemoteOK, Himalayas, Remotive, Jobicy **and Workable** — while only advertising four. Workable results flow through the same `collect_results` path and are cached and filtered identically; the omission is purely in the human-facing instruction text. Treat this as a known discrepancy when reasoning about what the tool *says* it searches versus what it *does* search (see [Architecture Overview](architecture/overview.md), which already lists Workable as the fifth source).
+Workable is particularly important for local listings (e.g., in Greece), which are often posted to its public board and nowhere else.
 
 ## What it does NOT need
 

@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8c14b3bc576b005452845a53d8d900309ae2d7311b404b0d2c552875e5f953f4",
+  "pageVersion": "sha256:1e13f0d4110ac53ef6260341425690f374ad6ba209101f8e83ae97e1022f9ab1",
   "claims": [
     {
       "id": "claim_6cd6982141bc4315a5044d9b2fd060c5",
-      "statement": "The repository has no classic unit-test suite; the deterministic Harbor eval and the manual LangSmith eval are the entire quality gate.",
+      "statement": "The repository has no classic unit-test suite; the deterministic Harbor eval and the manual LangSmith eval serve as the quality gate.",
       "evidence": [
         {
-          "resource": "repo://README.md#L326-L328",
+          "resource": "repo://README.md#L352-L354",
           "version": "repo-lines-v1:sha256:e7c899a0129a0cb18f937aba0bbefb290ff722b9f5ca0534032e3c5144a85344:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDVhNjhhNTY0Y2IwMTQwN2E2MTMxYTE3YzMyMGU1NmNjNDI0YWRlY2VjNDMzNmY5NzRmZjRlYjUxZDJmYjZkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMjdlNTc4OGQ1ZDlkNzNkMjRhODFkYmMwYTVhNzRiZmE4MmM5YzNiM2FmOTllNTJhZjc5NmU5MGI0NjhhOGEzZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTJmODEzMDc3YTkyZWE3MjI2NmE2YzY1Y2JiM2VmMzY3ODc3MTJiYWFjOWY5NGM4ZGQ5MDBmZGE4ZjRlZDYyNCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODgwOTE4YWM2NDMwNzA0MDMwMDQzMjc4YWJiMTY3MDAxYzY4MzQzZmM1YTNhZGY3ZjgyYjYxNjk1MjliODRhZiJ9"
         },
         {
           "resource": "repo://eval_runner.py",
-          "version": "repo-file-v1:sha256:6cceb0c235817ce412e15aa97cd3625c00b458a3f35ee0978f7ed40637f6035a"
+          "version": "repo-file-v1:sha256:35cd1bd8e0eace49f331b6606d9ab0db3a12aff8abb07252700bf4ae0fc40c3d"
         },
         {
           "resource": "repo://evals/check_reward.py#L1-L9",
@@ -42,15 +42,15 @@
     },
     {
       "id": "claim_7d1032ec6a5545adbcd56baac66fc126",
-      "statement": "The Harbor eval freezes five job sources (RemoteOK, Himalayas, Remotive, Jobicy as JSON, plus Workable as reduced schema.org HTML); the frozen environment is enforced with network_mode: none and a frozen_apis.py stub that routes known hosts to fixtures and raises on any live network call.",
+      "statement": "The Harbor eval freezes five job sources (RemoteOK, Himalayas, Remotive, Jobicy as JSON, and Workable as HTML parsed via schema.org blocks); the frozen environment is enforced with network_mode: none and a frozen_apis.py stub that intercepts requests, routing known hosts to fixtures and raising on any live network call.",
       "evidence": [
         {
           "resource": "repo://evals/configs/no-network.yaml#L1-L2",
           "version": "repo-lines-v1:sha256:42cd299e0ef6fc7d5d9af7821a4284ea7bd707f5c5a6954a9d342dea3f590b72:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZmE3M2ZjY2RjOTllYTgzNTk2N2M3ZGVlN2VmYmVkMWYzY2E4NzI2MGQ5MjkzMTg1MGZkZDY2ZGE4Y2IxMmYxZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2JjNDQyNmJhMmEwNGRjODRhNjg0OTUyZWMzYmEwZGU5MGIxNjI5Nzg1ZjJjODkxY2M1ZWNjYTdiNjJhNTM1OCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjAsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjEsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDQwNjFlNDZiODdiMWJkOWMzNjE3ZTUyZDcyMTFmZTQ5NjM5YTQ1ODcxOGRjZmQ2Y2U3ODM4MDBhODI5NzQzYSJ9"
         },
         {
-          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L9-L65",
-          "version": "repo-lines-v1:sha256:82f7a1496e75c780d18e7b14de18b19ee785e0e77a18d33c32011626fbe246dd:eyJzZWxlY3RlZExpbmVDb3VudCI6NTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwY2JiMGVhMmUxNGNkZDNkZWJiYmNjOWNhMTkwODY1MTBlYWRmMGI4MWI0YWVjYTczMTI1ZjQ3YmJjNDhiMjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE2MTY1NDMwMGM2OTQ2MDY0YzAyNWI3MGJlYWRkNzI5NGQyOTRlY2JmMDgzYTc5MDJkZGQ3MTI5MjhiMzNlM2UiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhMDgwNTBhNWE0ZjRiNmEyYjEwOGEyZGI5YmYxYmIzODNkZGU4ZWVkOTY0NjE3MGYzMjVmZTAzODFiNmU3MGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImJmMmY4ZGQ3YzMxYWY4MDBjYzhiN2NmYzkwNDlhYmE3YjA0Y2EyZGVlMTc5ZDNmMzdkNGQxOWNjYWM3OGNmODEifQ"
+          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L1-L86",
+          "version": "repo-lines-v1:sha256:868b59324a47790af91ccfafa455dbb3c9caa101e68a5693b36bee70357385c0:eyJzZWxlY3RlZExpbmVDb3VudCI6ODYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI2MWE5MTEyYTI5MThlMmFiYTAzZTE5YTJmMjIxYTAyN2FiNGI2ZjllOTQ2YTZjMzk4MTRmNTRlMThlMDdkZmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImJmMmY4ZGQ3YzMxYWY4MDBjYzhiN2NmYzkwNDlhYmE3YjA0Y2EyZGVlMTc5ZDNmMzdkNGQxOWNjYWM3OGNmODEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
         }
       ]
     },
@@ -59,7 +59,7 @@
       "statement": "Adding Workable turned the Harbor eval red before shipping because the frozen environment knew four hosts and the fan-out had changed; the expected set was rewritten by hand from the new fixtures.",
       "evidence": [
         {
-          "resource": "repo://README.md#L440-L442",
+          "resource": "repo://README.md#L466-L468",
           "version": "repo-lines-v1:sha256:2a6f81a337851588f56284e714af53ca83b940cafa4eada29533d3bc5bdfacbb:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzYzYWQ3NjdjNWI3YmM5NWM4NGY3MDA0MTJjNDY3ZTMxZjg5ZGYwZGZkZDBmYWI0MTM3ODA5MmRjMTdjODcyZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMzcyMGFlMzhhMWU5OGY3N2UzZDNiYTdjMmViMDNmNjk3NWYzODhkNGY5OWU5Y2U2NzljMTJiMWIzODZlN2RmZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGNkODVjMWZiZGUwN2MyZGI5NmU2OTA0MTQ5YTI0ODFhMjQwN2EzNjU4OTlmNmUyYTM0Y2RjYTUzZWY4ZjZlNSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGE1YjlmMzJkZmRmYzM5OTJmYjY5YTRlNDk3MjkwYzI4ZWIxNzU5MDE4NWRiNmI5YTFmNGUxNmMzMDUwZTQ2ZiJ9"
         },
         {
@@ -91,11 +91,11 @@
       "statement": "The LangSmith eval posts queries to localhost:8002/askeval and scores relevant/total with a Gemini 2.5 Flash structured-output judge.",
       "evidence": [
         {
-          "resource": "repo://README.md#L330-L334",
+          "resource": "repo://README.md#L356-L360",
           "version": "repo-lines-v1:sha256:96461417ecc96fe7b8053330391fd1861c7543f481f44018a1b31320a3108e08:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDdjMDZjNTYxZDVjMzI3MzQzNjg1MjY4YTQ2YjMzOTFmMzk5OGVlZTg5MGQyYmU1MWYwZDIxY2M0YTUzYWU2ZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjUyZDcxMTEwM2Q1MGE0Mzc4MzBjNmZiY2QwNGZiNGJhYjQ5YTBmODJmNmQyNmQxYzc5MWM2ZTg0ODhkZDA5MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGUwZjcyOTNkMTU2YTZkMTI1MjhkYjEyOTMzNzllNTJhNWY4MzY3MDQ0Mjk3YjIyODJiOTdmZjJjODYwNDM4ZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDRmZTgyZDM1MGFhYmE1Y2Y1Y2Q5MTJmZmUxMmFmODk5ZmViM2E4NDc2OGFmMGU4OTVjYzMxMDRiOGZiNzBhOSJ9"
         },
         {
-          "resource": "repo://eval_runner.py#L48-L64",
+          "resource": "repo://eval_runner.py#L47-L63",
           "version": "repo-lines-v1:sha256:e3dea6f3c5dfe145185a61336ccc784b648b0838c041c02c485d66beeaa7725a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYxNDQzYjRjMGE2ZGFkZGEyMjk2MTVkN2IxMzlhOTYwZTM3YTQwNjNhMDExMzRmODgzYzdkN2Q5NGMwZDQ5YmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU4OGY0MGIwMTE3YzYyZWNiZjUwMzE4ZGI5MmYyN2VlOTExNzVmMjYzZGZhMGQ3YzhiMzkzODlhN2NlMTg4NDciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZjZTRmZDgzMzRhNTgyODFkMDhiZTY5YWI4NGRlMTY5NmJiY2VkYzI3NDg4NjdlN2JjYWJmOTA4NzllYTYyY2EifQ"
         }
       ]
@@ -105,15 +105,15 @@
       "statement": "The LangSmith judge was rewritten for repeatability: an empty_ok flag short-circuits queries whose correct answer is nothing to 1.0 before the judge is called, the grading prompt states that a rejected listing only subtracts one and silent criteria count in a listing's favor, and reference criteria were rewritten to be decidable.",
       "evidence": [
         {
-          "resource": "repo://README.md#L384-L394",
+          "resource": "repo://README.md#L410-L420",
           "version": "repo-lines-v1:sha256:72d4361642a509daeb76aea7fc49d257a85331b24322ad807d2813de64d5e6cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQxYjQyZDU3MWFlODE0ZGEzYTQ4NzM2MjQ0ZmEwNGE4YjQ0MzY1NjhkYzA3N2ZkZDVjODY3YmM3MjliZGY1ZjMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE2YWQwYWNmZWVhYjYzNzIwNDBkYTU4NDVmNTk5MTM5NzgzMjU0ZWZlNGJkOTJkNjEwZDA5ZGJjYTc0OTM1MmMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlmYjllZDMxZmI1ODRhMmM0ODc0MmZhMTY2NjFhOTRiYjkxOTU5YzcxNDQ4MWJjMDg2YjU0NjhlM2Y0YTVmZWIifQ"
         },
         {
-          "resource": "repo://eval_runner.py#L52-L57",
+          "resource": "repo://eval_runner.py#L51-L56",
           "version": "repo-lines-v1:sha256:b54c34f42d723379a3255639b71425f34f5f96dbcf880832f16a766244c09d60:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzJjNTk2ODFmNGJmZGUxYWFjNWRjNmZkNmY3MzE2YTdhMjIxNDI2OTg2ODNmMTY5YmMwZWUzMWVlMDY4NDhlNCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTZiMDQ0OTE0Njk3MjJlODM2M2E5NGU0MDQ0NTM4ZTAxM2EyYTIxN2UzNmIxZTU2OGJhNjBhY2I3YjRjOGYyZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDExN2Q5MjMzNjE0MTZmMTQ4NWUzMzk1ZmIwZDNkMzQwY2I3OWMwZjA4MzY4NzQ5MDQ5YmJiNzNkYTZjMTRmYyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjU1NjU3YTU0YmVhYTkxMjExZGIzNTE1YjE5YmQ3MTQzZjYwYTE5YmNlMTc5YjAwOTQwYTgwMDllYzQ1YTMwMyJ9"
         },
         {
-          "resource": "repo://eval_runner.py#L84-L95",
+          "resource": "repo://eval_runner.py#L83-L94",
           "version": "repo-lines-v1:sha256:00c3416c19a6d65c889be0d8ffbf215e6953c3daa78db579ec6619377466a6dc:eyJzZWxlY3RlZExpbmVDb3VudCI6MTIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjczMzQ2NDdhMGQwYjk0Y2ZlYjUxOGZlYjJiYmQ3NGEyNzI4OThjYmFkZmQ2OWY4MmM5YTg3ZGU0ZjU3MWMxMTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzMDNlY2RkNGE0ZDEwZjE5YzczZmQ0MmZkMTI0MzdmZDMzNTRhODI2ODE2MDVkYTUyNTVhOTdhMzkwNjhkYmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzNjdlZWM3YjYxMWNhNDBjMjRjNzBhMzc4NmZjMjY1Yzc4OWNiOWMzNDI1ODJiM2Q5ZTQwMTY1OGZkN2Y3NjAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImZhNWZkZTRiYzdmZGFiODU2ZGQ5NGUxNjZkZTE5YjkzZDU5MmQ0MmUzNjRjNmQ5ZDg4YmExMDMzMjY2ZmFmNjkifQ"
         }
       ]
@@ -123,7 +123,7 @@
       "statement": "LangSmith changes are judged against a control run of the unchanged code on the same day, not a stored baseline, because live job boards shift (the same unchanged code scored 0.765 five days later) and individual cases wobble; the aggregate is the signal.",
       "evidence": [
         {
-          "resource": "repo://README.md#L152-L157",
+          "resource": "repo://README.md#L165-L170",
           "version": "repo-lines-v1:sha256:82772c8de944e6fd9b24d1769764fa356b1f23ac3c2868435130623e73079590:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDdmODg5OWM3ZmVmYjgyY2FlOWJkNGU2NzQ0NjY0NDU2MGE1MjdkNjQ5ZDRmN2U5NmE0OTkxNTc3ZDQ5M2U3NiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjZkODNmYTE2YzlmNWQxOGYzZDU3ZjI2M2ZmMzE1ZDhlNTU3NWEzYTM3YTU0MjczOTg1NTUyNGVmMjI2NTk3OSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2JiMDMzM2RhZWNlMTQwZmQwMmU5ZmIxNWIyOTA0OWFhMGE4NTFkYzk4Y2E3MDQxY2VmMjJiOTljZTUyNWRiZCJ9"
         }
       ]
@@ -133,22 +133,22 @@
       "statement": "Local Harbor runs use PYTHONPATH=$(pwd) harbor run ... --job-name local followed by python evals/check_reward.py evals/jobs/local; the LangSmith eval uses python eval_runner.py with the backend on port 8002, requiring LANGSMITH_API_KEY, GEMINI_API_KEY, and an EVALS key.",
       "evidence": [
         {
-          "resource": "repo://README.md#L346-L348",
+          "resource": "repo://README.md#L372-L374",
           "version": "repo-lines-v1:sha256:279ee7cca7b0dfaade6883fc2ab26c273dafd2ba74530641628706b7b3fec7b1:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGNkZTI4YWQ4NTA2N2FmNWVjZjM4ZjVkNmVjZDc5YmM5ZmZmMWI2YzJkY2VlYjBkNGQyOGU3MmViZDhjZDQ1NCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmU2Mjg1ZDM5NzJiYmM0ZDViODM3NzcwNjlhNzY4Njk4MTZjNGZjNjQ0YmFiMjgxYTY4ZWI1ZjM4Y2I5ZGFiZiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDc0MTkxOTg5N2VhZjhhYzg2ZDY4ZjQyNWFlODE5Yzk2NWQxZjYxMzE4Nzk2MzUwZTlhOGUyOWVjNGQyY2ZjZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDYzNTAwMDAxZjlhOGVjNzdiMzMzNDc3YmNmZWRhYjI3YTUyMGJkNzljZGNlNDdkYjk1YTQxYTVkNDBjZGU3YSJ9"
         },
         {
-          "resource": "repo://README.md#L421-L434",
+          "resource": "repo://README.md#L447-L460",
           "version": "repo-lines-v1:sha256:697eed9086f06555a57a5bfc6396b1cc35d981d207c60bd939e192d687154d19:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3OWFhYTMyOWRkMTk5MmZiNmFiYTRhYjg0NjE4YjJkMGZkMjI4NDYyZmVkN2VkNjI1YTU5MzZjN2I4ZGMyNzAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijg0OTliMTQyM2UxZDY3YTQ2OTY2ZDRmYmNhNWZiZDY4MTA3OGI4MjEwNGFjOWJlZGVkZDRhODljMzM5MjUzODUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjI1OTcwNmZmYjQyMWIyMTU5M2JlNDc3MDJlNjk0ZjMxZDQ5ZTI4OTVjOTI4ZWEzNTFmYzdiOGYyOTY3OTE5NGEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ1Mjk3NGExYTMwYjRiMmRhZmVhOGFjZDI0NDMzZDg5NzVhNjEyNjQ5NmQ0YjY1NGFjM2IxOTUwMzZiZDExMjQifQ"
         },
         {
-          "resource": "repo://eval_runner.py#L35-L42",
+          "resource": "repo://eval_runner.py#L34-L41",
           "version": "repo-lines-v1:sha256:179934ddd6e914b418b726b4195f8f6ea8c0d00b03c1fb7def10dd35a69be928:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYzkyOWEyZjMyOWQxMWE1OTMyNmE0OWZjYmQ2YzU5ZGNkNmMxNDhjMGI5YjgzY2JiYWI0NzBjNDE2YTk5YTEwZCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMTI3NjVmMTI2NzI0YjdhZTFiYjAyOTIzNDEwYThkMDc1ZThjZmY3YTY2MmE0MmE1ZTg0ZWM3NGNmZTFjNWZmMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMDQyNjA0ODMwNzFkZGEwYjg2NmNmMDI0YWQ5MDNkMDA5YTU5MGI4ZGJmMmNmYWU1ZDg0MDg4NmM2MTczNzM0MSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODJlMGMwMjE1ODEzOGM2NmNmNDNjZTQ3MWUxMjE1MGYxMzBlNjYyOGE5NWI4ZjE3ZTM0MGVlYWQ4N2VmNDI0YyJ9"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.1",
-    "at": "2026-11-01T15:48:11.877Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T09:45:53.453Z"
   }
 }

@@ -12,7 +12,7 @@ okf_version: "0.2"
 - [Source Map](source-map.md) - File-level map of all entry points, supporting files, voice and evals subsystems, deployment files, and authoring-convention skills — with responsibilities and suggested edit order.
 - [Testing and Evals](testing.md) - Two eval systems — the deterministic Harbor eval (frozen fixtures for five sources, CI, exact-set assertions) and the LangSmith eval (live job boards, LLM judge, ~0.90 baseline over 24 cases). No classic unit test suite.
 - [Voice Agent](voice-agent.md) - Voice interface using Pipecat with Deepgram STT, ElevenLabs TTS, and Daily WebRTC transport. Shares the same agent.py graph as REST but uses in-memory MemorySaver, caches last_jobs for local re-filtering, and routes commands by first word.
-- [Workflows](workflows.md) - User-visible and maintenance workflows — keyword search, feedback loop, CV upload, n8n digest, Harbor eval, and LangSmith eval — with change guidance for each.
+- [Workflows](workflows.md) - User-visible and maintenance workflows — keyword search, feedback loop, CV upload, and Harbor CI eval — with change guidance for each.
 
 # Directories
 

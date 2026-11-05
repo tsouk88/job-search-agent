@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8154db5904dad0eb4329d20cff7abec7d0c5691e694368533e08e4d1788f3fcb",
+  "pageVersion": "sha256:916af8140447f96b11832baad7b1572f19842fb6f1aa2a9887fe92f80711e8d0",
   "claims": [
     {
       "id": "claim_0f1fbcb8816d4e15bb908ef79a13055d",
       "statement": "voice_agent.py imports the graph directly from agent.py and compiles it with an in-memory MemorySaver; it runs the same five-source fan-out (RemoteOK, Himalayas, Remotive, Jobicy, Workable via fetch_wjobs) used by REST and MCP, not a separate agent.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L558-L565",
-          "version": "repo-lines-v1:sha256:b143d02db64d9f5443ac4a43f1cb723d0b6fff1591d382ed9e603dc11fb9bdfc:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M3OTM5NmQzYWEzZmFjOTBhNmMxNzQ3NzFiOWI5M2QwMjVkMjZlM2U4MjFkNDAyYzBkMzg0OGFjOTc5YWRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODliZTM1NWU3MTZjZWVjOTM0YzlhYTBmOTk3ZGIwMGNkMWE4OTdlODczODRiZGU3OWRhYzJkZWI1MjUyMjJkNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRmMTkyMWM5YmM0ZjkwYjg3NDA1OGQ0ZDkxMWYyMDE1ZDUzNThlZTA4NGU0NmE0MDBhYTAxMzliNzM0N2E5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWE4MmViZTllZDQwN2MzYTZiYTRiMDAzNDI5MmJhYTUyYzExY2U1YWUyODYxMDc0MDJkZTQ3OTJlZWVjYWNmYyJ9"
+          "resource": "repo://agent.py#L380-L400",
+          "version": "repo-lines-v1:sha256:dc994dc862cad1b039c0ebdc72ed388f93bcc68770d1cb6b328572dee68adf04:eyJzZWxlY3RlZExpbmVDb3VudCI6MjEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3ZWM3OGJhNmYyNTFmMmUzOWZiZDVjNjcxMDMwYmU1YmMyYzU5ZGY5OTRkNmFhM2QzMTNmMDQ0OWMxMmYzNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlOTgxMDg2MDQzMTEzYTUwM2I4ZmY2YzI5YWRkNGIwOWE2ZjBjMTUyOGE5YzVmMjgwZDFmMzg3ZmI5N2Y2MDUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1YzIzMTg3ZTQ4NzhlOTNlODM2ZDg1NGVhZTYxODU1ZTNlMTZiZWQxMjlkYTQxOWVhNjlmNjEyZWYwYzNlOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ5NWM1ZDU5YWJmZDg0YjVjNzU2Nzc2MmIzMmU2Zjc2ZmZhOGMzMzJhMWJlN2IwZTE1MDdkNmQyMjUxNDhjODEifQ"
         },
         {
           "resource": "repo://voice_agent.py#L1-L16",
-          "version": "repo-lines-v1:sha256:ac83bbc75340ed217df912b8880df0ea15019d0526131aac32dd29fe92da9b11:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiMjcwZTM0ZGUzOGQ5OWYwMzY0MDQzY2ExODA4OTgzZjQ5OGE5ZTM5NDMxMzMwNzE5MzE2NTczNDBiNWJjOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE5OTgwMmZjNDFjNjNmZTU2YmY4ZGZjM2I5MzMxNzNmZGNmMGQ4MDQ2NGFkYTZiZDkyODQyNjYxMDRhNjNlNDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjExMjhlZjM1YmI3OTJiY2YwZWMzNTVhZTdiOTMxNjJjZWJhZTBkZGVkMTQ0YWI3MDliYWQ1NDg0ODM1MDBkMzAifQ"
+          "version": "repo-lines-v1:sha256:49b67de8bf30ea1dbe910720f5fdd2f96fef9e0fa10f555317da7b5048618deb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiMjcwZTM0ZGUzOGQ5OWYwMzY0MDQzY2ExODA4OTgzZjQ5OGE5ZTM5NDMxMzMwNzE5MzE2NTczNDBiNWJjOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjYxZTIzYjkzYWNmYzBhMzdjYmNjNzgxMTVjOGU4ZjhmZDEyZTY3YWIzNWYyYzExMTQzOGMwZmI2YWQwYzZiMzAifQ"
         }
       ]
     },
@@ -21,7 +21,7 @@
       "statement": "Each VoiceSession holds an in-memory memory list of exclusion keywords, a fresh uuid4 thread_id passed as the configurable LangGraph config, and a last_jobs cache of the last run's normalized results; run invokes the compiled graph and re-caches, while resume and reset only re-filter the cache locally without re-running the graph.",
       "evidence": [
         {
-          "resource": "repo://voice_agent.py#L18-L50",
+          "resource": "repo://voice_agent.py#L17-L49",
           "version": "repo-lines-v1:sha256:8478d21099a684d2c51756d873a140df47ca6df93a4981dc4e590004e4d20c8e:eyJzZWxlY3RlZExpbmVDb3VudCI6MzMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImE1NjQ1NjNhZmRhZmZiNDNhZWUwOWI4NDk5OTBiYjFmMTQ5NDQ0NzdhMTFlNTQ1ZTY0Mzc3MmYzODEyZmZkYzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmOGFjM2Y3OGUzNjQ4YmU3OGY4N2VjNzVlNjU0NzJmMjE2ZDVhMTQ2NzdjZWQ0MjFhYTA0ZDVmZDAyZjkyZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjlmZDAzZDg2YTRhMDFjNDk0NjcwYjk5OWNmMDk1MWNlMjQ4N2YzNzYyZjE4MmQ1Yjg2Yjc1YzUyMjc0NDVmYWEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiNmZhMDEzMTNjZTUxYWZjMDllNjEwZjgxOTI1MGRhNTAxNzc4YWQzNjNjYmE0ZjllMzEyYTZlYzgyM2Q0MmEifQ"
         }
       ]
@@ -31,11 +31,11 @@
       "statement": "VoiceSession.resume runs a Gemini extraction prompt to pull avoidance keywords, appends them to memory, and re-filters the cached last_jobs locally via filter_jobs rather than re-invoking the graph or re-hitting the job APIs.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L29-L51",
+          "resource": "repo://agent.py#L30-L52",
           "version": "repo-lines-v1:sha256:4db8d4e8c3adf3710f34575ef561e56f9e7fcaa2cd54fa42f6230df238cb0161:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkN2NkZmE0MjczNmJhNDE3Y2JlMTkwMmI1MzRhNjYwMjg5OGU0MDc3ODFmOTBlNzZiNDdlOTMwYjNjZjJmNDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5OTQ5YjAxZjUzYTNmZmJiODBlOTk1ZDlmZWNiOTllZmM5OGRmMTYwNjZmNjIzMzRlZmJkNTYyN2NhZjc5YzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzZDRiZGNiNTMyOWYzYjVkZGNmYzM5ODBmZmNmOTlhZDUxZDBhMmQyNjJmZTk2NWZkZDM2NWYwMGJmZGNhOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkMmYwZjM4MDg3NjdhMTFhMGI4ZjU1MjVjYTI1ZmEwYmE1NGQzOTUyMzY5N2FkZWIyYjhhZDVkYTExNDczMjYifQ"
         },
         {
-          "resource": "repo://voice_agent.py#L40-L50",
+          "resource": "repo://voice_agent.py#L39-L49",
           "version": "repo-lines-v1:sha256:6a6bc23073bd5281d3630602bf4dce7d94549550aab72ac5954eab7466af2f0c:eyJzZWxlY3RlZExpbmVDb3VudCI6MTEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUyNjQ3NTM3ZjQ5MTM2MDUxYjVlNmZkY2MzNzI1NzhlN2I1MzEzODI4ZTkwN2NiYjAxZDdmMTEwODU0MTViMjciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjhmOGFjM2Y3OGUzNjQ4YmU3OGY4N2VjNzVlNjU0NzJmMjE2ZDVhMTQ2NzdjZWQ0MjFhYTA0ZDVmZDAyZjkyZTMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjVmOGQ0NDI1YTJhMDI1ODM4ZTI4MjY3MzAzNmNkMTA1OGU3Mjk1MDRlYTg0YzA5ZTdjY2NiNDE3NzY2MTc2NTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjoxLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhiNmZhMDEzMTNjZTUxYWZjMDllNjEwZjgxOTI1MGRhNTAxNzc4YWQzNjNjYmE0ZjllMzEyYTZlYzgyM2Q0MmEifQ"
         }
       ]
@@ -66,11 +66,11 @@
     },
     {
       "id": "claim_f1fdd868ed1541489033b96f9c8200c1",
-      "statement": "Voice sessions are stateless and short-lived: voice_agent.py uses a module-level MemorySaver checkpointer (no PostgresSaver), so conversation memory does not persist across calls and each call starts with a fresh VoiceSession and thread_id.",
+      "statement": "Voice sessions are stateless and short-lived: voice_agent.py uses a module-level MemorySaver checkpointer (no PostgresSaver), so conversation memory does not persist across calls and each call starts with a fresh VoiceSession instance (which generates a new thread_id) when the Pipecat bot initializes.",
       "evidence": [
         {
-          "resource": "repo://voice_agent.py#L1-L23",
-          "version": "repo-lines-v1:sha256:7d4ccd62456543e8867c8a8a374aca32cc639f25c8f5d95bf2daee5eee72dd38:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiMjcwZTM0ZGUzOGQ5OWYwMzY0MDQzY2ExODA4OTgzZjQ5OGE5ZTM5NDMxMzMwNzE5MzE2NTczNDBiNWJjOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwODU3MmIzMzEzZmFiZjdkMTY1MmU4ZmVjZDhkZTIzYmFhMjJjNmExMTQzNDkwZTBlMzM3MzhlY2UyOWJmMGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxNWMwYjFhNjc3OWZlNDNmMTU4YmNlYWE1MGU2M2I1MTI1Yzg5NWMxNGEyODA5NmZhY2ZhYzY3YTA1ZWJhMTQifQ"
+          "resource": "repo://voice_agent.py#L1-L22",
+          "version": "repo-lines-v1:sha256:1682c3e713f19e6a96dd0c4171408e78108d1c6292a21abc5023e17e557a0107:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFiMjcwZTM0ZGUzOGQ5OWYwMzY0MDQzY2ExODA4OTgzZjQ5OGE5ZTM5NDMxMzMwNzE5MzE2NTczNDBiNWJjOTUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjIwODU3MmIzMzEzZmFiZjdkMTY1MmU4ZmVjZDhkZTIzYmFhMjJjNmExMTQzNDkwZTBlMzM3MzhlY2UyOWJmMGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjAxNWMwYjFhNjc3OWZlNDNmMTU4YmNlYWE1MGU2M2I1MTI1Yzg5NWMxNGEyODA5NmZhY2ZhYzY3YTA1ZWJhMTQifQ"
         }
       ]
     },
@@ -110,7 +110,7 @@
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.1",
-    "at": "2026-10-01T12:03:35.670Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T09:45:53.453Z"
   }
 }

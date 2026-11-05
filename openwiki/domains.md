@@ -23,8 +23,8 @@ sources:
   - id: openwiki-source-3ea4f69fcc0222dbd310ddfc
     resource: repo://tasks.py
 verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T14:50:14.085Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T09:45:53.453Z
 generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
 ---
 

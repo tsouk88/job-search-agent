@@ -1,32 +1,28 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:1d98686044675195dfa6a5ed8297fbb56be6cf8df99228ddd56899e889503403",
+  "pageVersion": "sha256:0d070a1a4113cc789f4e2b2d632593521c405cc9720ec3ce7f959b801270dcca",
   "claims": [
     {
       "id": "claim_0391a247f6e84f1fb3d5f869c427fb84",
-      "statement": "The Harbor eval freezes five job sources: RemoteOK, Himalayas, Remotive, and Jobicy (JSON APIs mapped by hostname in HOSTS) plus Workable (HTML at jobs.workable.com, served via a separate workable_fixture path router). Any host outside these five, or any Workable path the fixture map does not recognise, raises RuntimeError, so adding a sixth source to agent.py would turn the eval red before it ships.",
+      "statement": "The Harbor eval freezes six job sources: RemoteOK, Himalayas, Remotive, Jobicy (JSON APIs mapped by hostname in HOSTS), Workable (HTML at jobs.workable.com), and Getro (API at api.getro.com). The environment enforces this by raising RuntimeError for any unfrozen host, ensuring that adding a seventh source to the agent's fan-out graph would cause the eval to fail.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L571-L587",
-          "version": "repo-lines-v1:sha256:0109ad8f3809d0f1454a106e9a83ca0bfd17c76903600d90bc1b3369566596cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MTcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliMzJiMGZmZjNlMWJkYTk3MzUxOGFmMTEwMGYyYmE1ZDY2YzEyNmQzZWQxYzAzMjlmZGZmZjBiOTNiYmRjOTAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlOTk2N2YxMjk5MWNhM2VmNmI2ZmVmYjZiNDRmN2IwODdjOTQxMzYyNzkxNDBjYmNkNzFmMDk5M2I2MDQ4ZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjU3ZmVlMjlhNTNhNTE2OGJiMGVkM2E3ZTg5MzA3MWYyYTZmYTAyY2MwOTIxN2JkYjdiODZiMTkxMTVhNTE4YTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhM2NmNTE5MjM1NGY3MTYxNWFjNTEwMzRiM2U5N2MyMGVkYTk5NjQzZmNhZjViYmU2ZDQxYWQ1OWJkMTIxNjcifQ"
+          "resource": "repo://agent.py#L614-L621",
+          "version": "repo-lines-v1:sha256:24a93db40fdffa3661972cd95b15f8f850203a02ff833ab8f28acf67e1837733:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2IwNTBjN2QxYjYwYzE3NGI2N2FjYTZlZjQ3ZDBmNmQ4NzExYjMzY2Y1ZDg0MDhhMGE5Zjk3MWNmMDZkYzcwNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiY2Q1ZmI3Y2I0YTdkNGVlYmYwMjFmZDQyMzYxODcwOGQ0OGY3ZGQzNzZhZDAwNGUzODU3M2M2ODg2MTQ1ZGZjNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGUyMzdjNWMyZGZlMDA5NDI3OGM0OTc3MDg5NDE3NGI5MzI5NzUzMmUwZWMyNjA3YmY3MTAwODNhMzcyNDRmMiJ9"
         },
         {
-          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L9-L55",
-          "version": "repo-lines-v1:sha256:abd66484644cc4f3e0e1473ec4f10c36b63d2534da2045f72795f552c0e77e38:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwY2JiMGVhMmUxNGNkZDNkZWJiYmNjOWNhMTkwODY1MTBlYWRmMGI4MWI0YWVjYTczMTI1ZjQ3YmJjNDhiMjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3ZDAxNzAzOGI5OWU2YzU4MjMxOTdjNTRkM2VlNDNmYzdkZDMwZTgzN2M2MTQ0YzViMTZlZTI2ZTUyOWUwNDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhMDgwNTBhNWE0ZjRiNmEyYjEwOGEyZGI5YmYxYmIzODNkZGU4ZWVkOTY0NjE3MGYzMjVmZTAzODFiNmU3MGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2YmEwNGFlN2NkMzc1MzFjZWNkYjViN2Y4MDM3YTQ1M2U2NzQ4ZjRjZGUxZTE3MmYxZGIwYTJkZTMyNGU5MmIifQ"
+          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L9-L66",
+          "version": "repo-lines-v1:sha256:3e0028d072be2e570fe1e59bc7f99b95b036b02648c3afc8fef6c956172e6ba1:eyJzZWxlY3RlZExpbmVDb3VudCI6NTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgwY2JiMGVhMmUxNGNkZDNkZWJiYmNjOWNhMTkwODY1MTBlYWRmMGI4MWI0YWVjYTczMTI1ZjQ3YmJjNDhiMjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjliOTRmMDA0MmQ1M2EyNjUzN2ZmZjg0NjllNGEzNmY5YTdkZmE0ZTFlYWI1YmFkMmRmYWQ4MmMwZDY5NGNkN2QiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFhMDgwNTBhNWE0ZjRiNmEyYjEwOGEyZGI5YmYxYmIzODNkZGU4ZWVkOTY0NjE3MGYzMjVmZTAzODFiNmU3MGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImU3OTg3NDBlZDI5ZmU1YTRmODhhZDNiMGY2YTUxYTY4YzgwYTVmOWY5YmJkODlhOTE0ZWVjNDE3ODIyNjg2YWEifQ"
         }
       ]
     },
     {
       "id": "claim_b851f50b50df4644a53bcfa39ce59cb6",
-      "statement": "Workable differs from the other four frozen sources in two ways: it serves HTML rather than JSON, and the fetcher makes two rounds of requests (a search page for listing links, then a page per posting). The FrozenResponse stub carries a text attribute for the Workable HTML path and a payload attribute for the JSON path, both with status_code = 200.",
+      "statement": "The fixture system supports multiple response types via FrozenResponse: JSON payloads for API sources (RemoteOK, Himalayas, Remotive, Jobicy, Getro) and raw text for HTML sources (Workable). The fetcher uses a host-based router in frozen_get and frozen_post to map requests to these fixture files.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L355-L431",
-          "version": "repo-lines-v1:sha256:96b6f55e74c97425bf37de80062720ed5c33ee98b09083d4cc7c14513d5d36fc:eyJzZWxlY3RlZExpbmVDb3VudCI6NzcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4Nzk1NWY0ZmVkYmY2MzMyMjU2M2I2N2ZjZWFjZDdiYjc1MzQ1M2M2MTM3OTNlMmMxMjczYjkwMDM4M2I5MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQ4OTYwMGE3M2QyZTAyZjM1MmI5MGZlZjFkOGQ2MzgxMWJhNGE4ZWUwYzFiZWFhN2FlNDY1OGYzNmFhMmUxOTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiM2MwYzU3YTA4Y2VjMDllNmQ2NTYzZTcyYWY2YWExZmVlNTBiYzBhZGQ3YWFhMDFkNGNlNjk5YWQ2MGY0OWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjYWI1YTVjMDQ3ZDYzZDI0YTAyMjdhZTFiN2RhYmEwMDc2MGI0MmRhZWIwNWI1NzFiNTViOTMzN2FlZGRiZTcifQ"
-        },
-        {
-          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L16-L55",
-          "version": "repo-lines-v1:sha256:4bb47d65fb3f5d2de19c70717068451ba31e0ef217b173e2b27daebcb499490d:eyJzZWxlY3RlZExpbmVDb3VudCI6NDAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk2YzY2ODllNmI5NTNjYmMwNGM2MjA3MTQ5NzRlMmRlNzZiZTc5ZDkyZTA2MzY2MDQ1MDZmZWI2MzVjZWZjYzEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY3ZDAxNzAzOGI5OWU2YzU4MjMxOTdjNTRkM2VlNDNmYzdkZDMwZTgzN2M2MTQ0YzViMTZlZTI2ZTUyOWUwNDMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQyN2M4ZWFkYjVkZDdmNjBmOTIzNzFiZjg0MzE1ODYyNTUwOWY1NzUwM2I5ZGMyMWE2NTUwNGE4MWUzMWE4NGUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQ2YmEwNGFlN2NkMzc1MzFjZWNkYjViN2Y4MDM3YTQ1M2U2NzQ4ZjRjZGUxZTE3MmYxZGIwYTJkZTMyNGU5MmIifQ"
+          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L22-L81",
+          "version": "repo-lines-v1:sha256:9b70115877805ab339cdba0c2d0309f2a8e98f11a75e1f9c53c768d58ad913c0:eyJzZWxlY3RlZExpbmVDb3VudCI6NjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRhODZkYWQ3ZjkyZDY3MWViODNiYmFlYTA2NWVmMTkxMDY5M2U2YWZmZGIwNmIwYmVmZWNiOWU5NTUxOGIzNGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI5YmIyMGJkYjYzNTgxNjNhNDVmZDI0ZTdjZTNjOWY0ODMwNDYyYjYzOTZlNjE0OWNiOTI1ZTYyNmMzN2Y3NGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNhMWIyZjQ5NmRlOTM0ZjQ4MGNiOWRhNzBjMDk5OWRkZWJkY2MwMWExZDBiNmFmNzhmNTU2ZjE1ODQ4MGJiNDEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg5YjA1NjhmOGY2NzhkZWQxMmVhNDEwZDhhY2UyYzlmZDI0ZTgzZTM5ZmE2MGJkNDA2MzZkZDg4ZTEwYWI5OTEifQ"
         }
       ]
     },
@@ -49,7 +45,7 @@
       "statement": "The test query 'python developer' with exclusions ['senior', 'game', 'canonical'] exercises both branches of filter_jobs: 'senior' (a SENIORITY term) drops listings via the title-only branch (the Jobicy 'Senior Software Engineer - Python/MongoDB' and the Workable 'Senior Backend Engineer (Python)'), while 'game' and 'canonical' drop via the full-text branch (title + description + location). 'canonical' matches only in the description of the Jobicy 'Python Engineer' (149543) listing, not its title. There are 6 listings dropped in total.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L29-L51",
+          "resource": "repo://agent.py#L30-L52",
           "version": "repo-lines-v1:sha256:4db8d4e8c3adf3710f34575ef561e56f9e7fcaa2cd54fa42f6230df238cb0161:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkN2NkZmE0MjczNmJhNDE3Y2JlMTkwMmI1MzRhNjYwMjg5OGU0MDc3ODFmOTBlNzZiNDdlOTMwYjNjZjJmNDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5OTQ5YjAxZjUzYTNmZmJiODBlOTk1ZDlmZWNiOTllZmM5OGRmMTYwNjZmNjIzMzRlZmJkNTYyN2NhZjc5YzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzZDRiZGNiNTMyOWYzYjVkZGNmYzM5ODBmZmNmOTlhZDUxZDBhMmQyNjJmZTk2NWZkZDM2NWYwMGJmZGNhOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkMmYwZjM4MDg3NjdhMTFhMGI4ZjU1MjVjYTI1ZmEwYmE1NGQzOTUyMzY5N2FkZWIyYjhhZDVkYTExNDczMjYifQ"
         },
         {
@@ -82,11 +78,11 @@
     },
     {
       "id": "claim_9c3139f9a7774d9292888c7c9e3c0257",
-      "statement": "frozen_apis.py replaces requests.get with a host router and replaces every other requests entry point (post, put, patch, delete, head, options, request) and Session.request with a function that raises, so a call that escaped the frozen stub would fail in-process even on a networked host.",
+      "statement": "frozen_apis.py enforces strict network isolation by replacing requests.get and requests.post with routing functions and overriding all other requests entry points (put, patch, delete, head, options, request) and Session.request with a blocked function that raises RuntimeError, guaranteeing that even on a networked host, the eval cannot make live network calls.",
       "evidence": [
         {
-          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L58-L66",
-          "version": "repo-lines-v1:sha256:9862de36c64caa1d6923d4b9786a29262e37cc68d81885da1db2f591d2110ebf:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNTg5YzJlYzBlY2IzMTVkOGY4NGE1YTNiMzcxNjkyNjkzOWVlYzQ5MjlkYmY3OWMyYjNjZjUxYWY0YjY2NGQ5YSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmYyZjhkZDdjMzFhZjgwMGNjOGI3Y2ZjOTA0OWFiYTdiMDRjYTJkZWUxNzlkM2YzN2Q0ZDE5Y2NhYzc4Y2Y4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNWYyZTYyNWY1ZWIwODA1ZWU5NTAxMDFjYmMzODNjZmU4MDcwYTJjYmU4MmY3ZTI0NmI5ZjBkOTg2YWJkOGVhZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L82-L86",
+          "version": "repo-lines-v1:sha256:165097d9c8c28bfcfb2584416335fa5602944e1c5c813540e83f79d44fec7066:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGY4ODNmMzRkN2ViMWJhZTQ2NWJhN2RkMDY2MTk0YTQxYTQ2YjA1OGVhMjBmOTdkMjVhOWI1OGVhYzRiOTU2MiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYmYyZjhkZDdjMzFhZjgwMGNjOGI3Y2ZjOTA0OWFiYTdiMDRjYTJkZWUxNzlkM2YzN2Q0ZDE5Y2NhYzc4Y2Y4MSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjUxYzI0N2ZhM2EyYWE3NmRhYThlMWFiNTcxMjU1ZTJjYzVlMWRkODgyNmU5N2M1MTkzN2VmMjc3N2FjMzI0ZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
         }
       ]
     },
@@ -140,7 +136,7 @@
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.1",
-    "at": "2026-11-01T15:48:11.877Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T09:45:53.453Z"
   }
 }

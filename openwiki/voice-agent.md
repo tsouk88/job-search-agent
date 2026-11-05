@@ -4,8 +4,8 @@ title: Voice Agent
 description: Voice interface using Pipecat with Deepgram STT, ElevenLabs TTS, and Daily WebRTC transport. Shares the same agent.py graph as REST but uses in-memory MemorySaver, caches last_jobs for local re-filtering, and routes commands by first word.
 tags: [voice, pipecat, deepgram, elevenlabs, daily, webrtc, langgraph, voice-agent]
 verified:
-  - by: openwiki/0.6.1
-    at: 2026-10-01T12:03:35.670Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T09:45:53.453Z
 sources:
   - id: openwiki-source-eca60e2ced68ba99bd0ac710
     resource: repo://agent.py

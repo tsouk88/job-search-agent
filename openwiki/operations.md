@@ -10,10 +10,10 @@ sources:
     resource: repo://n8n_workflow.json
   - id: openwiki-source-f70156010a8eb5325870bfc6
     resource: repo://render.yaml
-generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T09:45:53.453Z" }
 verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T15:48:11.877Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T09:45:53.453Z
 ---
 
 # Operations / runbook
@@ -96,7 +96,23 @@ any of those endpoints are used, the corresponding token must be added
 manually as a Render dashboard environment variable. Without it the endpoint
 returns 401 because `os.getenv(...)` is empty.
 
-### Database setup
+## N8N Integration
+
+The project integrates with [n8n](https://n8n.io/) via `n8n_workflow.json`, which defines an automated job search pipeline.
+
+### Workflow Components
+
+The workflow automates the following cycle:
+1. **Trigger**: A `Schedule Trigger` runs the workflow every 12 hours.
+2. **Configuration**: `Search Settings` node defines the query (e.g., "python AI backend engineer remote") and `thread_id`.
+3. **Execution**: An `HTTP Request` node (named "Wake node") calls the local API (often targeting a tunnel like `http://localhost:8002` in development or the deployed production URL) to trigger processing.
+4. **Digest**: The system uses specialized endpoints (`/digest`, `/digest/sent`) protected by an `N8N_DEDUPE` API key to manage job alerts and prevent duplicate notifications.
+5. **Notification**: A `Gmail` node sends the compiled results to the user.
+
+### Operational Notes
+- **API Key Security**: The API key used for the `/digest` endpoints (`N8N_DEDUPE`) must be manually configured in the environment where the workflow runs (e.g., the Render dashboard or local `.env`).
+- **Development**: When testing n8n workflows locally, use a service like [ngrok](https://ngrok.com/) to expose the backend port so the n8n HTTP Request node can reach it.
+
 
 PostgreSQL is required for persistent memory via `PostgresSaver`.
 

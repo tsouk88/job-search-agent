@@ -40,8 +40,8 @@ sources:
     resource: repo://voice_agent.py
 generated: { by: "openwiki/0.6.1", at: "2026-11-01T14:50:14.085Z" }
 verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T15:48:11.877Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T09:45:53.453Z
 ---
 
 # Source map

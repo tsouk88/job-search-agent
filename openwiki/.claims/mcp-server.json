@@ -1,18 +1,18 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:35020a147531907be0035da5231ea4a99eb668750f51300fa2c49a1b2686f439",
+  "pageVersion": "sha256:69e8a4fcc134b40991395f62aed80404b72882c19f4da6772138d5e6a3b68b38",
   "claims": [
     {
       "id": "claim_ee7e5f1ecab84656b513e7ea0865c868",
-      "statement": "The MCP tool's text contract (the MCPServer instructions string at mcp_server.py lines 10-11 and the search_remote_jobs docstring at lines 33-35) names only four sources — RemoteOK, Himalayas, Remotive and Jobicy — but the underlying graph actually fans out to five, because agent.py's fan_out dispatches Send to fetch_wjobs (Workable) alongside the four named fetchers.",
+      "statement": "The MCP tool's underlying graph fans out to five sources (RemoteOK, Himalayas, Remotive, Jobicy, and Workable), though the search_remote_jobs docstring currently only names four. Workable results are processed identically to the other sources.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L434-L456",
+          "resource": "repo://agent.py#L490-L512",
           "version": "repo-lines-v1:sha256:edd2e0ed52448e6f8b5ca94ed9fe6712ba50a913d032e46ad979f3172f24610f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4NDMzYzdkZGI3ZWRkMDlhMGY4Y2YyMDAyNzY2OTM2NDc4NTk3Y2NjZjAwN2EzNGZjMzNiMDYyYjgxNzc3YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFlOGM2MjlhMTAwMDAwNmYxMjY3M2U5ZGYwMjFhNDlkNzFiZTcwZTg1MzVjZjAwMDFjODU4Njc4MzMwOWE0YTgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImQ3MDE0OWUwNjlhZDY3ZWNjZjQ3MzY0NmZmMWM3NTAwNTBkMzI5ZDExMDAxOGRjNTc2Njg3OGVhZmExZDYwN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImMwOTk4YmZiNjg3OTA2N2YwYmVmMmY0ZjNkZTQ0ZWYyYjc5MmQ3YjA3MTdlNGZjYWUyODM4ZTRiNTAyMTRkZDMifQ"
         },
         {
-          "resource": "repo://agent.py#L559-L566",
-          "version": "repo-lines-v1:sha256:b143d02db64d9f5443ac4a43f1cb723d0b6fff1591d382ed9e603dc11fb9bdfc:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M3OTM5NmQzYWEzZmFjOTBhNmMxNzQ3NzFiOWI5M2QwMjVkMjZlM2U4MjFkNDAyYzBkMzg0OGFjOTc5YWRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODliZTM1NWU3MTZjZWVjOTM0YzlhYTBmOTk3ZGIwMGNkMWE4OTdlODczODRiZGU3OWRhYzJkZWI1MjUyMjJkNyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRmMTkyMWM5YmM0ZjkwYjg3NDA1OGQ0ZDkxMWYyMDE1ZDUzNThlZTA4NGU0NmE0MDBhYTAxMzliNzM0N2E5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWE4MmViZTllZDQwN2MzYTZiYTRiMDAzNDI5MmJhYTUyYzExY2U1YWUyODYxMDc0MDJkZTQ3OTJlZWVjYWNmYyJ9"
+          "resource": "repo://agent.py#L615-L622",
+          "version": "repo-lines-v1:sha256:3595e6dd4f1a578ac174ec855c0f2de6a38a3a1891ffbc6151a2c23a154cfc26:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M3OTM5NmQzYWEzZmFjOTBhNmMxNzQ3NzFiOWI5M2QwMjVkMjZlM2U4MjFkNDAyYzBkMzg0OGFjOTc5YWRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjc4ZWJjYTg0ZThkYTEyZGFlMWM3OWQzMmQ3NzYyOGNhZjRhMjNmZjViOTM4N2Q0ZjM0NDBkMjZhNzdjYjNkZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRmMTkyMWM5YmM0ZjkwYjg3NDA1OGQ0ZDkxMWYyMDE1ZDUzNThlZTA4NGU0NmE0MDBhYTAxMzliNzM0N2E5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOWE4MmViZTllZDQwN2MzYTZiYTRiMDAzNDI5MmJhYTUyYzExY2U1YWUyODYxMDc0MDJkZTQ3OTJlZWVjYWNmYyJ9"
         },
         {
           "resource": "repo://mcp_server.py#L10-L12",
@@ -29,7 +29,7 @@
       "statement": "The MCP server's in-process cache uses CACHE_TTL=14400 seconds (4h), the same freshness threshold the REST backend applies to its persisted last_fetch_time before re-running the agent graph, so both interfaces share one freshness policy.",
       "evidence": [
         {
-          "resource": "repo://main.py#L123-L123",
+          "resource": "repo://main.py#L124-L124",
           "version": "repo-lines-v1:sha256:a90f1213e10f9eead442d1f7f56fe4dbbeca5d6c16afdebbb1c8f0e0cbb1f300:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTkwZjEyMTNlMTBmOWVlYWQ0NDJkMWY3ZjU2ZmU0ZGJiZWNhNWQ2YzE2YWZkZWJiYjFjOGYwZTBjYmIxZjMwMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTkwZjEyMTNlMTBmOWVlYWQ0NDJkMWY3ZjU2ZmU0ZGJiZWNhNWQ2YzE2YWZkZWJiYjFjOGYwZTBjYmIxZjMwMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTI5ZDMzYTkwNDkxNDI2OWU4NDYzMjRiZTg1M2I5ZjZhNDg2MjhiZTdmOWFhOTk5ZjUzZTg0MDhiYTUzMDRmMCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTQ2YzAzMWQ4YmZlNGY3MGRhNzNjNzA2NGNlNjVmNzA5MjU2MWMwMDQxYjE5ZGM4OTljMWVmYzZhNzg3Zjk0ZSJ9"
         },
         {
@@ -74,7 +74,7 @@
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.1",
-    "at": "2026-11-01T14:50:14.085Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T09:45:53.453Z"
   }
 }

@@ -1,13 +1,13 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:020d4ec9a3e001e2e63fda9d3e10d474d991af55dfddf5242fecd2fa9e0a806a",
+  "pageVersion": "sha256:e0c567ff2f554a112a5273d42b35335e0a0e2e3d1054ffc9cfe4df859b0b33e1",
   "claims": [
     {
       "id": "claim_1418192c938d4920801a53e134d6c56f",
       "statement": "The n8n workflow runs every 12 hours and holds no filtering or deduplication logic of its own — it only schedules, calls the backend, gates on results, and mails; search and cross-run dedup both live in the backend.",
       "evidence": [
         {
-          "resource": "repo://README.md#L463-L465",
+          "resource": "repo://README.md#L489-L491",
           "version": "repo-lines-v1:sha256:344c177af3fde5452398debdcca44f6e6fb9915ae6eef79eadb7b2fd7ff46067:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOTFmMjY0YWE0NzJhOTkxYjQ5NDNkMDhlNGU5YThmYjRjODI0OTYyMDQ2MDgxNDhhY2FiYmExM2NhNGMxNjJlYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODNmNzlhNDMwZjRjNjg0OTcxZjg3Y2JlMDkwMzhmM2YwNTg2N2U3Yjk5MWU1NmQzMzM2ODlhNThkZGM5MDEwMSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjcyNzQ3NDU3ZDVlMTEzYTZjN2Q0YzNlOTIyMGJjOGIxZWI4OWFkYzgwYTg4ZmJkNWZhMmFlNTEwNjU0ZTRkZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiODJhNGNlMTZhZDEwMDg2ZTczZWFkM2FiMzY5ODY3YjcyY2FjNjE1YmJhZDM4MmVlODg2YzVkNjMzNWE5NjNjYiJ9"
         },
         {
@@ -45,30 +45,12 @@
       "statement": "The Wake node sends GET /docs with onError set to continueRegularOutput (On Error: Continue), existing purely to trigger a cold boot on a sleeping free-tier Render instance; failing is its normal outcome and the workflow continues regardless.",
       "evidence": [
         {
-          "resource": "repo://README.md#L479-L479",
+          "resource": "repo://README.md#L505-L505",
           "version": "repo-lines-v1:sha256:ceff9f7588a668157d15e3fe27b997b75a97ee1f7db1891fa889c26a979154c9:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmZjlmNzU4OGE2NjgxNTdkMTVlM2ZlMjdiOTk3Yjc1YTk3ZWUxZjdkYjE4OTFmYTg4OWMyNmE5NzkxNTRjOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmZjlmNzU4OGE2NjgxNTdkMTVlM2ZlMjdiOTk3Yjc1YTk3ZWUxZjdkYjE4OTFmYTg4OWMyNmE5NzkxNTRjOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzgwYjNlNDFlNzNmZTA2MWY5OTQyN2M5NTgwNGIzMzQzYjVlYjUyYTQ2MjYzMGM3M2ZmZmY1MjE2M2Y1MWQyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDYzZGQ4MjFlNmM2NTllM2VlZmJiY2ViMTA3YTQ0YjViZWFlZmE4ZDA0MmMxOWIzYmMyMWIwYzkzNjcwMmVhMiJ9"
         },
         {
           "resource": "repo://n8n_workflow.json#L78-L95",
           "version": "repo-lines-v1:sha256:d45cfdd055e3fc5b246004fac4f79d6f438a88f2a0d0d3fa1098a220c78fd9fa:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5Y2E4OTFiZmY3YWMxZjdjZWFhZTQwZWYwNTEwNjZiZTllZmU0N2I0ZTQyODFlODZjMzE5YmUyYzU1ZWJjZTQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjFmMGNkYjk3MmE3YmZiN2VkMjQ2ZjlmZjY3MjM4NWU1NWY0OTY4ZmMxMTA0M2RjNWI2ODRkNTFkZmEzMWRiY2IiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkN2VjNmExZjJhY2ZlNDhhZTM5OTY3Y2Q5MjVkZGE1NTkxYjJjZmM2YmJjZGZiOTk4YWYxM2U4OTU0NTVjZDQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijc2MmFmNTkzNjU2ZmRhYTU0M2M5MDBiODgxNmE0M2RkOTE5ZjgyYzRhOTJlMjczOGFkMTUzNjdjNGY0NGZlZmMifQ"
-        }
-      ]
-    },
-    {
-      "id": "claim_d5474573618f4ec59ce99a23c997ab87",
-      "statement": "The /ask call goes through five job sources in parallel — RemoteOK, Himalayas, Remotive, Jobicy, and Workable (fetch_wjobs) — via LangGraph's Send API fan-out, then collect_results deduplicates by employer and title, scores, and caps at MAX_RESULTS=12.",
-      "evidence": [
-        {
-          "resource": "repo://README.md#L17-L24",
-          "version": "repo-lines-v1:sha256:56454ba3f3e6c3f23a87ebee5d72886db5874d0828f849f25e46febf65b15b57:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzM2NWQxOWYzOTQ4MWE5M2IyNTg0NmI4ZDYxMmFhZjAyZGZmZWMwZjQ4MmE5NDg2MGExN2QwZjZmNjY2ODVlNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjk3MmZkNGJkM2I1YzBmNDlmZGIyMDk4ZWYzZTBlYzk2MmVmMWRiMDkxY2YwZTUyYTBkYzg5NzFhOTg1MGRhNiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2QyODYxMGJjMDgxZDhjZjlkNjU2YThiNmQ3ZDk0NTM3MjMzOTU0MmQwNzI1MzA3YjE4MjRkN2Q5MWRlM2M1MyJ9"
-        },
-        {
-          "resource": "repo://agent.py#L22-L22",
-          "version": "repo-lines-v1:sha256:a578a099baede83376a86e945ba1b3609892d11ab9dfe89b9c2c8d2800ae8fac:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU3OGEwOTliYWVkZTgzMzc2YTg2ZTk0NWJhMWIzNjA5ODkyZDExYWI5ZGZlODliOWMyYzhkMjgwMGFlOGZhYyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYTU3OGEwOTliYWVkZTgzMzc2YTg2ZTk0NWJhMWIzNjA5ODkyZDExYWI5ZGZlODliOWMyYzhkMjgwMGFlOGZhYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMGFhYmU4NTk1NDkwYTUzZjFjNmRjMmMwNDJkYTA3ODk0MTNhMTNmMjVmOWNhZTNjZWEyOTNhZWMxZjMyZjUxOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMGRiNzljZDU5NTQzY2I2ZThkMzdlMzI2OGU4ODQ4MmZlZmIzZjEyMzBlYmRkOTc5YTZlMzgwYTlmN2FiZTkxMSJ9"
-        },
-        {
-          "resource": "repo://agent.py#L559-L587",
-          "version": "repo-lines-v1:sha256:5d0cc266b85eb13822d3c3878357a502074eccc2e299891b90cacfacdce23f4e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNzkzOTZkM2FhM2ZhYzkwYTZjMTc0NzcxYjliOTNkMDI1ZDI2ZTNlODIxZDQwMmMwZDM4NDhhYzk3OWFkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlOTk2N2YxMjk5MWNhM2VmNmI2ZmVmYjZiNDRmN2IwODdjOTQxMzYyNzkxNDBjYmNkNzFmMDk5M2I2MDQ4ZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZjE5MjFjOWJjNGY5MGI4NzQwNThkNGQ5MTFmMjAxNWQ1MzU4ZWUwODRlNDZhNDAwYWEwMTM5YjczNDdhOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhM2NmNTE5MjM1NGY3MTYxNWFjNTEwMzRiM2U5N2MyMGVkYTk5NjQzZmNhZjViYmU2ZDQxYWQ1OWJkMTIxNjcifQ"
         }
       ]
     },
@@ -87,11 +69,11 @@
       "statement": "Persistent filters are set by calling POST /feedback once with the same thread_id; the thread outlives the workflow so stored exclusions persist across digest runs, and the response footer lists the filters actually stored (extraction done by an LLM and may generalize more than intended).",
       "evidence": [
         {
-          "resource": "repo://README.md#L481-L481",
+          "resource": "repo://README.md#L507-L507",
           "version": "repo-lines-v1:sha256:e33272fb629e9ef149c7444bb2cbd8f17eb0133475e600e1f983ed92ab63de67:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTMzMjcyZmI2MjllOWVmMTQ5Yzc0NDRiYjJjYmQ4ZjE3ZWIwMTMzNDc1ZTYwMGUxZjk4M2VkOTJhYjYzZGU2NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZTMzMjcyZmI2MjllOWVmMTQ5Yzc0NDRiYjJjYmQ4ZjE3ZWIwMTMzNDc1ZTYwMGUxZjk4M2VkOTJhYjYzZGU2NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMmI1NWRiN2FhZWY0ZjkyMjZiOGJjMzdmMzczODY5M2VmYzViZjdmZjk4M2MzZDRhZWQwNDNjZmY2ZWU2NDkwNyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMDAxZjJlYzE3NTkzYzEwNTRlYjQ2MzY3ZDg0NTNlZjI0YTE3M2NlOTZiNzExN2Q5MWY5YTY4ZDQ0ZmVmOGIwMSJ9"
         },
         {
-          "resource": "repo://main.py#L267-L286",
+          "resource": "repo://main.py#L268-L287",
           "version": "repo-lines-v1:sha256:e6fb7c1bbb73549e0598c61e5b5133ccddc8ed5956618f7b28b3917ecf93f146:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZiZjdhM2IyMDNjMmNiMjIxODZiNmEwNDU3ZjkyMTc3N2QzYzIzMWUwZTkwNWY3Njg2YzZlZjZlYmQ1NmE4MjMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQ5NTZkOTEzYjIyODYyOWU0MGZkZDA2NmZhM2M2NjA3ZWZkYzM4NGE5ZmYyYjU5NWUzYjg1NTEzYjgwZTE2NDgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUwNWUxZDljMDliYzE5YjE5MTU4ZTEzNjlhNzNhNDkzZmJlM2MzMzlmZmUzMjEwM2FjMmEzNzhlNDYzNTVjYTgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImY4ODU3NWI0MDcwYTY2MTM4ZTQ3MDBlN2NkNTEwNjUxMzE0MDE3YzdhZTI0ZjFlNGYwMjc2MmMyYzA2NWY1ODAifQ"
         }
       ]
@@ -101,11 +83,11 @@
       "statement": "The /evaluate endpoint is auth-gated: it requires an x-api-key header matched against the EVALUATE_TOKEN env var via secrets.compare_digest (constant-time), and returns 401 without the env var or header. It is a separate token from N8N_DEDUPE and is not wired into this workflow.",
       "evidence": [
         {
-          "resource": "repo://main.py#L163-L171",
+          "resource": "repo://main.py#L164-L172",
           "version": "repo-lines-v1:sha256:2af72c175cf7cd799786da486272569e8205e25e286b7b482fd1b7f1b5d8943a:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGU1N2I0ZGFkZTY1YjY2OTRhOTZjNDQxMDNhMzZlMTI1Y2JlMTlhMmQ3M2VhOTlmZTg3OWJkYzEwNGUyZjhkMCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOTY5NDg4NmI4NzEwMmVmZDc1YjYzNjY2YzRiMWYwYjU1NDk5OWZhN2IxMDI3Nzc4YWMxY2YxY2MwMTU4NzNjMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTIxNDc4ZjVmOTRmZDI2MmJmMmMxNTEyZTRiYzIzNzVjMDRhMzVlYmUwMzA5MzEwYTA4N2ZjMzc2MDFhZGU4YyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTg2NDAwZTUwMjUyY2ViY2I4Njc1NWMyNTgxZjczNGM3NmQxZTRhMDI3ODU5ZDcxNGJmZTIzMGZjN2I1YWM4YSJ9"
         },
         {
-          "resource": "repo://main.py#L199-L221",
+          "resource": "repo://main.py#L200-L222",
           "version": "repo-lines-v1:sha256:7a6cdb8fdae92bf9a0497af6888acb5035a4fee63abe073c91807c37b2b6f844:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImY5NjZjZjNlNTVlMTQzNzU2MjlmNjZlNWU1ZDMxZWY2Mjg5NmRhMGUyYmEzY2ZkZTUwNjk3Y2ExOGUwYjU4MDciLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcyMDg1MzI5MTBjZmNlZmU1ODcwM2Q0MzQ0NWE5YzIwMmIxMjQ4NzcyZjE2ZWY1YTE2MzBlNjJmMjVkZjAyNzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjFiOGRjMDEwNTNjOGExNzEzOTQ0OWMzM2NjMTVjOTNlYjM0N2E5OTExNzU2NzgyODEyODFlNzUyOTQzN2RlMzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImM4MTY4YWM3NWI3Y2EyOGQyN2Y1ZWU3NWU3Yzg4ZGE1NjQ1NzMzNDQyNGMzYTkzZjAxNTQ4OGQ3ZmYwNTFlZWEifQ"
         }
       ]
@@ -115,7 +97,7 @@
       "statement": "All three HTTP nodes in the workflow (Wake GET /docs, Digest POST /digest, Mark Sent POST /digest/sent) should point at the backend URL — http://host.docker.internal:8002 from Docker, http://localhost:8002 without Docker.",
       "evidence": [
         {
-          "resource": "repo://README.md#L475-L475",
+          "resource": "repo://README.md#L501-L501",
           "version": "repo-lines-v1:sha256:48fc31a9d352cb1a49768c75caccc159f0d2ef878f647241e1038bc2c98b8ea6:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDhmYzMxYTlkMzUyY2IxYTQ5NzY4Yzc1Y2FjY2MxNTlmMGQyZWY4NzhmNjQ3MjQxZTEwMzhiYzJjOThiOGVhNiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNDhmYzMxYTlkMzUyY2IxYTQ5NzY4Yzc1Y2FjY2MxNTlmMGQyZWY4NzhmNjQ3MjQxZTEwMzhiYzJjOThiOGVhNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYmVlNjczOTM3OWQ4Y2MxYTM5ZmNkY2U5NmQ5ODAyY2ZjOTM1NDYzYTk0NWFiNTg4M2RiMGEwMTRiNTA5ZWYzYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNzgwYjNlNDFlNzNmZTA2MWY5OTQyN2M5NTgwNGIzMzQzYjVlYjUyYTQ2MjYzMGM3M2ZmZmY1MjE2M2Y1MWQyMSJ9"
         },
         {
@@ -129,22 +111,18 @@
       "statement": "If the backend is always on (not a sleeping free-tier instance), the Wake node and the Wait node can both be dropped — they exist only for cold-start handling.",
       "evidence": [
         {
-          "resource": "repo://README.md#L479-L479",
+          "resource": "repo://README.md#L505-L505",
           "version": "repo-lines-v1:sha256:ceff9f7588a668157d15e3fe27b997b75a97ee1f7db1891fa889c26a979154c9:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmZjlmNzU4OGE2NjgxNTdkMTVlM2ZlMjdiOTk3Yjc1YTk3ZWUxZjdkYjE4OTFmYTg4OWMyNmE5NzkxNTRjOSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiY2VmZjlmNzU4OGE2NjgxNTdkMTVlM2ZlMjdiOTk3Yjc1YTk3ZWUxZjdkYjE4OTFmYTg4OWMyNmE5NzkxNTRjOSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNzgwYjNlNDFlNzNmZTA2MWY5OTQyN2M5NTgwNGIzMzQzYjVlYjUyYTQ2MjYzMGM3M2ZmZmY1MjE2M2Y1MWQyMSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZDYzZGQ4MjFlNmM2NTllM2VlZmJiY2ViMTA3YTQ0YjViZWFlZmE4ZDA0MmMxOWIzYmMyMWIwYzkzNjcwMmVhMiJ9"
         }
       ]
     },
     {
       "id": "claim_0974a9911a164d44b20badfe92939055",
-      "statement": "POST /digest runs searchhelper -> normalize_jobs -> filter_jobs (applying the thread's stored memory), then reads every joblink from the Postgres n8njobs table and keeps only jobs whose apply_url is not in that set, returning {md, links} where md is the formatted markdown and links is the apply_url list of the surviving listings.",
+      "statement": "POST /digest runs searchhelper -> normalize_jobs -> filter_jobs (applying the thread's stored memory), then reads every joblink from the Postgres n8njobs table and keeps only jobs whose apply_url is not in that set, returning {md, links} where md is the formatted markdown and links is the apply_url list of the surviving listings. The set is updated in-memory during the loop to prevent duplicate listings within a single digest response.",
       "evidence": [
         {
-          "resource": "repo://main.py#L116-L154",
-          "version": "repo-lines-v1:sha256:0dfcbe781f6665f0745a2216a2b170002adbe89318a34e099cad964af58d6403:eyJzZWxlY3RlZExpbmVDb3VudCI6MzksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNmODY3NzAyMWJkYTBiZDM5Y2Q3MTgyMWIyNzBlZTM3MzZhOGMwMDVhNzI5ZjA2NjlkN2RjNDQ2YzMxYjNlM2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1YzVlMjFhNzZlNTUxN2MwNmY4MmEwM2VkYmU2MTIzNjNhMTg4ZGNlNTZmMmEyMjAyYmQyOTVhNTdkMzc1ZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjQ4ZjU3YjI1ZDc0YWRlMjQ1NzA3ZjZhOGE4MzkyYmQzNjJkNTE3MGJhMTgxNWIzZjViOWI3YzJkZWRlYTJiMTIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmMjU5MjkzMjA0NzZmOTMzYjllZGQwNzU1ZjY3NTc5ZTMwYjgwYzI1MTkwYTE0YTBkZGYzNjA4ZTk4MjJmYTUifQ"
-        },
-        {
-          "resource": "repo://main.py#L174-L189",
-          "version": "repo-lines-v1:sha256:aa4dd5dbbf9c08591ae6c79ab89afd2a00dc98d25d66798deb3e17f77d3b7b74:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjcwNWYzYjAzYWIxZWMwZTk2NWNhMzk1ZTM0ZjJkNmM3OGIxYTc2NDI4N2E5YjQxNzU0YTc3NGIxMWNiYzlmNzMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwYWQwMTFmYjE4YThmMWY3ODAzMjM4MzAxYTUxZGM1YzY2NjdjYTMyNDJhMDE2ZjlmYzkwNWJlZGI1OTc3OGUiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImY4NTU5Zjc5NDVkNjc2ZTMzOGFlM2I4MGI0Mjk1NWNkYWJhNzY5NmY1OTdhMDAxYWY0ZDMwNzFiYjRiOWYzODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjkyZmQ3YTk2MjA3YjUzYzUyZjJjNGQzZjE0NzEwZDMwOTcwZjQ5ZmY1MjU3NWFiYjZmODY3NGE0NWU3M2NjYmQifQ"
+          "resource": "repo://main.py#L174-L187",
+          "version": "repo-lines-v1:sha256:15e373d34522c26ec85fa029595b135da2069f618b4db534dab0546f83f436e0:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNjNGI0MGUwZjUxM2Q0YTcyZjI1NWVhMzYyYzRkZTk3N2Y0MzQzMDNiNjI4NDg2YWQyYjg3ZmFkNWIxMDY2MmEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY3N2I4ZThlZjFlM2QwZmJhODI1OWI0MmEzNzZlOGI5ODQ4M2RkMTg0OGViMDE1ZDkwMjFkMjhjN2Y1Yzg0NmQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjcyYjEzZmVmYzllMzllM2UxNDU3ZDg0ZmFiODVhOTZhZGMyZmVhODhhODg0OTdiZWQ1M2Q3MzU0NTc4ZWI5YjQifQ"
         }
       ]
     },
@@ -153,11 +131,11 @@
       "statement": "POST /digest/sent inserts each link into the n8njobs table with ON CONFLICT (joblink) DO NOTHING; the workflow calls it only after Gmail succeeds, so a failed email after a successful search does not mark listings sent, and the idempotent insert makes the worst case a repeated email rather than a missing one — the workflow never emails the same job twice across runs.",
       "evidence": [
         {
-          "resource": "repo://README.md#L465-L467",
+          "resource": "repo://README.md#L491-L493",
           "version": "repo-lines-v1:sha256:3a9c7b90b0e711c0a0bd57fc4eb7b3dbbbaec378874e48a185fe33aac1f9cd9b:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiODNmNzlhNDMwZjRjNjg0OTcxZjg3Y2JlMDkwMzhmM2YwNTg2N2U3Yjk5MWU1NmQzMzM2ODlhNThkZGM5MDEwMSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiM2NmODk2NDI5MDViNWRiZGRjZGM4YmVkMWVjM2E3MWE2MDVmNTBjYzRiYmJjZWZkNWY2YzMxNDBjMTg1NzQzMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTk3ZDQ3OWE5NzdhNTRlMjE3NGI1ZGMyYjFlYjRhZDJkNTg4YmMzODkyNDFiYTAxM2JjYmU1YjhhZTU5MTc1MiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNWMzZmJmMDQyYzZhMDc0NWQ2M2EzMTg5MGUzYzdlMGE1MmE2M2RiYTAzNGEzYzA1YmM4NDkzNmJhMTBhZGJjZCJ9"
         },
         {
-          "resource": "repo://main.py#L191-L197",
+          "resource": "repo://main.py#L192-L198",
           "version": "repo-lines-v1:sha256:712aba82ffd1e27884c7958c60e0844f5b6aa9de4b52df67a6ed2a3a28e540b1:eyJzZWxlY3RlZExpbmVDb3VudCI6NywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiOWUwZmM1NDI1ODRkODg1MmMxOTQwYmQ2NGQzZTJkMGQ1MTdhZTY3NzFkNjRmNTFjOTk2Mzg0MjRmODM0M2UwOCIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjJhNWQ1YzIyNjI1MzUwZmVlZTlmYzFlODQ1NmQ3MmE0ZTY1Zjg0NTRjNDhhNmZlMmZkMmRlZGI1NjhmNGE3MyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjk4MmY5ZGU4MmJkNjNhOTEyNTlmNmIwOTc4M2ZhMzY0NjBlNWYzYzE5ZTQzZTViYzY5MmRjN2RiZWY2NGIyYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiN2QxMjE5OTI3NWQxZTRlNjQ4MmY1NjkyODIyN2Q2YzA1MjJmMWNkNjI3YmIwZTA5NjhiYzQyYzgxZjMzOGQ4YiJ9"
         }
       ]
@@ -167,7 +145,7 @@
       "statement": "Both backend HTTP nodes in the workflow (Digest and Mark Sent) authenticate via an httpHeaderAuth (Header Auth) credential whose value is the N8N_DEDUPE secret; the backend guards /digest and /digest/sent with keycheck('N8N_DEDUPE') using secrets.compare_digest and returns 401 without the matching x-api-key header.",
       "evidence": [
         {
-          "resource": "repo://main.py#L163-L197",
+          "resource": "repo://main.py#L164-L198",
           "version": "repo-lines-v1:sha256:2e9815d47d28f8fc18a3647733d4344e31b00df0e080c9bfe2810851f6587597:eyJzZWxlY3RlZExpbmVDb3VudCI6MzUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlNTdiNGRhZGU2NWI2Njk0YTk2YzQ0MTAzYTM2ZTEyNWNiZTE5YTJkNzNlYTk5ZmU4NzliZGMxMDRlMmY4ZDAiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYyYTVkNWMyMjYyNTM1MGZlZWU5ZmMxZTg0NTZkNzJhNGU2NWY4NDU0YzQ4YTZmZTJmZDJkZWRiNTY4ZjRhNzMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjkyMTQ3OGY1Zjk0ZmQyNjJiZjJjMTUxMmU0YmMyMzc1YzA0YTM1ZWJlMDMwOTMxMGEwODdmYzM3NjAxYWRlOGMiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdkMTIxOTkyNzVkMWU0ZTY0ODJmNTY5MjgyMjdkNmMwNTIyZjFjZDYyN2JiMGUwOTY4YmM0MmM4MWYzMzhkOGIifQ"
         },
         {
@@ -192,7 +170,7 @@
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.1",
-    "at": "2026-11-01T15:48:11.877Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T09:45:53.453Z"
   }
 }

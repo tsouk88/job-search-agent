@@ -4,8 +4,8 @@ title: Integrations
 description: External service integrations — five job APIs with their query patterns and quirks, the LLM and LangGraph stack, Redis (cache, rate-limit storage, Gemini budget), Celery over Redis, OpenRouter and laya serve judges, PostgreSQL persistence, LangSmith observability, the frontend HTTP contract, n8n automation, the MCP client contract, and the voice agent service stack.
 tags: [integrations, external-services, apis, job-boards, llm, persistence, redis, celery]
 verified:
-  - by: openwiki/0.6.1
-    at: 2026-11-01T14:50:14.085Z
+  - by: openwiki/0.9.0
+    at: 2026-11-05T09:45:53.453Z
 sources:
   - id: openwiki-source-5f5b95b3d6a215fa02ceb945
     resource: repo://.env.example

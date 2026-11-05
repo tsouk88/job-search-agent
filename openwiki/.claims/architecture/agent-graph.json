@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:16db0fa597eb47170c83638954e5a47729677fa46cd9b955e5cf5bd8efe6564b",
+  "pageVersion": "sha256:75816b45d9dc28214bde9f46ce4469a563cf264c7a7734b4ab2df8b958ed019a",
   "claims": [
     {
       "id": "claim_51d0d84294da490199c9fe302fef5974",
-      "statement": "The LangGraph StateGraph fans out from START to five fetcher nodes via the Send API (fetch_jobs/RemoteOK, fetch_sjobs/Himalayas, fetch_tjobs/Remotive, fetch_fjobs/Jobicy, fetch_wjobs/Workable), each with a plain edge to collect_results which edges to END.",
+      "statement": "The LangGraph StateGraph fans out from START to six fetcher nodes via the Send API (fetch_jobs/RemoteOK, fetch_sjobs/Himalayas, fetch_tjobs/Remotive, fetch_fjobs/Jobicy, fetch_wjobs/Workable, fetch_gjobs/Getro), each with a plain edge to collect_results which edges to END.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L559-L587",
-          "version": "repo-lines-v1:sha256:5d0cc266b85eb13822d3c3878357a502074eccc2e299891b90cacfacdce23f4e:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjNjNzkzOTZkM2FhM2ZhYzkwYTZjMTc0NzcxYjliOTNkMDI1ZDI2ZTNlODIxZDQwMmMwZDM4NDhhYzk3OWFkZmUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZlOTk2N2YxMjk5MWNhM2VmNmI2ZmVmYjZiNDRmN2IwODdjOTQxMzYyNzkxNDBjYmNkNzFmMDk5M2I2MDQ4ZTkiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY0ZjE5MjFjOWJjNGY5MGI4NzQwNThkNGQ5MTFmMjAxNWQ1MzU4ZWUwODRlNDZhNDAwYWEwMTM5YjczNDdhOWUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhM2NmNTE5MjM1NGY3MTYxNWFjNTEwMzRiM2U5N2MyMGVkYTk5NjQzZmNhZjViYmU2ZDQxYWQ1OWJkMTIxNjcifQ"
+          "resource": "repo://agent.py#L615-L623",
+          "version": "repo-lines-v1:sha256:217d03ce38587c6daeaa24292b14a4d424ca457894a17107b87d8f1e9ee6a5d1:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiM2M3OTM5NmQzYWEzZmFjOTBhNmMxNzQ3NzFiOWI5M2QwMjVkMjZlM2U4MjFkNDAyYzBkMzg0OGFjOTc5YWRmZSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYWRkMjQ0NTgyYjZmYjAzZDIzYjg0MTVhYmVjZDM0NmIwYzlmNDY2YjZmNzUyYjA2ODE4OWNlN2U5YTJkYzM1MCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNjRmMTkyMWM5YmM0ZjkwYjg3NDA1OGQ0ZDkxMWYyMDE1ZDUzNThlZTA4NGU0NmE0MDBhYTAxMzliNzM0N2E5ZSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNTdmZWUyOWE1M2E1MTY4YmIwZWQzYTdlODkzMDcxZjJhNmZhMDJjYzA5MjE3YmRiN2I4NmIxOTExNWE1MThhMSJ9"
         }
       ]
     },
@@ -17,7 +17,7 @@
       "statement": "State now carries a country field (str, default '') in addition to user_input; fetched_jobs and memory both use the add_or_reset reducer, which appends or returns [] when new is None.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L267-L274",
+          "resource": "repo://agent.py#L268-L275",
           "version": "repo-lines-v1:sha256:7effd36a36eec6ae4342641aa9eb819a4c1d4e38e20919106598a1f4fbf97938:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmZjMTU4YjE1MzVhNzhkZTk2ZmE5ZmYwZDFiNmNkMWNkYzllYzM0MTZjNTQ2NGFmOTZkOWZhZWI2NzZjNTVmYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjEzN2EwOWI1YWJhMmM0ZGY2MmYwNTE3NzhjYmY1MGEzYWIyOGFlNjBhOTUzNjIxNGYwZmFjNTM2OTZiMjRlMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjY4OTIxMmVkMmEyZDQ5NGFmYjQ4ZjAwMjRhZTUzODNlZDAxOWIyMTQ2ZmZjY2E4MWUyMzM5MTUxODVjMjg3YiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjBkNTRkMWU0ZTU3NmY1M2M5MjRjNjg4NjA0MDM4NjgyMmI3OTgzNmQ2MjBmMjM4YWEzNmY5ZmM2OGNiNmU0YiJ9"
         }
       ]
@@ -27,23 +27,23 @@
       "statement": "canon() and ALIASES spell synonyms one way before matching (machine learning→ml, artificial intelligence→ai, full stack→fullstack, developer→engineer, etc.), unifying query and title tokens so disjoint spellings become one result set; canon is applied by signal_tokens, job_title, and inside score_job (to the description and query words), but distinctive_tokens tokenizes the raw query without alias normalization.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L134-L138",
+          "resource": "repo://agent.py#L135-L139",
           "version": "repo-lines-v1:sha256:d05474b59197fea27ebddbbed5a9534fea16bb9b42d7f655a86db04ef3ff590f:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMzUzNmJjOTdjMzJhZTJmNzIxOWZlYmNmZmUzZjAxZmI3ZWY4MzliY2JmYTg3ZWQzNzUyOWYzM2VkZGU4YzBiMyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiOGQyODc0YjgxMWQzM2U5MTA0ZGQ5Nzk3YzRkMmY2NmFhNzg5ZmI3NmRhNDcxYTZjMTY2NjQ4NjM2NTEyYjJkMyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMzgxNzdkNThkZDQ0ODhiOWE2YTgzMDA3NDVjYjc0OTM3OTlmNTE5NTA3YzFlN2JiNWJhYjEwYzVjNTAwY2ZiMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjkyNmYzMmUxNjI0Mjc3YThmNjg2Mzk5YWQxYWNjOGM4YTQ3ZjhhZGY2ZTM1ZTc4ZTIzYTFiY2JlOTQ2ODdhYyJ9"
         },
         {
-          "resource": "repo://agent.py#L143-L167",
+          "resource": "repo://agent.py#L144-L168",
           "version": "repo-lines-v1:sha256:29eaccf381af985cb8bf6b4c7056a125cd7751a8ee1bdd27edd0fce0e0c8d732:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI4MjdlZjUyMzg4YWU3ZWQxMWJmYjViOGEyNDc2YTI3NDE1ZjAzOTcwZTMwMTQ3NjhmNjE2ZDE1NDU0OWIzN2EiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImRhYjhmNGY0MTM1OWY2YzBiZjdhYmMwNDdkNGM1Nzc0NTcyMjMzNGY1ZDJkNmU3MmUxNjZhNTViM2EwOTc0NzEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZhYmRlMmMxNzdiMzY4MzhhYmRjYTU3YWM2MzE0NjcyZjY2MzRkZWNkNzE2NTUxZDRjOWVmMjZhMTRmNjY3ZWQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImQxMjEwNGQzZWUyNWIwZTE5ZTgyZDgzZjFjYjE4NmQ5M2E1ZTIwMzE4ZTAwNTRjYzM1NWM0MDM5Yzc2ODQ2NWEifQ"
         },
         {
-          "resource": "repo://agent.py#L169-L182",
+          "resource": "repo://agent.py#L170-L183",
           "version": "repo-lines-v1:sha256:416ef07d315ea431c11c2312c090960173aa1489a8671d5cac2605f182c99e4a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwOTQ0M2RmOTk5Y2Y1YWY4OWY5MmVjOWNlMWIwZGE1NzdlZTU0OWExZjYyYTk2NDlkY2FmZmE1ZDY2MjE4MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzOTI2Y2VkNWI0MDdiYzliNjg1NmZhNjVlZDQwZDBiYTM0ODkxYTg1NmVjODc1MDMyMmFmMTY0OTllNDdmOTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyNTliZWFlYWU5Yjk1Y2U5ZmFlNTk4NGNiZjM4ZDg3NmE1ZmY4YmVmNzI5YTk3OTRhOGY2NmVhYmUzN2EyMjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2Njg1YzY5ZGIwMDMzYTIyMzBlMGZjOGJlMTVhZGRjZmY4MDBiOTkzOWE2ZjhhMWE4ZjUyMzI4MGQyZDM3NDIifQ"
         },
         {
-          "resource": "repo://agent.py#L185-L188",
+          "resource": "repo://agent.py#L186-L189",
           "version": "repo-lines-v1:sha256:66d5c4063b0d512a6c4a0b192ead6bd13c9faee30f5a405bdd836462c69f5f94:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZTVkNjAyZTdhNjlkYjA5ODZjYjFlNTUxZWRiNzczM2Q1M2U0YThiMWU1NmU3NTg2MzA4NjhhNmRhNWU2ODhlMiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNjlhOTY0MWQwNmI1ZTNhZTFiNjYxMzhjNDg1ZjVmYzRiMTlkZDkxNWZhOGYzZDM3ZTFhMTY0OTFhMDdjNTVlYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTY2OGRmZDE4ZGMyODE0ZmRhOTliOGQzNmIyNzlhOWI4YTAxOTUyOTU3NzFjMDcwZjM0OWI1MzVkZTdmMWNjOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiM2IyNzFjZmM2MmFkZWUzM2RjOWIyMTlmODk1NTIyZmU0NTMxNjdmMDQ0Zjc2ZDc5NWVjOWViZjllYTA5MWU1ZCJ9"
         },
         {
-          "resource": "repo://agent.py#L202-L221",
+          "resource": "repo://agent.py#L203-L222",
           "version": "repo-lines-v1:sha256:03c56a9b89df58e70e4b7e78c5a2f3a66d58fabdacc5b7d180d17948ffb8c0cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlYzUyYjU1MWRjMjRlMmEzMmE2MDhhZGY2ZWVkYzE1MzYwMWZhYWI0ODUzMTAyZjU5OTQxM2VjNzUxMzI5NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2NjU1MDMxODdjNzdlNDgzMzU4M2Y4MDc3YjYwYzU1OGZjMzE2MDc3ODViZjljMWY0MjhhYmUwMWVhNjIwMWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2MDkwZTJjNTc4ZGZhN2UzYjFlM2RjNGYwZjg1YzMyNzFlNWRmZTUxYWQxYzhmZWQxODk1OTliNDc3YmFjODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1MmM4YzViYjMxN2E2OWFlNmE3ZDA4Y2U5YjY0ODIxMzBhMjJiZTk5N2FiOWQ1NzBiZTFmNDE2ZDM3ZGVhN2QifQ"
         }
       ]
@@ -53,7 +53,7 @@
       "statement": "distinctive_tokens() picks non-generic tokens in order, deduplicated and capped at TAG_LIMIT=3, for tag-based API queries; unlike signal_tokens it tokenizes the raw query (query.lower()) rather than canon(query), so it sees literal words not aliased forms; it returns the words that narrow the search and empty means the caller should ask without a tag.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L169-L182",
+          "resource": "repo://agent.py#L170-L183",
           "version": "repo-lines-v1:sha256:416ef07d315ea431c11c2312c090960173aa1489a8671d5cac2605f182c99e4a:eyJzZWxlY3RlZExpbmVDb3VudCI6MTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjQwOTQ0M2RmOTk5Y2Y1YWY4OWY5MmVjOWNlMWIwZGE1NzdlZTU0OWExZjYyYTk2NDlkY2FmZmE1ZDY2MjE4MDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImEzOTI2Y2VkNWI0MDdiYzliNjg1NmZhNjVlZDQwZDBiYTM0ODkxYTg1NmVjODc1MDMyMmFmMTY0OTllNDdmOTciLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImIyNTliZWFlYWU5Yjk1Y2U5ZmFlNTk4NGNiZjM4ZDg3NmE1ZmY4YmVmNzI5YTk3OTRhOGY2NmVhYmUzN2EyMjYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY2Njg1YzY5ZGIwMDMzYTIyMzBlMGZjOGJlMTVhZGRjZmY4MDBiOTkzOWE2ZjhhMWE4ZjUyMzI4MGQyZDM3NDIifQ"
         }
       ]
@@ -63,7 +63,7 @@
       "statement": "title_hit uses regex r'\\b{token}(?:js|s|\\d+)?\\b' matching whole words with optional plural/version/js suffix; there is no <4 char special case. Suffixes are allowed (python3, reactjs, agents) but prefixes are not (rust does not match anti-trust, java does not match javascript).",
       "evidence": [
         {
-          "resource": "repo://agent.py#L191-L199",
+          "resource": "repo://agent.py#L192-L200",
           "version": "repo-lines-v1:sha256:9be826f93953bd3893d7519b825061d4d7e8dbb27510cafdb059e53168bc7fd1:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZDY4NWY0Yjg4ZmI1MzQwZTY1ZTQwNWQ3Yzc4MjhjZjdiMTEwY2RmZWUyZjZkYTY3M2QzMWZlMjcxNjVmNGViZiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZGVhOTQzY2ZiYzczZmFkZGNlMjBiZjM1MWNlZjQ5OTc2YzViZjIyMGQxN2U2Y2RkNThiOTMxZTI4MjYwZGFlZSIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZWMyYjQ1NGNjNWVlNTg1NzE5MmZmODZiMmE1NDllMjExOWJhMzVjODA2OTg5ZTYyNmZjYmYwNmI4MjczZmQ3MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2FkMzlkZjAzMTQ2ZDdlMWYwYWM0MDRmZjZlNGUxYmE1OTBkNjIyYTIzN2IwNDI3ZGVlNDhlMTEzNWZjMDQxMCJ9"
         }
       ]
@@ -73,7 +73,7 @@
       "statement": "score_job is frequency-weighted: title_hits*TITLE_WEIGHT plus a description contribution of min(desc_hits + gen_hits + freq/8, 9), where gen_hits counts GENERIC words in the title (0 when the whole query is generic) and freq/8 is a frequency bonus; the description is canon-normalized before desc_words/desc_hits/freq are computed. The description contribution is capped at 9, below TITLE_WEIGHT=10, so it can only reorder admitted results, never admit a job the title did not match.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L202-L221",
+          "resource": "repo://agent.py#L203-L222",
           "version": "repo-lines-v1:sha256:03c56a9b89df58e70e4b7e78c5a2f3a66d58fabdacc5b7d180d17948ffb8c0cb:eyJzZWxlY3RlZExpbmVDb3VudCI6MjAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJlYzUyYjU1MWRjMjRlMmEzMmE2MDhhZGY2ZWVkYzE1MzYwMWZhYWI0ODUzMTAyZjU5OTQxM2VjNzUxMzI5NDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjY2NjU1MDMxODdjNzdlNDgzMzU4M2Y4MDc3YjYwYzU1OGZjMzE2MDc3ODViZjljMWY0MjhhYmUwMWVhNjIwMWMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImU2MDkwZTJjNTc4ZGZhN2UzYjFlM2RjNGYwZjg1YzMyNzFlNWRmZTUxYWQxYzhmZWQxODk1OTliNDc3YmFjODAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1MmM4YzViYjMxN2E2OWFlNmE3ZDA4Y2U5YjY0ODIxMzBhMjJiZTk5N2FiOWQ1NzBiZTFmNDE2ZDM3ZGVhN2QifQ"
         }
       ]
@@ -83,7 +83,7 @@
       "statement": "collect_results deduplicates by a company+title hash (re.sub removing non-alphanumeric) rather than apply_url, keeps only jobs passing location_ok(job, country) and job_is_recent(job) (MAX_AGE_DAYS=120), keeps score >= TITLE_WEIGHT, applies a wants_engineer special case (when title_hit('engineer', canon(query)) the job title must also contain 'engineer'), sorts by score descending, and caps at MAX_RESULTS=12; after capping it strip_html-cleans and truncates each description to 2000 characters.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L521-L554",
+          "resource": "repo://agent.py#L577-L610",
           "version": "repo-lines-v1:sha256:1f1374fee1cd2b78caa0f10766671c10bffca979adc7b467278191d28385c068:eyJzZWxlY3RlZExpbmVDb3VudCI6MzQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU1MmM4YjRhYTRjYjRjZDA1MDQ4NDBiODdhZjY2NDAyMGI1ODFmMWNiZjFmZjc1NmE2MTE1NzNmNDZjYjA0YjgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjgzZjVkMjA2YTQ4MDgzYjJkOTU0Y2ZhNTE2OGE0OTg3ZDVlMWM1MjFjYWM2Mzg5YWE5MTBhMmI3ZjVjMTA0NWQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzY2JlYWEwOTVlNTYwYzg4OTJlMGMzOWY3ZjAyNjE1NGIzZTlhNzAxOTMyNzEyM2Y5NzJkNWU5MDA5MDMwMzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNkNWZiN2NiNGE3ZDRlZWJmMDIxZmQ0MjM2MTg3MDhkNDhmN2RkMzc2YWQwMDRlMzg1NzNjNjg4NjE0NWRmYzcifQ"
         }
       ]
@@ -93,7 +93,7 @@
       "statement": "fetch_wjobs (Workable) is a two-round crawl: workable_urls fetches search pages and extracts links from schema.org ItemList LD+JSON using path-form URLs (/search/<country>/remote-<token>-jobs) because robots.txt disallows the query-string form; the country segment is mandatory ('worldwide' slug) and an unknown country returns 200 with an empty list, retried worldwide. workable_job then fetches each surviving posting's JobPosting LD+JSON block, capped at WORKABLE_DETAILS=6 per-posting fetches.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L355-L453",
+          "resource": "repo://agent.py#L411-L509",
           "version": "repo-lines-v1:sha256:6e1e29581984f404f8bec9478b9dbc564009edbea83e06d30c18386d56da1f79:eyJzZWxlY3RlZExpbmVDb3VudCI6OTksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4Nzk1NWY0ZmVkYmY2MzMyMjU2M2I2N2ZjZWFjZDdiYjc1MzQ1M2M2MTM3OTNlMmMxMjczYjkwMDM4M2I5MGMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImVlOWNmZjZiMmIzOTAwZjEzMTI2NGIwMWQ3Yjg2NjU0OWJhMTNkNDlmMTNhMDI1MzI2Njg0MTBjZDdiMjBiODYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjdiM2MwYzU3YTA4Y2VjMDllNmQ2NTYzZTcyYWY2YWExZmVlNTBiYzBhZGQ3YWFhMDFkNGNlNjk5YWQ2MGY0OWIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjEyYjM3NGI0OTdiNTM1ZWM3MGQ3MDQwMzMyNDkwOGI2OWY1ZGJmYmU4YjAyYTk4NDkyMTVhOGI1MDYxNzNiYTkifQ"
         }
       ]
@@ -103,7 +103,7 @@
       "statement": "fetch_jobs (RemoteOK) uses distinctive_tokens (not just the first keyword), tries tags in order until a page returns >= ENOUGH (50) results, deduplicates by URL/id across tag attempts, and re-checks every listing against its own title via title_hit because RemoteOK tags are SEO filler.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L279-L307",
+          "resource": "repo://agent.py#L280-L308",
           "version": "repo-lines-v1:sha256:b61c8bc78c889ebc91db4418521ba03d8538ce80c9c835488b6d36e9a6b2033a:eyJzZWxlY3RlZExpbmVDb3VudCI6MjksImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImU5YTZkNjZmZjEwODNiNTQ5MzA5YTI4NDE2ZDJkN2NiYTIxZGE4OTgyMDBmZDg3M2IwZTg5OWVkYmE0OTFjZWUiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM1NmI4YWJlODA4NDFmMWQxMDRmZTllZTM4YjNkNzdlMmIzZGI1YWI3MDRiZTRmN2UwYWQwNGNiOGFlNTUyYWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY5MDdjNmY1ZDRjMjg0ODBmZDQ2YThjYzE3NTJjYzU0ZGNmNjhkMDVjZTgzNDMxZjMxOWJhZWI2MTRjNWNiN2QiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjY3ODAzYTJkY2JmYjgwNDg0ZGQ1NzY0ZDBmZDcxYWFkZWNhYmY2MmFlNThlOGFjNTgxMWQ2YTkzYzA3MjA5MWIifQ"
         }
       ]
@@ -113,7 +113,7 @@
       "statement": "fetch_tjobs (Remotive) is a cached feed, not a search: remotive_feed() uses a module-level _REMOTIVE dict with REMOTIVE_TTL=6*3600 (6h); the edge cache does not vary on query string, a failed refresh keeps the previous list, and listings are filtered by title_hit in the fetcher.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L324-L348",
+          "resource": "repo://agent.py#L380-L404",
           "version": "repo-lines-v1:sha256:1516378cd7b8a14e79eff0d5a658f85caebd431e5e8d12c27a81f20b236b15d1:eyJzZWxlY3RlZExpbmVDb3VudCI6MjUsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImI3ZWM3OGJhNmYyNTFmMmUzOWZiZDVjNjcxMDMwYmU1YmMyYzU5ZGY5OTRkNmFhM2QzMTNmMDQ0OWMxMmYzNDEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImNkYzE4ZWVkOGNjMTBjMzUxNmU4NWUxYjIyNTNlYTRmMzNkYjE4NTMzNTVmZWQ3MTk5YzM4NGYyN2I4ODhlOTYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjE1YzIzMTg3ZTQ4NzhlOTNlODM2ZDg1NGVhZTYxODU1ZTNlMTZiZWQxMjlkYTQxOWVhNjlmNjEyZWYwYzNlOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjJmYjA2MGUyYmMyNDU3NmVmODAwZDg0MTA3M2QzYjkyMTllNmY3MjM5YWFmZDMzNjFhOTZjN2Y5ODBkZGVhNjkifQ"
         }
       ]
@@ -123,7 +123,7 @@
       "statement": "fetch_fjobs (Jobicy) uses distinctive_tokens with a geo=country parameter; an unknown country returns HTTP 400 and is retried without geo, and if all tagged attempts return empty it falls back to an untagged request.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L479-L519",
+          "resource": "repo://agent.py#L535-L575",
           "version": "repo-lines-v1:sha256:ecbc2bc73c3e383c9c3206d99e3ef83985700720e2ea159b95aff1440357b9fc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImYxM2VhZjdhZWE3ODVmZTA0ZWIxMWMzZDAzNDZmMmNjMTNmNDEwNjEzNTQ3ODI4ZGQzZmQyYjEzMGViZjIyZTYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZkMjRlOTdhZDA5ZDIwMTc0ZDM1NzcyYjdlZWM3NTc3MDY1MDUyNWJhNTZiY2FjYjBjNTlmY2FkOTRlMWUyMjIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImMzMTE0NTZjNmYxMTFhNDlhM2Q4NjBkZGU3ODk0NmVmNDcxNTMyNjQ1YzkxYzc2ZjQxNTU1NTMxN2UzYjQ2ZDgiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI1Yzg0M2NlNjMxZTJlMDA3MGQ0NGZiMWMzNTU1ZTRlZTcwYTEzNTUyYjczOTFiYTY3Y2MxMjM5ZTAyZDg2ZTMifQ"
         }
       ]
@@ -133,11 +133,11 @@
       "statement": "filter_jobs also removes jobs without an apply_url or with empty/Unknown position, and the SENIORITY set includes pleno, sênior, estágio, head, director, vp, chief in addition to the earlier senior/junior/lead/etc. terms.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L13-L14",
+          "resource": "repo://agent.py#L14-L15",
           "version": "repo-lines-v1:sha256:b01b96304fd3d5e7ebc696100ed59488a40d98e8893c9af79d4e1b3849e9f738:eyJzZWxlY3RlZExpbmVDb3VudCI6MiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNGM0OTcxNzc2OTE5Y2NiOTgwODg3OWYzZjRjMjRiM2JiYjA2MzMxMTE1ZGJlNzdhZGVmNzI5Njc0OTk1NTc5MyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZmQ1NjMyNWU3Y2FlZDI5OTQ3NGE0OGM1Yzc0OTMzODA4MTY2YjQ4NDA4NTkyYTA5YTFjYmYyNjRiY2QyYjUyMCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiZjEzYzc2YmNlYzY1ZDBlNjY3N2VhNWI2YTMwNTZiNjMzMzZhZWYwMWNmMmFmMmFlNTI3NDgzMDQwODMyNDEwMyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNDRmNDc5MDI5ZjBlMTYzOWZjZDU5YzQzYTVlZDI1ODI0OTZmMzIwYjQyM2JkYjczMjQ5ZTMxNzc5YzViZjE3ZSJ9"
         },
         {
-          "resource": "repo://agent.py#L29-L51",
+          "resource": "repo://agent.py#L30-L52",
           "version": "repo-lines-v1:sha256:4db8d4e8c3adf3710f34575ef561e56f9e7fcaa2cd54fa42f6230df238cb0161:eyJzZWxlY3RlZExpbmVDb3VudCI6MjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjlkN2NkZmE0MjczNmJhNDE3Y2JlMTkwMmI1MzRhNjYwMjg5OGU0MDc3ODFmOTBlNzZiNDdlOTMwYjNjZjJmNDgiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImM5OTQ5YjAxZjUzYTNmZmJiODBlOTk1ZDlmZWNiOTllZmM5OGRmMTYwNjZmNjIzMzRlZmJkNTYyN2NhZjc5YzQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzZDRiZGNiNTMyOWYzYjVkZGNmYzM5ODBmZmNmOTlhZDUxZDBhMmQyNjJmZTk2NWZkZDM2NWYwMGJmZGNhOTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImFkMmYwZjM4MDg3NjdhMTFhMGI4ZjU1MjVjYTI1ZmEwYmE1NGQzOTUyMzY5N2FkZWIyYjhhZDVkYTExNDczMjYifQ"
         }
       ]
@@ -147,7 +147,7 @@
       "statement": "normalize_jobs applies fix_mojibake to company/position/location/description, strips HTML via strip_html, cleans salary (a salary reducing to only spaces/hyphens/zeroes via re.sub(r'[\\s\\-0]', ...) becomes 'Salary not listed'), and deduplicates by a company+position hash (re.sub removing non-alphanumeric); it does not truncate the description (that is done earlier in collect_results at 2000 chars).",
       "evidence": [
         {
-          "resource": "repo://agent.py#L235-L264",
+          "resource": "repo://agent.py#L236-L265",
           "version": "repo-lines-v1:sha256:1918987d290d95ca7377cf490ab9dbaafb454f24c36bf9770781151bfef66488:eyJzZWxlY3RlZExpbmVDb3VudCI6MzAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjE1YTkxMDE3NzVkODY1NzdjMmUzNjk5NWM5OWZjYzFhNWVlZjNkOTU4MzQ4NzFjMGY4NGI1OWYwMzIwODE0MzYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijc4ZjQwZDU2MDNmNmY5N2I1M2EzYzI0YzBiOGQ2MTE4YWQ1YmRjMzg5YjE0ODQyMWI5ZTM5NDU4NmY2MWVmMmMiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6Ijg4NmRkYTYzMjBjOGI3NmEzZThhYmUyZjdhMzIyY2MwNDFlMzZlMzhlZDRmZjNiZTJjMGUzOTFmOTU5Nzk2MTEiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjZhMGMyZGEwODc3OTg4OTI3Yjc1MDJkZDJlMmFkNmFjZmNjMWE4NzQ0ZWVhODc1Zjk1MDk4MGVkZDdlNTg3ZDEifQ"
         }
       ]
@@ -157,7 +157,7 @@
       "statement": "last_fetch_time is only written by collect_results when the result set is non-empty; an empty result set does not update the cache timestamp, so a subsequent retry re-runs the graph.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L551-L554",
+          "resource": "repo://agent.py#L607-L610",
           "version": "repo-lines-v1:sha256:9e511c06aab8f32f37d9bc420ae483ceed989121713f48dfbb34421761059c43:eyJzZWxlY3RlZExpbmVDb3VudCI6NCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMThlZWE2NmQ3ZWViYzFiNGQ1M2NiMzI3ZmFjYzkzMzMzZGNkNGY5YWRjN2FmZTVjNGIzMTFmODU1OWUyMzQ2NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiODNmNWQyMDZhNDgwODNiMmQ5NTRjZmE1MTY4YTQ5ODdkNWUxYzUyMWNhYzYzODlhYTkxMGEyYjdmNWMxMDQ1ZCIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTUyNjYzYWZmNWUwNmU1YTcxNTRjNWU5NTliZmVlOTY3ODIxZjg4NTBlMGRmMWM3OWUwYzhlMTFkYjFmZWNlMiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiY2Q1ZmI3Y2I0YTdkNGVlYmYwMjFmZDQyMzYxODcwOGQ0OGY3ZGQzNzZhZDAwNGUzODU3M2M2ODg2MTQ1ZGZjNyJ9"
         }
       ]
@@ -167,7 +167,7 @@
       "statement": "collect_results applies a wants_engineer special case: when title_hit('engineer', canon(query)) is true, only jobs whose title also matches 'engineer' are kept, so a query for an engineer excludes titles like 'engineering manager' or 'director of engineering' that matched on other signal words.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L538-L540",
+          "resource": "repo://agent.py#L594-L596",
           "version": "repo-lines-v1:sha256:1a2b180d532fb9dc5c5e7933710832ccadab46d4f7942c3f197de557f4e16895:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMTY0MWQ2NzQ5NWQ3MTQ5YmI1NjY0YzNhOWQ3MjkxNGFkNGZiMzA2YWQ3MDA0MDQ5MTM2MDc2M2FkY2Q1ZTc0YyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjQwOGU3ZWY0ZTNjNGJlZTdiMjMxNzg2MmM5NTg3MjdkOGIwNjMxMGU2YjJjZWNlZjg5NDczYzM1YTFmNThjNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMjUzZDJhOTNjNzAyMTVjZTk2NTFjOWM0MGIyYzI4ZWExYjM1NGNiY2M2MzNjZmI0YTVjOGE2MmE4NTJlM2I5NCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGM5MGZjMGMxNWJjMTQ5ZWI2MmIxNmM1NTk0YzllYTc2NjNkOGNhZjVkMjJjYWRhYTI3ZDAzNWIxZjFkMWJiMiJ9"
         }
       ]
@@ -177,18 +177,18 @@
       "statement": "collect_results truncates each kept job's description to 2000 characters after strip_html-cleaning it; normalize_jobs does not truncate, and the display layer (format_jobs_markdown in helper.py) further shortens to a 150-character textwrap.shorten preview, so the 2000-char figure is the graph's own intermediate representation.",
       "evidence": [
         {
-          "resource": "repo://agent.py#L546-L550",
+          "resource": "repo://agent.py#L602-L606",
           "version": "repo-lines-v1:sha256:9110e03eb7f76bd6294a649761b5070c978d57861b34f5f4dad213cb0ed293d8:eyJzZWxlY3RlZExpbmVDb3VudCI6NSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiZGE1MzNhZjJkNzBjYTM2YjBlYWMwNzhkYjMxMTQ2YTEwMWI1ZDRmZDUwMDFiYjFlNDAyODk3MGUyZGZlMzM5YiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGUwYWNhNzU4NTQ2ZjBkOGRjMTcwNGIzMDQ5Y2UzOTAwYzE2YjlhZGZkNjRiYTNiZjBlOWFjMDRkN2VhMjljMiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiOTNkNjJhYzA5MzExNjJiYTkyODc2NzhlZTI4M2Q1ZjJmN2RiNzMwNjQ2Y2UyNDVkNWQwYTVhZWNmZTIxODAyZiIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiYzIyNjZlZTM1ZjJlYWUwNWYwNDdjNDFkZDYwN2IxNmIyODgyZWExZTQyNTg1MmJkYTUzMDYwNzk4NmE0YjJlNyJ9"
         },
         {
-          "resource": "repo://helper.py#L97-L97",
+          "resource": "repo://helper.py#L96-L96",
           "version": "repo-lines-v1:sha256:7928f5e6e1101dba3786a244abf453c06e39fee191d412a68b18f9034e3ca797:eyJzZWxlY3RlZExpbmVDb3VudCI6MSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNzkyOGY1ZTZlMTEwMWRiYTM3ODZhMjQ0YWJmNDUzYzA2ZTM5ZmVlMTkxZDQxMmE2OGIxOGY5MDM0ZTNjYTc5NyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiNzkyOGY1ZTZlMTEwMWRiYTM3ODZhMjQ0YWJmNDUzYzA2ZTM5ZmVlMTkxZDQxMmE2OGIxOGY5MDM0ZTNjYTc5NyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiODZkOTQzODdiZmZhOThkOWZiOTc2MWU0ZTAxZGNhMjMxMzA3NDU3YWRmZjNmNzFlNzI1ZmEzNTk3MDk3ZTYxZCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjViMjU3OWY3NGE0NThkYzgzMTNkNjMwZDNmZGM3NTI3YzhhZWRkNGY2ODFhMjVlNTZjODEyMDdhMTZhYjY1NyJ9"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.1",
-    "at": "2026-11-01T15:48:11.877Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T09:45:53.453Z"
   }
 }
