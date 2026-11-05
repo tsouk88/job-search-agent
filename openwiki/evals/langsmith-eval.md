@@ -3,6 +3,14 @@ type: Subsystem
 title: LangSmith Evaluation & Tracing
 description: Live LLM-as-a-judge regression harness and observability setup tracking search relevance, precision, and regression against real job board endpoints.
 tags: [evals, langsmith, llm-judge, regression, quality, tracing]
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-11-01T15:48:11.877Z
+sources:
+  - id: openwiki-source-f1644da1c1a64a6a6567706b
+    resource: repo://eval_runner.py
+  - id: openwiki-source-23775c3de52f3ab95a13cb8b
+    resource: repo://README.md
 ---
 
 # LangSmith Evaluation & Tracing

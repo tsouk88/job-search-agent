@@ -4,15 +4,15 @@ okf_version: "0.2"
 
 # Files
 
-- [Domain Concepts](domains.md) - Core domain concepts — five-source job aggregation, normalization and mojibake repair, alias-based query canonicalization, title-weighted scoring with frequency-based description contribution and generic-word tie-breaking, signal tokens, thread memory and the seniority/full-text filter split, country/location matching, age filtering, resume-derived search intent, and evaluation semantics.
-- [Integrations](integrations.md) - External service integrations — five job APIs with their query patterns and quirks, the LLM and LangGraph stack, Redis (cache, rate-limit storage, Gemini budget), Celery over Redis, OpenRouter and laya serve judges, PostgreSQL persistence, LangSmith observability, the frontend HTTP contract, n8n automation, the MCP client contract, and the voice agent service stack.
-- [MCP Server](mcp-server.md) - The Model Context Protocol stdio server in mcp_server.py — one read-only tool (search_remote_jobs), in-process 4h cache, no database, no LLM, no env vars. Designed for intent-based exclusion via explicit args. Backs five job sources through one LangGraph graph.
-- [Operations / Runbook](operations.md) - Operational runbook — local startup (Redis + Celery), all environment variables, runtime dependencies, LangSmith observability config, Render/Vercel deployment, endpoint behavior, CORS gotchas, cold-start handling, and troubleshooting.
-- [Job Search AI Agent Quickstart](quickstart.md) - Primary entry point for the repository; a LangGraph job search agent with REST, MCP, and voice interfaces, deterministic scoring, PostgreSQL memory, and evaluation systems.
-- [Source Map](source-map.md) - File-level map of all entry points, supporting files, voice and evals subsystems, deployment files, and authoring-convention skills — with responsibilities and suggested edit order.
-- [Testing and Evals](testing.md) - Two eval systems — the deterministic Harbor eval (frozen fixtures for five sources, CI, exact-set assertions) and the LangSmith eval (live job boards, LLM judge, ~0.90 baseline over 24 cases). No classic unit test suite.
-- [Voice Agent](voice-agent.md) - Voice interface using Pipecat with Deepgram STT, ElevenLabs TTS, and Daily WebRTC transport. Shares the same agent.py graph as REST but uses in-memory MemorySaver, caches last_jobs for local re-filtering, and routes commands by first word.
-- [Workflows](workflows.md) - User-visible and maintenance workflows — keyword search, feedback loop, CV upload, n8n digest, Harbor eval, and LangSmith eval — with change guidance for each.
+- [Domain Concepts & Scoring Models](domains.md) - Core domain entities, data schemas, multi-source job aggregation, deterministic scoring heuristics, location filtering, memory exclusion semantics, and correctness evaluation models.
+- [External Integrations & Job Boards](integrations.md) - Integration protocols, rate limits, error handling, caching behaviors, and infrastructure contracts for six job sources, Google Gemini, Redis, PostgreSQL, and Celery.
+- [Model Context Protocol (MCP) Server](mcp-server.md) - Model Context Protocol stdio server in mcp_server.py exposing the read-only search_remote_jobs tool with an in-process 4-hour cache and intent-based exclusions over the 6-source LangGraph agent.
+- [Operations & Runbook](operations.md) - Deployment, configuration, background workers, storage operations, and operational runbook for running the system in production and locally.
+- [Quickstart & Task Routing](quickstart.md) - Primary entry point, operational overview, task routing guide, and developer onboarding instructions for the job search assistant.
+- [Repository Source Map](source-map.md) - Exhaustive file-by-file and module-by-module navigation index mapping repository paths to their architectural responsibilities across agent execution, backend API, Celery tasks, evals, and frontend.
+- [Testing & Quality Assurance](testing.md) - Comprehensive testing and quality assurance guide covering deterministic Harbor evaluations, live LangSmith benchmarks, same-day control discipline, and manual verification.
+- [Voice Agent Interface](voice-agent.md) - Real-time conversational voice assistant interface powered by Pipecat, Deepgram, ElevenLabs, Daily WebRTC, and in-memory LangGraph sessions.
+- [Developer Workflows & Runbooks](workflows.md) - Step-by-step developer workflows for adding job sources, tuning ranking rules, running Harbor and LangSmith evaluations, and debugging runtime degradation.
 
 # Directories
 

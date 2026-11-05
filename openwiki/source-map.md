@@ -3,15 +3,55 @@ type: Source Map
 title: Repository Source Map
 description: Exhaustive file-by-file and module-by-module navigation index mapping repository paths to their architectural responsibilities across agent execution, backend API, Celery tasks, evals, and frontend.
 tags: [source-map, architecture, entry-points, files]
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-05T16:18:10.477Z
+sources:
+  - id: openwiki-source-eca60e2ced68ba99bd0ac710
+    resource: repo://agent.py
+  - id: openwiki-source-f1644da1c1a64a6a6567706b
+    resource: repo://eval_runner.py
+  - id: openwiki-source-ab20f2fabcf9dffc06e9a9a7
+    resource: repo://evals/filter-exclusion-senior/tests/expected.json
+  - id: openwiki-source-6f3a365387ad1dfc55a94d24
+    resource: repo://evals/filter-exclusion-senior/tests/test_outputs.py
+  - id: openwiki-source-18837785d6eee548467c07ac
+    resource: repo://evals/harbor_agents/pipeline_agent.py
+  - id: openwiki-source-1691a76fbd7a6781b3420f6c
+    resource: repo://evals/harbor_agents/run_pipeline.py
+  - id: openwiki-source-46c84c82a35e96f529aef1f3
+    resource: repo://evals/specs/filter-exclusion-senior/environment.md
+  - id: openwiki-source-502b8ec3f7fed4ad66c8f8dd
+    resource: repo://evals/specs/filter-exclusion-senior/harness.md
+  - id: openwiki-source-e3ff670d1996f2afaaf51e04
+    resource: repo://evals/specs/filter-exclusion-senior/task.md
+  - id: openwiki-source-8c042cb3c17efe62134801ac
+    resource: repo://frontend/app/page.tsx
+  - id: openwiki-source-ab9b6a971a877d6f6da86dd0
+    resource: repo://laya/Dockerfile
+  - id: openwiki-source-833e692518af9eeaf8564cc6
+    resource: repo://main.py
+  - id: openwiki-source-7a041713b68b973227e27f3e
+    resource: repo://mcp_server.py
+  - id: openwiki-source-f70156010a8eb5325870bfc6
+    resource: repo://render.yaml
+  - id: openwiki-source-373640cd8a0886cee69db282
+    resource: repo://requirements.txt
+  - id: openwiki-source-3ea4f69fcc0222dbd310ddfc
+    resource: repo://tasks.py
+  - id: openwiki-source-3a30c14a947fb74b6b9d65b7
+    resource: repo://voice_agent.py
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T16:18:10.477Z" }
 ---
 
 # Repository Source Map
 
-This document provides a comprehensive structural and functional map of the repository. It indexes all modules, entry points, background execution pipelines, evaluation harnesses, and user interfaces, detailing their specific responsibilities, dependencies, and integration boundaries.
+This document provides a comprehensive structural and functional map of the repository. It indexes all modules, entry points, background execution pipelines, evaluation harnesses, and user interfaces, detailing their specific responsibilities, dependencies, integration boundaries, and safe edit sequencing.
 
-For dedicated architecture walkthroughs, see [System Overview](architecture/overview.md), [Agent Graph](architecture/agent-graph.md), [Backend API](architecture/backend-api.md), and [Quickstart](quickstart.md).
+For dedicated architecture walkthroughs, see [System Overview](architecture/overview.md), [Agent Graph](architecture/agent-graph.md), [Backend API](architecture/backend-api.md), and [Workflows](workflows.md).
 
-```mermaid
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Heuristic: an unescaped angle bracket inside a label breaks rendering; rephrase the label. -->
+```text
 flowchart TD
     subgraph Clients["User Interfaces & Evaluators"]
         FE["Next.js Web UI<br/>(frontend/app/page.tsx)"]
@@ -63,13 +103,27 @@ flowchart TD
     API -.->|Checkpointer| PG
     CELERY -.->|Checkpointer| PG
 ```
-*Architecture and invocation map: interfaces dispatching through the backend API, Celery worker, and LangGraph engine across external job boards and VC networks.*
+*System architecture and invocation map: client interfaces dispatching through the backend API, Celery worker, and LangGraph engine across external job boards and VC networks.*
+
+---
+
+## Architectural Boundaries
+
+The system maintains strict decoupling across execution domains:
+
+1. **Deterministic Agent Core (`agent.py`)**: Contains no LLM invocations. Exposes pure search, scoring, deduplication, country filtering, and title-seniority gates. Does not own database connections; accepts whatever checkpointer is injected at compilation.
+2. **LLM & Transformation Layer (`helper.py`)**: Encapsulates external LLM interactions (`google_genai:gemini-3.5-flash-lite`), structured CV keyword extraction schemas (`CVKeywords`), markdown rendering (`format_jobs_markdown`), and job board branding (`site_of`).
+3. **Gateway & Session Orchestrator (`main.py`)**: Owns the HTTP boundary, PostgreSQL connection lifespans for checkpointer persistence, Redis caching with fallback, Slowapi rate limiting with in-memory fallback, Gemini daily call quotas, async PDF reading offloaded to worker threads, and Celery task dispatch.
+4. **Asynchronous Background Processing (`tasks.py`)**: Executes CV parsing and end-to-end agent graph queries off the HTTP event loop using Celery backed by Redis.
+5. **Model Context Protocol (`mcp_server.py`)**: Standalone stdio tool provider for AI desktop clients; wraps the uncheckpointed graph with an in-process 4-hour memory cache.
+6. **Voice Pipeline (`voice_agent.py` & `voice/server/`)**: Bridges Daily/Pipecat streaming audio frames with an in-memory `MemorySaver` graph session.
+7. **Testing & Benchmarks (`eval_runner.py` & `evals/`)**: Separates online LangSmith multi-judge grading from offline, network-isolated Harbor benchmark suites.
 
 ---
 
 ## Primary Entry Points
 
-The codebase provides multiple distinct entry points tailored for browser chat, Model Context Protocol (MCP) clients, voice conversations, offline worker tasks, and automated evaluation frameworks:
+The codebase provides multiple distinct entry points tailored for browser chat, Model Context Protocol (MCP) clients, voice conversations, background worker tasks, and automated evaluation frameworks:
 
 | Path | Primary Role | Code Lines | Interfaces & Consumers |
 |---|---|---|---|
@@ -90,8 +144,8 @@ The codebase provides multiple distinct entry points tailored for browser chat, 
 ### State & Constants
 - `State` (`TypedDict`): Holds `fetched_jobs` (annotated with reducer `add_or_reset`), `clean_jobs` (`list[dict]`), `last_fetch_time` (`str`), `current_job` (`dict`), `user_input` (`str`), `country` (`str`), and `memory` (`list[str]`, annotated with `add_or_reset`).
 - `TITLE_WEIGHT` (10), `MAX_RESULTS` (12), `MAX_AGE_DAYS` (120), `TAG_LIMIT` (3), `ENOUGH` (50).
-- `SENIORITY`: Frozenset of seniority tokens (`senior`, `sr`, `junior`, `lead`, `principal`, `staff`, `mid`, `entry`, `pleno`, `sênior`, `head`, `director`, `vp`, `chief`).
-- `GENERIC`: Common job search terms ignored during signal token extraction (`engineering`, `software`, `developer`, `remote`, etc.).
+- `SENIORITY`: Frozenset of seniority tokens (`senior`, `sr`, `junior`, `júnior`, `jr`, `lead`, `principal`, `staff`, `mid`, `entry`, `pleno`, `sênior`, `estágio`, `head`, `director`, `vp`, `chief`).
+- `GENERIC`: Common job search terms ignored during signal token extraction (`engineering`, `software`, `developer`, `dev`, `engineer`, `remote`, `job`, `jobs`, `work`, `role`, `position`, `specialist`, `expert`, `manager`).
 - `REGIONS` & `GLOBAL_WORDS`: Multi-region mappings (e.g., Greece mapped to Europe/EMEA/EU) and worldwide wildcards (`worldwide`, `anywhere`, `global`).
 - `ALIASES`: Synonym unification mapping variants to standardized canonical forms (e.g., "machine learning" $\to$ "ml", "large language models" $\to$ "llm", "developer" $\to$ "engineer").
 - `GETRO_VCS`: Collection IDs for 9 venture capital portfolio job boards (`[1680, 53552, 617, 222, 4350, 1518, 7715, 178, 29066]`).
@@ -108,7 +162,7 @@ The codebase provides multiple distinct entry points tailored for browser chat, 
 - `filter_jobs(jobs, memory, title_only=SENIORITY)`: Enforces negative memory constraints. Seniority terms are checked exclusively against the job title; other excluded keywords are checked across title, description, and location.
 
 ### Fetcher Architecture
-The graph dispatches parallel fetch requests via LangGraph's `Send` operator in `fan_out`:
+The graph dispatches parallel fetch requests via LangGraph's `Send` operator in `fan_out` across 6 distinct sources:
 1. `fetch_jobs`: Queries RemoteOK API (`remoteok.com/api`) iterating distinctive tags.
 2. `fetch_gjobs`: Queries 9 Getro venture capital portfolio boards in parallel via `ThreadPoolExecutor(max_workers=len(GETRO_VCS))`, executing `vcsearch` and `getrosearch` POST calls filtered to `work_mode: ["remote"]`.
 3. `fetch_sjobs`: Queries Himalayas API (`himalayas.app/jobs/api/search`).
@@ -131,10 +185,10 @@ The graph dispatches parallel fetch requests via LangGraph's `Send` operator in 
 #### State Lifespan & Checkpointing
 - `lifespan(app)`: Initializes Postgres checkpointer (`PostgresSaver.from_conn_string(DATABASE_URL)`) for production graph `agent`, and in-memory checkpointer (`InMemorySaver`) for `eval_agent`.
 
-#### Redis Infrastructure & Security
+#### Redis Infrastructure & Security Fallbacks
 - **Rate Limiting**: `slowapi.Limiter` using client IP (`CF-Connecting-IP` or remote address) backed by `storage_uri=os.getenv("REDIS_URL")` with `in_memory_fallback_enabled=True`.
 - **Gemini Daily Budget**: `check_gemini_budget(name, limit)` tracks daily LLM calls in Redis (`gemini_calls:{name}:{date}`) with an 86,400s (24h) TTL, returning HTTP 429 when limits are exceeded.
-- **Job Result Caching**: `jobcache(query, country)` builds Redis keys (`jobs:{querylow}:{country}`) caching normalized results for 14,400s (4 hours).
+- **Job Result Caching with Redis Fallback**: `jobcache(query, country)` builds Redis keys (`jobs:{querylow}:{country}`) caching normalized results for 14,400s (4 hours). Redis read/write calls are wrapped in `try...except redis.exceptions.RedisError` blocks that log warnings and gracefully fall back to cache bypass on connection failure.
 - **Header Authentication**: `keycheck(envname)` creates a FastAPI dependency validating the `x-api-key` header using constant-time comparison (`secrets.compare_digest`). Used to secure:
   - `/evaluate` $\to$ `EVALUATE_TOKEN`
   - `/digest` and `/digest/sent` $\to$ `N8N_DEDUPE`
@@ -148,11 +202,12 @@ Coordinates retrieval across memory and cache layers:
 4. If within TTL and unchanged, reuses existing `clean_jobs` from state.
 5. Normalizes and re-filters listings against thread negative memory.
 
-#### Endpoints Summary
+#### Asynchronous PDF Ingestion & Endpoints Summary
+`main.py` exposes 10 FastAPI endpoints:
 1. `POST /ask`: Primary search endpoint; calls `searchhelper` and returns formatted markdown.
 2. `POST /feedback`: Receives user rejection criteria, uses Gemini (`gemini-3.5-flash-lite`) to extract keywords to avoid, updates thread memory, and returns re-filtered results.
 3. `POST /reset`: Clears memory in checkpointer and returns unfiltered listings.
-4. `POST /upload`: Validates PDF uploads (max 5MB, PDF content type), extracts text from up to 5 pages using `pdfplumber` in a worker thread (`asyncio.to_thread`), checks Gemini budget, and enqueues Celery task `filework.delay`.
+4. `POST /upload`: Validates PDF uploads (max 5MB, PDF content type). Uses `pdfplumber` to extract text from up to 5 pages. Because PDF parsing and budget checks are blocking, they run off the main event loop via `asyncio.to_thread(pdfread, file)`, followed by enqueuing the background Celery task `filework.delay`.
 5. `GET /jobs/{job_id}`: Polls Celery task progress via `AsyncResult` over Redis result backend (rate limited to 60/min); returns `done`, `pending`, or `failed`.
 6. `POST /evaluate`: Authenticated via `EVALUATE_TOKEN`; uses Gemini to evaluate job postings against a candidate profile with prompt injection guardrails.
 7. `POST /digest`: Authenticated via `N8N_DEDUPE`; retrieves search results, checks apply links against PostgreSQL table `n8njobs`, and returns unsent listings `{md, links}`.
@@ -248,23 +303,61 @@ The Harbor evaluation framework verifies deterministic seniority and exclusion f
 
 ---
 
-## Deployment, CI & Configuration
+## Complete Repository Directory and File Map
 
-| File | Purpose |
-|---|---|
-| `render.yaml` | Render cloud deployment blueprint (Frankfurt region). Executes worker and server concurrently in `startCommand`: `celery -A tasks worker --pool=solo -l info & uvicorn main:app --host 0.0.0.0 --port $PORT`. Configures `/health` probe and binds `REDIS_URL`. |
-| `requirements.txt` | Python dependencies including `fastapi`, `uvicorn`, `langgraph`, `langchain`, `google-genai`, `celery`, `redis`, `slowapi`, `psycopg`, `pdfplumber`, `mcp`, and `langsmith`. |
-| `.env.example` | Template documenting required secrets: `GEMINI_API_KEY`, `DATABASE_URL`, `REDIS_URL`, `EVALUATE_TOKEN`, `N8N_DEDUPE`, `EVALS`, and `OPENROUTER_API_KEY`. |
-| `.github/workflows/eval.yml` | GitHub Actions workflow executing Harbor test suites on changes to `agent.py`, `mcp_server.py`, or `evals/`. |
-| `.github/workflows/openwiki-update.yml` | Scheduled workflow running monthly OpenWiki documentation refresh. |
-| `n8n_workflow.json` | Sample n8n workflow for scheduled job alerts: triggers `POST /digest`, evaluates results, dispatches email digest, and records links via `POST /digest/sent`. |
+The following index catalogs every functional file in the repository across architectural domains:
 
----
+### Root Backend & Engine
+- `agent.py`: LangGraph state machine, 6 parallel fetchers (`fetch_jobs`, `fetch_sjobs`, `fetch_tjobs`, `fetch_fjobs`, `fetch_wjobs`, `fetch_gjobs`), Workable scrapers, Getro `ThreadPoolExecutor`, `score_job`, `location_ok`, `job_is_recent`, and deduplication logic.
+- `main.py`: FastAPI server, Postgres checkpointer lifespan, Redis caching/budgeting/rate limiting, `keycheck` authentication dependencies, `pdfplumber` async parsing, and 10 REST endpoints.
+- `helper.py`: LLM initialization with Gemini 3.5 Flash-Lite, structured `CVKeywords` model, agent invocation wrapper `run_agent`, markdown formatter `format_jobs_markdown`, and site naming `site_of`.
+- `tasks.py`: Celery background worker application, Redis broker/backend configuration, and `filework` task for asynchronous CV parsing and search execution.
+- `mcp_server.py`: Model Context Protocol server exposing `search_remote_jobs` over stdio with a 4-hour in-memory query cache.
+- `voice_agent.py`: Stateful `VoiceSession` class compiling the agent graph with `MemorySaver` and invoking Gemini 3.5 Flash-Lite for filter feedback extraction.
+- `eval_runner.py`: LangSmith evaluation test runner executing multi-judge evaluations across Gemini, Jev, and Laya.
 
-## Authoring Conventions & Skills
+### Frontend Application (`frontend/`)
+- `frontend/app/page.tsx`: Next.js 15 client-side chat interface, localStorage sync, streaming text renderer, country selector, and Celery job poller.
+- `frontend/app/layout.tsx`: Root HTML layout definition, fonts, and page metadata.
+- `frontend/app/globals.css`: Global styling and Tailwind CSS imports.
+- `frontend/package.json` & `frontend/package-lock.json`: Frontend dependency tree (`react-markdown`, `lucide-react`, `tailwindcss`, `next`).
+- `frontend/next.config.ts`: Next.js application configuration.
+- `frontend/postcss.config.mjs`: PostCSS configuration for Tailwind CSS.
+- `frontend/tsconfig.json`: TypeScript compiler options and path mappings.
+- `frontend/eslint.config.mjs`: ESLint linting configuration.
+- `frontend/README.md` & `frontend/AGENTS.md`: Frontend component documentation and agent instructions.
 
-The repository incorporates authoring conventions located in the `/skills/` directory:
-- `skills/mermaid-diagrams/SKILL.md`: Guidelines for embedding syntax-safe Mermaid diagrams across wiki pages.
+### Voice Bot Subsystem (`voice/`)
+- `voice/server/bot.py`: Daily WebRTC audio transport pipeline integrating Deepgram STT, ElevenLabs TTS, Silero VAD, and `LangGraphProcessor`.
+- `voice/server/langgraph_processor.py`: Pipecat `FrameProcessor` mapping voice audio transcripts to `VoiceSession` methods and formatting spoken responses.
+- `voice/server/pyproject.toml` & `voice/server/uv.lock`: Python environment definition and pinned dependencies for the voice bot subsystem using `uv`.
+- `voice/README.md`: Setup and operational instructions for the Pipecat voice service.
+
+### Evals, Benchmarks & Judge Containers (`evals/` & `laya/`)
+- `evals/harbor_agents/pipeline_agent.py`: Harbor benchmark adapter (`jobsearch-pipeline` v1.0.0) uploading agent files into isolated containers.
+- `evals/harbor_agents/run_pipeline.py`: Harbor execution entrypoint applying frozen API monkey-patches before running `mcp_server.search_remote_jobs`.
+- `evals/filter-exclusion-senior/instruction.md`: Instruction prompt specifying the test query and exclusion criteria.
+- `evals/filter-exclusion-senior/task.toml`: Harbor task configuration declaring metadata and verification commands.
+- `evals/filter-exclusion-senior/environment/frozen_apis.py`: Mock network patch routing requests to local JSON and HTML fixtures.
+- `evals/filter-exclusion-senior/environment/fixtures/`: Static API payloads: `remoteok.json`, `himalayas.json`, `remotive.json`, `jobicy.json`, `getro.json`, and Workable search/view HTML pages.
+- `evals/filter-exclusion-senior/tests/test_outputs.py`: Deterministic test suite running 5 pytest assertions against prefilter and output files.
+- `evals/filter-exclusion-senior/tests/expected.json`: Verified ground-truth dataset specifying expected keep and drop listing URLs.
+- `evals/filter-exclusion-senior/tests/test.sh`: Container execution script asserting outputs and writing binary reward to `reward.txt`.
+- `evals/specs/filter-exclusion-senior/task.md`: Design document detailing capability, pass criteria, and negative controls.
+- `evals/specs/filter-exclusion-senior/harness.md`: Test harness architecture specification, network isolation policies, and frozen digest requirements.
+- `evals/specs/filter-exclusion-senior/environment.md`: Environment setup specification and static fixture requirements.
+- `evals/specs/filter-exclusion-senior/harness-digest.txt`: Checksum records for frozen benchmark files.
+- `evals/check_reward.py`: Harbor benchmark evaluation script inspecting exit codes and reward files.
+- `laya/Dockerfile`: Dockerfile compiling the container image for local judge service `laya[serve]==0.3.28`.
+
+### Operations, Deployment & CI
+- `render.yaml`: Cloud deployment blueprint for Render (Frankfurt region) executing Celery worker and Uvicorn concurrently in `startCommand`.
+- `requirements.txt`: Python package dependencies including `fastapi`, `uvicorn`, `langgraph`, `celery`, `redis`, `slowapi`, `psycopg`, `pdfplumber`, and `mcp`.
+- `.env.example`: Environment variable schema and template for secrets (`GEMINI_API_KEY`, `DATABASE_URL`, `REDIS_URL`, `EVALUATE_TOKEN`, `N8N_DEDUPE`, `EVALS`).
+- `n8n_workflow.json`: Scheduled email digest workflow automating `POST /digest` retrieval and `POST /digest/sent` deduplication.
+- `.github/workflows/eval.yml`: GitHub Actions workflow triggering Harbor benchmarks on changes to `agent.py`, `mcp_server.py`, or `evals/`.
+- `.github/workflows/openwiki-update.yml`: Scheduled workflow running automated OpenWiki documentation refresh.
+- `skills/mermaid-diagrams/SKILL.md`: Authoring convention for syntax-safe Mermaid diagrams.
 - `skills/write-connector/SKILL.md`: Specification for implementing OpenWiki source connectors.
 
 ---
@@ -273,7 +366,8 @@ The repository incorporates authoring conventions located in the `/skills/` dire
 
 Modifications to core logic propagate across multiple entry points and interfaces. When modifying system behavior, apply updates in the following order:
 
-```mermaid
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Heuristic: an unescaped angle bracket inside a label breaks rendering; rephrase the label. -->
+```text
 flowchart TD
     A["1. agent.py<br/>(Graph, Fetchers, Scoring, Filtering)"] --> B["2. main.py<br/>(Endpoints, Caching, Auth)"]
     A --> C["3. tasks.py<br/>(CV Task, Celery Worker)"]
@@ -284,7 +378,7 @@ flowchart TD
 ```
 *Ordered sequence of edits when modifying core agent logic.*
 
-1. **`agent.py`**: Must be modified first whenever changing search graph topology, adding fetchers (such as `fetch_gjobs`), adjusting scoring algorithms, or altering `filter_jobs` / `normalize_jobs`. Because `main.py`, `mcp_server.py`, `voice_agent.py`, and `tasks.py` all import `graph`, `normalize_jobs`, and `filter_jobs` directly, changes here affect all four interfaces simultaneously.
+1. **`agent.py`**: Must be modified first whenever changing search graph topology, adding fetchers (such as `fetch_gjobs`), adjusting scoring algorithms, or altering `filter_jobs` / `normalize_jobs`. Because `main.py`, `mcp_server.py`, `voice_agent.py`, and `tasks.py` all import `graph`, `normalize_jobs`, and `filter_jobs` directly, changes here affect all interfaces simultaneously.
 2. **`main.py` & `helper.py`**: Update next if request schemas, Redis caching logic, `keycheck` auth dependencies, response formatting (`format_jobs_markdown`), or endpoint behavior changes.
 3. **`tasks.py`**: Update when modifying background CV keyword processing or Celery task contracts.
 4. **`mcp_server.py`**: Align when MCP tool arguments or return structures are modified. Note: Harbor benchmark task `filter-exclusion-senior` tracks file digests of `agent.py` and `mcp_server.py`; modifying either file invalidates prior benchmark digests and requires updating test fixtures.

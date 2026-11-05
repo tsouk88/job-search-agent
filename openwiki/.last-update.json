@@ -1,8 +1,8 @@
 {
-  "updatedAt": "2026-11-01T15:49:53.348Z",
+  "updatedAt": "2026-11-05T17:14:47.834Z",
   "command": "update",
-  "gitHead": "4070a1ea9a7e9bcc4f4b7febbff73cba4de0d8fb",
-  "model": "gemini-3.1-flash-lite",
+  "gitHead": "8b91957dd33a7021d9d01b8c6c819cd217845a7d",
+  "model": "gemini-3.8-flash",
   "status": "complete",
   "language": "en"
 }

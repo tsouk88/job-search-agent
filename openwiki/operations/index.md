@@ -1,3 +1,3 @@
 # Files
 
-- [n8n Automation](n8n-automation.md) - The optional n8n workflow that runs every 12 hours — schedule trigger, search settings, wake node for Render cold start, POST /digest (returns {md, links} of unmailed listings), If gate, Gmail, then POST /digest/sent. Dedup lives in the backend, not the workflow.
+- [n8n Scheduled Digest Automation](n8n-automation.md) - Scheduled 12-hour n8n email digest automation integrating with FastAPI endpoints (/digest, /digest/sent, /evaluate), handling Render cold starts, 6-source parallel LangGraph search, PostgreSQL deduplication, and constant-time token authentication.

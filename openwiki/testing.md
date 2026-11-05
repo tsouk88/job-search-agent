@@ -1,18 +1,42 @@
 ---
 type: Guide
 title: Testing & Quality Assurance
-description: Quality assurance and testing guide detailing deterministic frozen evaluations, LangSmith regression runs, and validation commands.
+description: Comprehensive testing and quality assurance guide covering deterministic Harbor evaluations, live LangSmith benchmarks, same-day control discipline, and manual verification.
 tags: [testing, evals, harbor, langsmith, regression, quality, ci, getro]
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-05T16:18:10.477Z
+sources:
+  - id: openwiki-source-9ea7004cd60fc78ed888a032
+    resource: repo://.github/workflows/eval.yml
+  - id: openwiki-source-f1644da1c1a64a6a6567706b
+    resource: repo://eval_runner.py
+  - id: openwiki-source-1d64a0979a354ad458b3519a
+    resource: repo://evals/check_reward.py
+  - id: openwiki-source-a68f947821d6952a6d4a07df
+    resource: repo://evals/configs/no-network.yaml
+  - id: openwiki-source-4ea2d16d70ad274641c7935e
+    resource: repo://evals/filter-exclusion-senior/environment/frozen_apis.py
+  - id: openwiki-source-ab20f2fabcf9dffc06e9a9a7
+    resource: repo://evals/filter-exclusion-senior/tests/expected.json
+  - id: openwiki-source-6f3a365387ad1dfc55a94d24
+    resource: repo://evals/filter-exclusion-senior/tests/test_outputs.py
+  - id: openwiki-source-1691a76fbd7a6781b3420f6c
+    resource: repo://evals/harbor_agents/run_pipeline.py
+  - id: openwiki-source-23775c3de52f3ab95a13cb8b
+    resource: repo://README.md
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T16:18:10.477Z" }
 ---
 
 # Testing & Quality Assurance
 
-This repository has **no classic unit-test suite** — there is no `pytest` collection testing agent internals or isolated `unittest` modules. Instead, quality assurance is split between two distinct, complementary evaluation frameworks that answer fundamentally different questions. Neither suite subsumes the other.
+This repository has **no classic unit-test suite** — there is no `pytest` collection testing agent internals or isolated `unittest` modules. Instead, quality assurance is split between two distinct, complementary evaluation frameworks that answer fundamentally different questions. Neither suite subsumes the other:
 
 1. **Harbor offline deterministic evaluation**: Measures exact filtering and keyword exclusion correctness (`filter_jobs`) using static, frozen HTTP responses across six job sources inside a network-isolated container (`network_mode: none`). It incurs zero token costs, executes in continuous integration on every push and pull request, and asserts exact listing membership with hand-verified expected sets.
 2. **LangSmith live regression evaluation**: Measures end-to-end search relevance against live external job boards across 24 realistic benchmark queries. It evaluates complete agent pipelines using LLM-as-a-judge models (Gemini 3.5 Flash-Lite and Jev), guided by same-day control runs to distinguish code regressions from external market drift.
 
-```mermaid
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Heuristic: an unescaped angle bracket inside a label breaks rendering; rephrase the label. -->
+```text
 flowchart TD
     subgraph Harbor["Harbor Eval (Offline Deterministic CI Gate)"]
         H1["mcp_server.search_remote_jobs"] --> H2["Frozen API Fixtures<br/>6 sources in Docker<br/>network_mode: none"]
@@ -195,8 +219,26 @@ The LangSmith evaluation framework measures end-to-end relevance against live jo
 - **Dataset:** `job-search-eval` (24 queries in LangSmith).
 - **Harness:** `eval_runner.py` sends POST requests to `http://localhost:8002/askeval`.
 - **Target endpoint:** `/askeval` runs the production agent fan-out graph while bypassing the 4-hour Redis search cache (`jobs:*`) and providing a fresh UUID `thread_id` per query to avoid memory leakage.
-- **Judge models:** Gemini 3.5 Flash-Lite (structured output with `relevant` and `total`) and Jev (OpenRouter classifier scoring per listing, threshold 0.5).
+- **Judge models:** Gemini 3.5 Flash-Lite (`model="google_genai:gemini-3.5-flash-lite"`) and Jev (`typesafe/jev-1.13` classifier on OpenRouter, threshold 0.5).
 - **Metric:** Precision score ($\text{relevant} / \text{total}$) averaged across all 24 cases.
+
+### Evaluator Architecture in `eval_runner.py`
+
+`eval_runner.py` configures two active evaluators executed in parallel for every test query:
+
+```python
+client.evaluate(
+    run_agent,
+    data="job-search-eval",
+    evaluators=[jev_correctness, gemini_listing_correctness],
+    experiment_prefix="gemini35lite-jev-perjob",
+)
+```
+
+1. **`gemini_listing_correctness`**: Invokes Gemini 3.5 Flash-Lite with structured output (`JobOutput(reason: str, relevant: bool)`). It grades each listing individually against reference criteria, explicitly accounting for subtleties: company product mentions do not disqualify a role, and full-stack positions with backend leanings remain valid full-stack roles.
+2. **`jev_correctness`**: Queries the OpenRouter decisions endpoint (`https://openrouter.ai/api/alpha/decisions`) using `typesafe/jev-1.13`. It returns a probability per listing; any listing scoring $\ge 0.5$ is marked relevant.
+3. **`gemini_full_correctness` (Baseline)**: Evaluates the whole markdown response at once using `Output(reason: str, relevant: int, total: int)` with Pydantic validation.
+4. **`laya_correctness` (Local Alternative)**: Posts to a local container running Laya multilingual classifier (`http://127.0.0.1:8000/v1/systemone`). In benchmark trials, Laya was rejected due to excessive leniency (accepting 203 of 225 listings, including Freight Broker for LangChain agent).
 
 ### Repeatability and Judge Calibration
 
@@ -206,14 +248,32 @@ Before judge calibration, identical result sets scored 0.889 and 0.222 on consec
 2. **Strict Grading Constraints**: The prompt instructs the judge that evaluation is strictly confined to returned listings: a non-matching listing subtracts one point without invalidating other matches, and silent reference criteria count in the listing's favor.
 3. **Decidable Criteria Contracts**: Benchmark references are phrased as explicit contracts ("a listing is relevant when... and is not relevant when..."), eliminating subjective judgment on ambiguous roles.
 
-### Control-Run Methodology
+### Same-Day Control Discipline
 
-Because external job boards update constantly, changes must **never be evaluated against a historical baseline from a previous week**. The same unchanged code can score 0.82 one morning and 0.765 five days later purely due to external board turnover.
+Because external job boards update constantly, changes must **never be evaluated against a historical baseline from a previous week**. The same unchanged code can score 0.82 one morning and 0.765 five days later purely due to external board turnover. A single query like `rust` can swing from 1.0 to 0.5 across five days with zero code changes.
 
-When evaluating a change:
+When evaluating an algorithm or heuristic change:
 1. Run `python eval_runner.py` on the **unmodified base branch** (control run).
 2. Run `python eval_runner.py` on the **feature branch** on the same day.
 3. Compare the delta between the two same-day runs. An aggregate increase indicates genuine algorithm improvement.
+
+### Historical Benchmark Progressions
+
+Every algorithmic refinement in the search graph was measured against live boards. Most of the overall precision gain came from removing artificial padding and tightening candidate admission:
+
+| Refinement Phase | Benchmark / Control Score | Resulting Score | Key Insight / System Invariant |
+|---|---|---|---|
+| **Initial Starting Point** | — | **0.558** | Baseline precision across original 22 test cases. |
+| **Untrusted RemoteOK Tags** | 0.558 | **0.575** | Switched from trusting noisy platform tags to matching words in job titles. |
+| **Removed 8-Result Minimum** | 0.575 | **0.679** | Eliminated padding where a single genuine match like `rust` pulled in 7 body-text mentions. |
+| **Treated Dev/Eng as Distinct** | 0.679 | *0.584 (reverted)* | Treating "developer" and "engineer" as distinct words severely degraded recall; reverted and unified via `ALIASES`. |
+| **Typo Reference Corrections** | 0.679 | **0.751** | Explicitly flagged typo queries (`pyton developer`) as expecting 0 listings (`empty_ok: true`). |
+| **Generic Word Set Comma Fix** | 0.751 | **0.812** | Fixed missing comma between string literals in Python set that dropped `"engineer"` and `"remote"`. |
+| **Market Turnover Drift Check** | 0.812 (Aug 6) | *0.765 (Aug 11)* | Unmodified code dropped to 0.765 purely from board turnover, establishing same-day control rule. |
+| **Title Tie-Breaking Generic Word** | 0.765 (Control) | **0.780** | Generic words in queries break score ties among admitted listings (+3 cases up, 0 down). |
+| **Description Frequency & Source Truncation** | 0.760 (Control) | **0.820** | Scored body text on word frequency rather than presence; removed 10-listing source cap (+5 cases up). |
+| **Dataset Expansion (24 Cases)** | 0.820 | **~0.900** | Added real user queries from logs (`Remote React jobs`, `Fullstack react remote jobs`). |
+| **Gemini 3.5 Flash-Lite Migration** | 0.840 (2.5 Flash) | **0.833** | Replaced retiring 2.5 Flash with 3.5 Flash-Lite (consistent 0.833 across 3 repeated runs; 195/195 agreed). |
 
 ### LangSmith Execution Instructions
 
@@ -233,7 +293,7 @@ python eval_runner.py
 export LANGSMITH_API_KEY="lsv2_pt_..."       # LangSmith tracing and dataset access
 export GEMINI_API_KEY="AIzaSy..."           # Google Gemini judge model
 export EVALS="your-evals-api-key"           # Passed as x-api-key to /askeval
-export OPENROUTER_API_KEY="sk-or-..."       # Optional: required for Jev classifier judge
+export OPENROUTER_API_KEY="sk-or-..."       # Required for Jev classifier judge
 ```
 
 #### Optional Local Laya Classifier
@@ -244,8 +304,6 @@ export OPENROUTER_API_KEY="sk-or-..."       # Optional: required for Jev classif
 docker build -t laya laya
 docker run --name laya -p 127.0.0.1:8000:8000 -v laya-hf:/root/.cache/huggingface laya
 ```
-
-*(Note: In initial benchmarks, Laya accepted 203 of 225 listings due to excessive leniency; Gemini and Jev remain the authoritative evaluators).*
 
 ---
 
@@ -305,6 +363,7 @@ In addition to automated evaluations, run these manual validation steps after mo
 
 - [Harbor Offline Evaluation](evals/harbor-eval.md) — Exhaustive technical breakdown of the Harbor deterministic evaluation harness, Docker isolation, and verifier logic.
 - [LangSmith Evaluation](evals/langsmith-eval.md) — Comprehensive guide to live regression testing, judge calibration history, and per-listing classifier comparisons.
+- [Workflows](workflows.md) — End-to-end user workflows, API contracts, and n8n background execution.
 - [Domain Heuristics](domains.md) — Specification of token canonicalization, scoring weights, and seniority filtering rules.
 - [Agent Graph](architecture/agent-graph.md) — LangGraph fan-out architecture across the six search sources.
 - [MCP Server](mcp-server.md) — Design and integration of the Model Context Protocol search tool under test.

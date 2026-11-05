@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
-  "pageVersion": "sha256:8ee6e99d6f292cd38937b3710778a8eba18db5e7b3ff9878d1bf1e995f5be90e",
+  "pageVersion": "sha256:17bbb1371f86d07b6c8d77d7c46ad36c5d6b218254bd6d4a5702117d3121757d",
   "claims": [
     {
       "id": "claim_e453a7e960f745e585a832759d812d14",
-      "statement": "The keyword search agent uses a three-condition cache check (no previous fetch, query changed, or >4 hours elapsed) to decide whether to re-run the agent graph or use cached job results.",
+      "statement": "The search helper evaluates a four-condition freshness check (no previous fetch, query changed, country changed, or >4 hours elapsed) and a Redis cache to decide whether to re-run the agent graph or reuse cached job results.",
       "evidence": [
         {
-          "resource": "repo://agent.py",
-          "version": "repo-file-v1:sha256:772d2a1d86f71495365d3cbe847a3a75293ec1e113805def745156e02a16940b"
+          "resource": "repo://main.py#L125-L155",
+          "version": "repo-lines-v1:sha256:8f5e281984df5ebe51115822f0c433a2739981225691c2fe8b8dc4787e0129c8:eyJzZWxlY3RlZExpbmVDb3VudCI6MzEsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6Ijk5NDBmNGNkN2Q1ZDcwZjBiZjYyZmQxNzc5ODQyYTdhN2ZjMDA0YTMzZDkwMWZiMTdiNzc2ZjkzYWJiZDRhZDMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI1YzVlMjFhNzZlNTUxN2MwNmY4MmEwM2VkYmU2MTIzNjNhMTg4ZGNlNTZmMmEyMjAyYmQyOTVhNTdkMzc1ZTIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjEwMDNkMWQ3Zjc1ZDNhNDAzYWM5MjIwY2NhYzExNmJkYTIzNGRiYmRjNjEzMmRkMjNkODU5M2ViY2YwYzM2MTQiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjdmMjU5MjkzMjA0NzZmOTMzYjllZGQwNzU1ZjY3NTc5ZTMwYjgwYzI1MTkwYTE0YTBkZGYzNjA4ZTk4MjJmYTUifQ"
         }
       ]
     },
@@ -17,8 +17,8 @@
       "statement": "The feedback workflow updates thread memory without re-invoking the agent graph, performing a local re-filtering of cached jobs instead.",
       "evidence": [
         {
-          "resource": "repo://main.py",
-          "version": "repo-file-v1:sha256:40f8adafe7bff77a76fb933b9dfbca59384933e7f246bc2804176f46fe524365"
+          "resource": "repo://main.py#L280-L297",
+          "version": "repo-lines-v1:sha256:06b4513b7d7159a2c9c1f02f6bdde7729095f498616d75546a9451bdfca1b083:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImUzMjU0YzU0NGY5ZDQwOWE0NTU1N2FlMDBhMTc1MjE2ZTc0MmIyOTAyYTY3OWM3ODVkMzliZjc4NTlmMGRkMmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjI3N2E5M2M2MDE2MjM5YmMxYzg2YmYyMzNiZmU5NzlkZjhjMGRiYzU0YjVlNjFkYWJmNmIxZGU0N2I4OWEwNWIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM3Y2QxMjkxYjQxMWY5MjBjZDk1YmJiZWVlM2U2M2YwNWNjNWY1ZjNiZjczZjVjOWM3YTY0NmRlNWIzZmFhNDIiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjhjODk4OTAzZGVlYWVhNzdhYWVjNDBhZTgwZGU1OGM4NjcyYWRkZmE4YWJiMGRlMTkwYjE1YjZjNDk3ZDBlNDYifQ"
         }
       ]
     },
@@ -27,14 +27,86 @@
       "statement": "The Harbor CI evaluation runs against frozen job API responses to verify the agent's filtering logic in isolation from LLM or network dependencies.",
       "evidence": [
         {
-          "resource": "repo://eval_runner.py",
-          "version": "repo-file-v1:sha256:6cceb0c235817ce412e15aa97cd3625c00b458a3f35ee0978f7ed40637f6035a"
+          "resource": "repo://evals/check_reward.py#L1-L47",
+          "version": "repo-lines-v1:sha256:506f81084e5dc47627622cf566213f676453b1a3aee9c615ee84a5ea604343dc:eyJzZWxlY3RlZExpbmVDb3VudCI6NDcsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFmODcyMjU1MmQwYmQ2YjZhMjE2MDlmZmU0NDUyYmE5ZDA3MGRkZGNlYTEwMzY1YTlkMzQyZDg2ZmQ4YmFjNGEiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjBiMjZjMjZlYTUwYWNjMzJlZTkyMTQwNWNjZjMwMzVlNjNkZmRlNTRmNWZlNDU1OWM5NjYxNzY2MTFlYTQ5YTEiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjowLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjowLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImUzYjBjNDQyOThmYzFjMTQ5YWZiZjRjODk5NmZiOTI0MjdhZTQxZTQ2NDliOTM0Y2E0OTU5OTFiNzg1MmI4NTUifQ"
+        },
+        {
+          "resource": "repo://evals/filter-exclusion-senior/environment/frozen_apis.py#L18-L80",
+          "version": "repo-lines-v1:sha256:a98fe3f8ca1bd22c92babee46217b732ff697955acc0cb6b35c607aef5545400:eyJzZWxlY3RlZExpbmVDb3VudCI6NjMsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjZhMDhjYzFmN2I2NTUwN2IzMzFjMTc5MWFhODVkOTk4YTFkOWYzMzMwNjk1NzU3YjZiNzJlMDBiMDQ3YWYxYmMiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjZjMTkzOWZhYjI3M2RhMWIzOTI5ZTE1MTFlYTI3MjE5MmIyMWY3ODJkYTk5NWE4ZWE2ZDM2MGM3MDI5OWYxNzkiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImNkYjI5ZDM4MGQ5NmZmN2Y2ZDczOGYxMWU0NWMwNjM5ZTNkMGY0YmZkMWQwNzkzZjAyZDYzMzIwYjc1NjhmNWUifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_c1459fa697e7491faa003d25b58f3749",
+      "statement": "The agent graph fans out parallel search requests to external job boards, including a multi-threaded Getro VC portfolio search node that queries multiple venture fund collections via a thread pool with tag-based query fallbacks.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L320-L373",
+          "version": "repo-lines-v1:sha256:37611e404ab522a925b89403f148e1e7afaf5f510fde0a0715463373a7675bc6:eyJzZWxlY3RlZExpbmVDb3VudCI6NTQsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjU5MDlhNTNhNjE4ZDAyOGUxZDMwMDBjMGE3YWJjZWVjYmU1ZmIzN2Y0ZTUxMWVmZTQ2NjQzZmFkNmU2Njg3MmYiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjYzOTUzNWYwOTQwNTg5ZDVkOTJiYjEyMTgwNDllNzJiOTJlZWNmOTk4N2VlMGFmYmQ5ZGJlYjY1YWExYjllMjgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImM5ZGY3YTkxZTNkYjczNjgxODkxN2UzY2U4NzczN2YzYTYzMWQ5ZTJkYTZjMWM4NDQ3NjYzMjNkM2QyZjVmNzYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjlmZTkwYTM1MWUxMjU5NTE2ZjJmZGM1ZWRiOGZmZDdhZDY5MDNhNjI0NGQyNmRhMTEwYjM0ZDZmMmJmN2M5ZmUifQ"
+        },
+        {
+          "resource": "repo://agent.py#L614-L623",
+          "version": "repo-lines-v1:sha256:02d0195e1b49adbc952ee61ed9ff4fac3925b68ad05e9382b02d35979ce3ad61:eyJzZWxlY3RlZExpbmVDb3VudCI6MTAsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImFkZDI0NDU4MmI2ZmIwM2QyM2I4NDE1YWJlY2QzNDZiMGM5ZjQ2NmI2Zjc1MmIwNjgxODljZTdlOWEyZGMzNTAiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNkNWZiN2NiNGE3ZDRlZWJmMDIxZmQ0MjM2MTg3MDhkNDhmN2RkMzc2YWQwMDRlMzg1NzNjNjg4NjE0NWRmYzciLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjU3ZmVlMjlhNTNhNTE2OGJiMGVkM2E3ZTg5MzA3MWYyYTZmYTAyY2MwOTIxN2JkYjdiODZiMTkxMTVhNTE4YTEifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_30f39f5de0204316903db434fb7c9da2",
+      "statement": "Deterministic job scoring enforces an admission gate requiring a title hit weight of at least 10 and engineer/developer canonical aliasing, augmented by description keyword frequency bonuses capped below the title weight threshold.",
+      "evidence": [
+        {
+          "resource": "repo://agent.py#L140-L157",
+          "version": "repo-lines-v1:sha256:7ac5c55c9771e8675b942345544d109757605b797aff662e14bd4886216a2882:eyJzZWxlY3RlZExpbmVDb3VudCI6MTgsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImIwNGE1MzY2NGFiMzllMTVjYjBmYWUwN2RiZWQ0ZGZkOWVhMDc5N2Y1NTdjMTFjOGQwNGEzOTY1ZGZmMmEyOTQiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImZkMDBhZDBhNzlmN2Y5MjAyNTg5NTg1MGJiZTRiNmNjMGZlOTI1ODYzZDUyODBkOGM4ZTljYmVhOWMzMzRjMTYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjM1NDkxY2IwZDlkODlkYWJjOGM3ODQwMDAyYmNhNWRhZDM2ZDQyNjM4NTQ2MGQxNDkxMzU2OTExNGEwZTRjMDIifQ"
+        },
+        {
+          "resource": "repo://agent.py#L204-L219",
+          "version": "repo-lines-v1:sha256:048e179312dc931733f33bc7c066f12231df004b2b7245c9c66a0c258c31ddde:eyJzZWxlY3RlZExpbmVDb3VudCI6MTYsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjRlNDI5YTMwZDAwOTU3OGFiNWNjYjlmZTRlMTA1ZjkxNmRiY2Q1MzIzMjc1ZjY2YzVkNjliNTk0NWY4ZDIwNmQiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjMzMThhYzJjN2RlODljNjdhZWQ1MDY3ZmEzMDU5ZDA4N2MzNDcxMTk2MDU3MjBhYmZiMTRhMzVhYThhMGM0NDYiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6ImNhZDM5ZGYwMzE0NmQ3ZTFmMGFjNDA0ZmY2ZTRlMWJhNTkwZDYyMmEyMzdiMDQyN2RlZTQ4ZTExMzVmYzA0MTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6IjVhYjEzM2U3YTcyMzBlZDc0YmIyYjYwODUzYTJiNzU2MjQ0OWMxYzNiNDQ2OWI4ZWY3NjJiNzFkMDUyMjgyNjgifQ"
+        },
+        {
+          "resource": "repo://agent.py#L588-L596",
+          "version": "repo-lines-v1:sha256:8d6e17a7590e3acc80087fa81c9d6a48465751ad64edb22ffa9f6634ddb89da6:eyJzZWxlY3RlZExpbmVDb3VudCI6OSwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMGVmMGJhYWY1MmU0Mjk4MGU5NWZlNTI4Yzg0NTZiNjkyOGE1Nzk5MjEyNWM4NTYyOWVkNTNlNTk1MDg4NWRkYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiZjQwOGU3ZWY0ZTNjNGJlZTdiMjMxNzg2MmM5NTg3MjdkOGIwNjMxMGU2YjJjZWNlZjg5NDczYzM1YTFmNThjNiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiYTRjMzE2ZjlhMGI2ODFkNTA4OTQ0YzRhZTM1M2JlNDkzMmZiZWQ3NThjNjlmNWJjMjE4YTE5MjIwNDkwZDhhYSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiOGM5MGZjMGMxNWJjMTQ5ZWI2MmIxNmM1NTk0YzllYTc2NjNkOGNhZjVkMjJjYWRhYTI3ZDAzNWIxZjFkMWJiMiJ9"
+        }
+      ]
+    },
+    {
+      "id": "claim_144855a005ca41b4a6b2165bdac4d97c",
+      "statement": "The backend handles Redis degradation through SlowAPI in-memory rate limiting fallbacks and guarded cache operations, while background CV parsing runs asynchronously via a solo-pool Celery worker.",
+      "evidence": [
+        {
+          "resource": "repo://main.py#L130-L151",
+          "version": "repo-lines-v1:sha256:bc30d06fef2a458e381ff2d8c460cf128eebc43173a80261d76d81281f67db2f:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjJkYjA5NWFlMzVkYjc4ZTE1MDk0MDljZDc5ODY0OWY2MmE5YTNjZmJiNjFiZWRiYWYwZGEyOGQ5NDA4YTc3ZDIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6ImQzZGEyMzZiZmJiYTMxZDg1NjViYzUxMTI3ZWU3NGQ3MDg3NGM4NzI5NGU4ZTdiNzNlNzIxZTljY2ExNjdlNzgiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjBkMzJiODIyYTQ4MzczODZkZTEwNGRmNTlkOGZlMTk1YTI3ZGQwMjZmM2VkZDBmOWNlYzViZDZmODQ3NDBhYTAiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6Ijg3MjA0MWVlZDRiYTYwZDQ1NjYzYjdkYjFlNDVhNWU2MTAwN2Q3NmIyYzBiMzI4NDMxZTQ3OTgzNjczNGNlYWEifQ"
+        },
+        {
+          "resource": "repo://main.py#L58-L63",
+          "version": "repo-lines-v1:sha256:1d0ee5b9a9ab030bd6b8d38be7768cf2c91d02eec00bf3528ad6f53d769c4d91:eyJzZWxlY3RlZExpbmVDb3VudCI6NiwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMDA2ZDdmNjY0ZDVkYjVlZjc4NjM2ZDZjOTJhZDBlNDdhYzhkNjMyYjgxODE2MDdmMWYzOTBjNDE5Zjg0OTUzYiIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMGYxMzMwMmU1MjUwMjNjNjk2OTkwYTM4MjgxZjMyMGM0ODg0MTIyYjQzNGMzYzMwMWU0Mzg3NzJkZGNlYTYwYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNDE2YTg0OTA2Mzk4Nzk2MzQ2NTY0NzA4ODExMDdjOWNiZmZkOWNlOTNkYWJlM2E3NDI1YjZlOGExMDZkMzBmOCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiNjk0YWNjZGE1YjdjOGQ5MWQ5NGMxMWNkMWU2OTIxNGVhOGUxNzU0MzJkNzgxODczZmQzZWRlOGJmMGFhMTA2NCJ9"
+        },
+        {
+          "resource": "repo://tasks.py#L12-L33",
+          "version": "repo-lines-v1:sha256:1781b0672a7d46ef9e56689b8c5aa2c368b5fcedae014264062b7fc4cfa6eb49:eyJzZWxlY3RlZExpbmVDb3VudCI6MjIsImZpcnN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJsYXN0U2VsZWN0ZWRMaW5lSGFzaCI6IjAxYmE0NzE5YzgwYjZmZTkxMWIwOTFhN2MwNTEyNGI2NGVlZWNlOTY0ZTA5YzA1OGVmOGY5ODA1ZGFjYTU0NmIiLCJwcmVjZWRpbmdDb250ZXh0TGluZUNvdW50IjozLCJwcmVjZWRpbmdDb250ZXh0SGFzaCI6IjY1MmI2ZTMzYTNkNzlkMTJhMWIxNzYxNWI5ZTkxYjAyZGNjMGQ0NjYxMWVkMWJiODI3MTVjMjQ5ZmIxMGQwZmYiLCJmb2xsb3dpbmdDb250ZXh0TGluZUNvdW50IjozLCJmb2xsb3dpbmdDb250ZXh0SGFzaCI6ImI5ODgwOTQxN2MwMjQwMDg1YmY3MGYyYTExMjdmMGI2MjJjMTUxNDY1MTczN2U3ZTRmZmFjNGIzOWU0ZGExN2UifQ"
+        }
+      ]
+    },
+    {
+      "id": "claim_a3c98542b21b4074a4998cf3094b0114",
+      "statement": "The live evaluation harness runs benchmark queries against an isolated in-memory evaluation agent endpoint to score relevance via Gemini and Jev judges while bypassing the production Redis search cache.",
+      "evidence": [
+        {
+          "resource": "repo://eval_runner.py#L235-L237",
+          "version": "repo-lines-v1:sha256:d2200a908a64b647114cb4d2cdac9450006b1fcd0dd13fbbc83fde917f8af14a:eyJzZWxlY3RlZExpbmVDb3VudCI6MywiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiYTY2MGVlYzk2NDExZjhiNmZiODU2MmE2NDhjYTdjZjM0NGI2NjQ4MjliNTBiODIxNWMzNzJiY2I4MjUxYjAzYSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiYzEzNTE1MjRkZWI4MjI1NzE4MTQxNjhlNzk1MGE4ZjNlOTRiYmJjOTY2Y2Y3MDk0YjkzZjU3OGM4MTk2YTZhYyIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNmEzY2Y1MTkyMzU0ZjcxNjE1YWM1MTAzNGIzZTk3YzIwZWRhOTk2NDNmY2FmNWJiZTZkNDFhZDU5YmQxMjE2NyIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjAsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiZTNiMGM0NDI5OGZjMWMxNDlhZmJmNGM4OTk2ZmI5MjQyN2FlNDFlNDY0OWI5MzRjYTQ5NTk5MWI3ODUyYjg1NSJ9"
+        },
+        {
+          "resource": "repo://eval_runner.py#L39-L46",
+          "version": "repo-lines-v1:sha256:b8ba6ffb35b76c3ceb97b3e69a463795930f3ac722fefad844713cf1fee842fe:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiNDg4YTk3N2YwN2E3Y2EwZWE5OTdiOTI1ZjYzMjhiYjZjZDYyMzQ0ZjBmYjYwYWQ5MTAwOWI2M2RmODE5MjYzNSIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiMTYwMzE3OWE2OWZkZGZjZDk4ZGE1NzExMTc5ZWJkZDBkY2MzYjRkNzk5YTJhOTM5ZGUyNDAwNzdjZTY5OGI4MCIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzdiYzAxMWU3N2ZkMjg2MTA1ZDJjODc5MzQ1NmE1ZjM1NDU2MDkwOTQxMjVjMTRjYmQ3MDRiMDU0N2Y5NDFiYyJ9"
+        },
+        {
+          "resource": "repo://main.py#L323-L330",
+          "version": "repo-lines-v1:sha256:83f99f8b1b120f74307ab7815f3af751c79548734bc449a3964cab9d0f5a353c:eyJzZWxlY3RlZExpbmVDb3VudCI6OCwiZmlyc3RTZWxlY3RlZExpbmVIYXNoIjoiMmQ5Yzg3MGMzMTViNjFlOGRiM2IzNzUxNDMxOGY1NTlmNDQ3YTIwZGE4NGRjYmM0NTYxY2QxNDczNGY5OTYwNyIsImxhc3RTZWxlY3RlZExpbmVIYXNoIjoiMDFiYTQ3MTljODBiNmZlOTExYjA5MWE3YzA1MTI0YjY0ZWVlY2U5NjRlMDljMDU4ZWY4Zjk4MDVkYWNhNTQ2YiIsInByZWNlZGluZ0NvbnRleHRMaW5lQ291bnQiOjMsInByZWNlZGluZ0NvbnRleHRIYXNoIjoiNGIwZGJkZGQ2ZjNiOTAzNTFmMzA1ZmRhNGJjMzcyNmJhOWMzY2Q0OTJkNDg3YjIwZDk2ZTE1Y2I3YzYxNmVhOSIsImZvbGxvd2luZ0NvbnRleHRMaW5lQ291bnQiOjMsImZvbGxvd2luZ0NvbnRleHRIYXNoIjoiMzRmZTFkMzFkMzkzYTVmZTAyNWRkNWMxOGY0YTc5NjMzMGYyMjFkYTI4YWY3ODcwMjkyMmExNjI4M2I3MjRhOCJ9"
         }
       ]
     }
   ],
   "verification": {
-    "by": "openwiki/0.6.1",
-    "at": "2026-11-01T15:48:11.877Z"
+    "by": "openwiki/0.9.0",
+    "at": "2026-11-05T16:18:10.477Z"
   }
 }

@@ -1,15 +1,28 @@
 ---
 type: Subsystem
-title: MCP Server Interface
+title: Model Context Protocol (MCP) Server
 description: Model Context Protocol stdio server in mcp_server.py exposing the read-only search_remote_jobs tool with an in-process 4-hour cache and intent-based exclusions over the 6-source LangGraph agent.
 tags: [mcp, model-context-protocol, stdio, tool, deterministic, cache]
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-05T16:18:10.477Z
+sources:
+  - id: openwiki-source-eca60e2ced68ba99bd0ac710
+    resource: repo://agent.py
+  - id: openwiki-source-1691a76fbd7a6781b3420f6c
+    resource: repo://evals/harbor_agents/run_pipeline.py
+  - id: openwiki-source-833e692518af9eeaf8564cc6
+    resource: repo://main.py
+  - id: openwiki-source-7a041713b68b973227e27f3e
+    resource: repo://mcp_server.py
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T16:18:10.477Z" }
 ---
 
-# MCP Server Interface
+# Model Context Protocol (MCP) Server
 
-`mcp_server.py` exposes the remote job search agent over the [Model Context Protocol](https://modelcontextprotocol.io) using the standard input/output (stdio) transport. It serves as a headless, deterministic interface to the underlying [LangGraph Agent Graph](architecture/agent-graph.md), designed specifically for LLM environments such as Claude Desktop, Claude Code, and other MCP-compliant client agents.
+`mcp_server.py` exposes the remote job search agent over the [Model Context Protocol](https://modelcontextprotocol.io) using the standard input/output (stdio) transport. It serves as a headless, deterministic interface to the underlying [LangGraph Agent Graph](architecture/agent-graph.md), designed specifically for AI desktop assistants and MCP hosts such as Claude Desktop, Claude Code, and other MCP-compliant client agents.
 
-Unlike the FastAPI web backend, the MCP server operates without server-side persistent conversation state, without external databases, and without language model inference calls in the search path ($0 token cost).
+Unlike the FastAPI web backend, the MCP server operates without server-side persistent conversation state, without external databases (no PostgreSQL or Redis), and without language model inference calls in the search path ($0 token cost).
 
 ## Architecture and Request Lifecycle
 
@@ -51,15 +64,35 @@ sequenceDiagram
 
 ### Execution Steps
 
-1. **Tool Invocation**: The client sends a JSON-RPC request to execute `search_remote_jobs(query, exclude_keywords)`.
-2. **Cache Check (`fetch_fresh`)**: The query string is normalized (`query.strip().lower()`). If the key is present in `_cache` and its age does not exceed `CACHE_TTL` (14,400 seconds / 4 hours), the cached normalized list is returned immediately.
+1. **Tool Invocation**: The MCP host sends a JSON-RPC request executing `search_remote_jobs(query, exclude_keywords)`.
+2. **Cache Check (`fetch_fresh`)**: The query string is normalized (`query.strip().lower()`). If the key exists in the in-process dictionary `_cache` and its age does not exceed `CACHE_TTL` (14,400 seconds / 4 hours), the pre-filter cached listing list is returned immediately.
 3. **Graph Execution**: On a cache miss or TTL expiration, `compiled.invoke({"user_input": query, "fetched_jobs": []})` runs the LangGraph state machine. The graph executes the parallel `fan_out` across six fetchers and aggregates them in `collect_results`.
 4. **Normalization & Caching**: The resulting listings are normalized via `normalize_jobs`, stripping HTML, fixing character encoding (mojibake), extracting uniform salary bounds, and deduplicating by company and position hash. The normalized list is stored in `_cache` with a fresh timestamp.
-5. **Deterministic Filtering**: `filter_jobs(jobs, exclude_keywords)` filters the listings against the caller's negative keywords before returning the final structured array to the client.
+5. **Deterministic Filtering**: `filter_jobs(jobs, exclude_keywords)` evaluates the listings against the caller's negative terms before returning the final structured array to the client.
 
-## Design Philosophy: Intent-Based Exclusion Contract
+## In-Memory Invocation Without External Databases
 
-The MCP tool contract is designed around **intent, not endpoints**. Rather than requiring separate conversational endpoints to manage exclusions and feedback state, `exclude_keywords` is an explicit parameter on `search_remote_jobs`:
+A central architectural property of `mcp_server.py` is its complete independence from external infrastructure services:
+
+```python
+from agent import graph, normalize_jobs, filter_jobs
+
+compiled = graph.compile()
+```
+
+### Absence of PostgreSQL and Redis
+
+In the REST backend (`main.py`), the agent graph compiles against `PostgresSaver.from_conn_string(os.getenv("DATABASE_URL"))` to manage conversational checkpoint threads across HTTP turns, and caches raw job payloads in a Redis instance (`redis.Redis(...)`). In evaluation contexts, the graph compiles with `InMemorySaver()`.
+
+In contrast, `mcp_server.py`:
+- Compiles the LangGraph `graph` directly into memory at module load time (`compiled = graph.compile()`) without attaching a `PostgresSaver` checkpointer.
+- Avoids all dependencies on PostgreSQL, Redis, or Celery worker queues.
+- Runs without requiring environment connection strings such as `DATABASE_URL` or `REDIS_URL`.
+- Executes single-turn state machine passes: `compiled.invoke({"user_input": query, "fetched_jobs": []})` runs state across nodes in-process, returning the final `clean_jobs` state dictionary directly to caller memory.
+
+## Tool Schema and Parameter Handling
+
+`mcp_server.py` defines a single tool entrypoint registered on the `MCPServer` instance:
 
 ```python
 @mcp.tool(annotations=ToolAnnotations(readOnlyHint=True))
@@ -78,28 +111,72 @@ def search_remote_jobs(query: str, exclude_keywords: list[str] | None = None) ->
     return filter_jobs(jobs , exclude_keywords)
 ```
 
-### Zero Server-Side Conversation State
+### Schema Parameters
 
-In conversational interfaces (such as the web UI via `main.py`), user feedback like "no senior roles" triggers an LLM chain that extracts keywords and commits them to PostgreSQL thread state (`memory` field) via `PostgresSaver`.
+| Parameter | Type | Required | Default | Description |
+|---|---|---|---|---|
+| `query` | `str` | Yes | — | Target job title or technical skills (e.g. `"python backend developer"`). |
+| `exclude_keywords` | `list[str] \| None` | No | `None` | Explicit negative keywords to filter out (e.g. `["senior", "full stack"]`). Coerced to `[]` when omitted. |
 
-In contrast, the MCP architecture relies on the calling client model (e.g., Claude) to maintain conversation context:
-- When a user requests refinements ("drop the junior positions" or "no blockchain"), the client LLM updates its own list of exclusions and invokes `search_remote_jobs` again with the updated `exclude_keywords` array.
-- No server-side thread identifier, database, or LLM feedback extraction chain is needed.
-- Because `fetch_fresh` caches the normalized listing collection *before* exclusions are applied, successive refinements for the same query execute entirely in-memory, filtering the cached list in microseconds without re-querying the job boards.
+The tool annotation `readOnlyHint=True` signals to the client model that invocations are safe, idempotent reads without write side effects.
 
-### Filtering Rules (`filter_jobs`)
+### Handling `user_input`
 
-Filtering in `agent.py` evaluates exclusion keywords as follows:
-- Entries are split by commas and stripped of leading/trailing whitespace.
-- **Seniority Keywords**: Keywords matching terms in the `SENIORITY` frozenset (`senior`, `sr`, `junior`, `jr`, `lead`, `principal`, `staff`, etc.) are checked strictly against individual tokens in the job's title (`title_words`). This prevents excluding a junior or mid-level posting simply because the job description mentions collaborating with senior staff.
-- **General Keywords**: Keywords not in `SENIORITY` are checked against the combined lowercase text of the title, description, and location.
-- Listings missing an `apply_url` or having an unknown or blank `position` are automatically discarded.
+The `query` parameter provided by the client model maps directly to `user_input` in the LangGraph initial state dictionary:
+```python
+result = compiled.invoke({"user_input": query, "fetched_jobs": []})
+```
+Inside `agent.py`, `user_input` drives tag extraction (`distinctive_tokens`), keyword signal extraction (`signal_tokens`), and query canonicalization (`canon`), which determine query parameters sent to the external job boards.
+
+### Explicit Exclusion Terms (`exclude_keywords`)
+
+Rather than relying on server-side conversational memory or an LLM to parse user feedback turns, exclusions are passed explicitly by the calling assistant:
+- When a user says "only junior roles" or "no crypto", the client model includes those negative terms directly in the `exclude_keywords` array of the tool call.
+- Inside `mcp_server.py`, `filter_jobs(jobs, exclude_keywords)` processes the negative terms deterministically:
+  - **Seniority Terms**: Terms matching the `SENIORITY` frozenset (`senior`, `sr`, `junior`, `jr`, `lead`, `principal`, `staff`, `manager`, `head`, `vp`, `director`) are matched strictly against tokenized words of the job title (`title_words`). A posting is not excluded merely because a junior job description mentions reporting to a "lead" engineer.
+  - **General Terms**: All other terms are matched case-insensitively against the combined title, description, and candidate location strings.
+  - Postings missing an `apply_url` or lacking a valid `position` are automatically pruned.
+
+### Country Selection Semantics
+
+The MCP server deliberately omits a country parameter from the `search_remote_jobs` tool schema:
+- In `agent.py`, the `State` TypedDict defines `country: str = ""`.
+- Because `mcp_server.py` passes only `{"user_input": query, "fetched_jobs": []}`, `country` retains its default empty string (`""`).
+- When `country` is empty, the country filter function `location_ok(job, country)` immediately returns `True` (`if not country: return True`), Workable queries the global `"worldwide"` endpoint (`workable_urls(token, "")`), and Jobicy queries without geo restriction parameters (`geo=...`).
+- Consequently, the MCP server returns an unconstrained worldwide search across all regions, unlike the web UI and REST API where users can explicitly select a specific country code from a dropdown.
+
+## In-Process Cache (`_cache`)
+
+`mcp_server.py` maintains an in-memory dictionary cache to prevent redundant API queries to external job boards:
+
+```python
+CACHE_TTL = 14400
+_cache: dict[str, tuple[datetime, list]] = {}
+
+def fetch_fresh(query:str) -> list:
+    keyq = (query.strip()).lower()
+    if keyq not in _cache or (datetime.now() - _cache[keyq][0]).total_seconds() > CACHE_TTL:
+        result = compiled.invoke(
+                {"user_input": query, "fetched_jobs": []}
+            )
+        clean_jobs = normalize_jobs(result.get("clean_jobs" , []))
+        _cache[keyq] = (datetime.now() , clean_jobs)
+        return clean_jobs
+    else:
+        return _cache[keyq][1]
+```
+
+### Cache Invariants and Operational Behavior
+
+- **4-Hour TTL (`CACHE_TTL = 14400`)**: Listings remain valid for 14,400 seconds (4 hours). This freshness duration exactly matches the `last_fetch_time` freshness threshold enforced in `main.py` for REST requests, guaranteeing unified data freshness across both server entrypoints.
+- **Normalization Key**: The cache key `keyq` strips leading/trailing whitespace and lowercases the input query (`(query.strip()).lower()`).
+- **Pre-Filter Snapshot**: `fetch_fresh` stores the normalized listing collection *before* `filter_jobs` is invoked. When a user refines their search ("now exclude contract roles"), the client calls `search_remote_jobs` with the same query but new `exclude_keywords`. The call hits `_cache`, retrieves the cached list in microseconds, and filters it locally without re-running the LangGraph agent or making external network requests.
 
 ## Six Sources vs. Four Advertised (Contract Discrepancy)
 
 A notable architectural discrepancy exists between the MCP tool's human-facing text contract and the underlying execution graph.
 
-The tool's registered text contract — both the `MCPServer` `instructions` string and the `search_remote_jobs` docstring in `mcp_server.py` — names only four sources:
+The tool's registered text contract — both the `MCPServer` `instructions` string (lines 9-12) and the `search_remote_jobs` docstring (lines 33-35) in `mcp_server.py` — names only four sources:
 
 ```python
 mcp = MCPServer(
@@ -123,44 +200,18 @@ def fan_out(state:State):
     ]
 ```
 
-Workable (`fetch_wjobs`) and Getro (`fetch_gjobs`) were integrated into `agent.py` without updating the client instruction and docstring text in `mcp_server.py`. Despite this omission in documentation, listings from all six sources flow through `collect_results`, are scored and ranked identically, and are returned through the MCP interface. For comprehensive details on each board's rate limits and parsing mechanisms, see [External Integrations](integrations.md).
-
-## In-Process Cache
-
-`mcp_server.py` maintains an ephemeral in-memory dictionary cache:
-
-```python
-CACHE_TTL = 14400
-_cache: dict[str, tuple[datetime, list]] = {}
-
-def fetch_fresh(query:str) -> list:
-    keyq = (query.strip()).lower()
-    if keyq not in _cache or (datetime.now() - _cache[keyq][0]).total_seconds() > CACHE_TTL:
-        result = compiled.invoke(
-                {"user_input": query, "fetched_jobs": []}
-            )
-        clean_jobs = normalize_jobs(result.get("clean_jobs" , []))
-        _cache[keyq] = (datetime.now() , clean_jobs)
-        return clean_jobs
-    else:
-        return _cache[keyq][1]
-```
-
-### Cache Invariants
-
-- **Freshness Window (`CACHE_TTL = 14400`)**: Listings remain valid for 14,400 seconds (4 hours). This duration directly matches the freshness threshold applied to `last_fetch_time` in the REST backend (`main.py`), ensuring uniform data freshness across interfaces.
-- **Normalization Key**: The cache key `keyq` strips whitespace and lowercases the input query.
-- **Pre-Filter Snapshot**: The cache stores the output of `normalize_jobs(clean_jobs)` before applying `filter_jobs`. As a result, refinement calls with different `exclude_keywords` do not invalidate or bypass the cache.
+Workable (`fetch_wjobs`) and Getro (`fetch_gjobs`) were added to `agent.py` without updating the client instruction and docstring text in `mcp_server.py`. Despite this omission in documentation, listings from all six sources flow through `collect_results`, are scored and ranked identically, and are returned through the MCP interface. For comprehensive details on each board's rate limits and parsing mechanisms, see [External Integrations](integrations.md).
 
 ## Interface Comparison: MCP Server vs. REST Backend
 
 | Dimension | MCP Server (`mcp_server.py`) | REST Backend (`main.py`) |
 |---|---|---|
-| **Transport** | stdio (standard input/output) | HTTP / REST (FastAPI) |
+| **Transport** | stdio (standard input/output JSON-RPC) | HTTP / REST (FastAPI) |
 | **Tool / API Contract** | `search_remote_jobs(query, exclude_keywords)` | `POST /search`, `POST /feedback` |
 | **State Persistence** | Ephemeral in-process dict (`_cache`) | PostgreSQL (`PostgresSaver`) + Redis |
 | **Memory Model** | Client context window holds exclusion history | Server-side thread state (`memory` list in Postgres) |
 | **Exclusion Mechanism** | Direct argument passing on tool call | Conversational turn parsed by Gemini LLM |
+| **Country Selection** | Global / unconstrained (`country=""`) | Country code dropdown / payload (`country="gr"`) |
 | **LLM Inference** | None ($0 per query, deterministic) | Google Gemini 3.5 Flash-Lite for feedback and CV parsing |
 | **Freshness Threshold** | `CACHE_TTL = 14400` seconds (4 hours) | `last_fetch_time > 14400` seconds / Redis TTL |
 | **Response Format** | Structured JSON list of normalized job dicts | Formatted Markdown text |
@@ -185,13 +236,16 @@ Rather than returning pre-rendered markdown or conversational prose, `search_rem
 
 This structured shape allows the calling model to inspect, filter, format, or compare job listings directly within its conversation stream.
 
-## Configuration and Setup
+## Setup and Integration with Claude Desktop
 
-The MCP server runs as a local subprocess spawned by an MCP host.
+The MCP server runs as a local child process spawned by an MCP host via standard input/output (`stdio`).
 
-### Claude Desktop Configuration
+### Configuration File (`claude_desktop_config.json`)
 
-Add the server definition to `claude_desktop_config.json` (located at `%APPDATA%\Claude\` on Windows or `~/Library/Application Support/Claude/` on macOS):
+To register the server with Claude Desktop, add the `jobsearch` server definition to `claude_desktop_config.json`:
+
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
@@ -204,10 +258,11 @@ Add the server definition to `claude_desktop_config.json` (located at `%APPDATA%
 }
 ```
 
-Key operational requirements:
-- Use absolute paths to both the virtual environment Python interpreter and `mcp_server.py`.
-- No environment variables (e.g., `GEMINI_API_KEY` or `DATABASE_URL`) are required.
-- The `readOnlyHint=True` annotation signals to client models that the tool executes read-only operations without external side effects.
+### Operational Requirements
+
+- **Absolute Paths**: Both the Python interpreter (inside the project's virtual environment containing `mcp` and `langgraph`) and the path to `mcp_server.py` must be absolute paths.
+- **No Environment Variables**: Because the MCP server uses neither Gemini LLM inference nor PostgreSQL/Redis, no `GEMINI_API_KEY` or `DATABASE_URL` entries are required in the configuration block.
+- **Server Execution**: When invoked as a script, `mcp_server.py` executes `mcp.run(transport="stdio")`, listening for JSON-RPC messages across stdin/stdout.
 
 ## Harbor Eval Pipeline Integration
 

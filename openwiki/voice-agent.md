@@ -1,21 +1,35 @@
 ---
 type: Subsystem
-title: Voice Agent Architecture
-description: Architecture, real-time audio pipeline, session state, and implementation details of the Pipecat voice interface.
+title: Voice Agent Interface
+description: Real-time conversational voice assistant interface powered by Pipecat, Deepgram, ElevenLabs, Daily WebRTC, and in-memory LangGraph sessions.
 tags: [voice, pipecat, deepgram, elevenlabs, daily, webrtc, langgraph, voice-agent]
+verified:
+  - by: openwiki/0.9.0
+    at: 2026-11-05T16:18:10.477Z
+sources:
+  - id: openwiki-source-eca60e2ced68ba99bd0ac710
+    resource: repo://agent.py
+  - id: openwiki-source-3a30c14a947fb74b6b9d65b7
+    resource: repo://voice_agent.py
+  - id: openwiki-source-e7dddbd4e6eed740150e85d4
+    resource: repo://voice/server/bot.py
+  - id: openwiki-source-751ee1fc8ed82a7ecfa9c52f
+    resource: repo://voice/server/langgraph_processor.py
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T16:18:10.477Z" }
 ---
 
-# Voice Agent Architecture
+# Voice Agent Interface
 
-A real-time voice interface that allows users to interact conversationally with the same LangGraph job search agent powering the [REST API](architecture/backend-api.md). Built with [Pipecat](https://pipecat.ai), the voice subsystem runs as a local demo server connecting browser audio to speech and language models through WebRTC.
+A real-time conversational voice interface that allows users to interact with the LangGraph job search agent powering the [REST API](architecture/backend-api.md) and MCP server. Built with [Pipecat](https://pipecat.ai), the voice subsystem runs as a local demo server connecting browser audio to speech-to-text, conversational routing, in-memory agent evaluation, and text-to-speech models through WebRTC.
 
-`voice_agent.py` imports `graph`, `normalize_jobs`, and `filter_jobs` directly from `agent.py` and compiles the graph with an in-memory `MemorySaver` checkpointer. It runs the exact same six-source fan-out graph (RemoteOK via `fetch_jobs`, Himalayas via `fetch_sjobs`, Remotive via `fetch_tjobs`, Jobicy via `fetch_fjobs`, Workable via `fetch_wjobs`, and Getro VCs via `fetch_gjobs`) used across the REST and MCP entry points, rather than maintaining a separate agent implementation. See [Agent Graph](architecture/agent-graph.md) for full graph topology and [Integrations](integrations.md) for source details.
+`voice_agent.py` imports `graph`, `normalize_jobs`, and `filter_jobs` directly from `agent.py` and compiles the graph with an in-memory `MemorySaver` checkpointer. It runs the exact same six-source fan-out graph (RemoteOK via `fetch_jobs`, Himalayas via `fetch_sjobs`, Remotive via `fetch_tjobs`, Jobicy via `fetch_fjobs`, Workable via `fetch_wjobs`, and Getro via `fetch_gjobs`) used across the REST and MCP entry points, rather than maintaining a separate agent implementation. See [Agent Graph](architecture/agent-graph.md) for full graph topology, [System Architecture Overview](architecture/overview.md) for subsystem relationships, and [Integrations](integrations.md) for source details.
 
 ## Real-Time Audio Pipeline
 
 The voice bot is structured around a Pipecat cascade pipeline: audio input via WebRTC, speech-to-text transcription, user aggregation with voice activity detection (VAD), frame processing through LangGraph, text-to-speech synthesis, and WebRTC audio output.
 
-```mermaid
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Heuristic: an unescaped angle bracket inside a label breaks rendering; rephrase the label. -->
+```text
 flowchart LR
     TransportIn["transport.input()<br/>Daily WebRTC"] --> STT["DeepgramSTTService<br/>Speech-to-Text"]
     STT --> UserAgg["user_aggregator<br/>SileroVADAnalyzer"]
@@ -53,7 +67,7 @@ checkpointer = MemorySaver()
 compiled_agent = graph.compile(checkpointer=checkpointer)
 ```
 
-At module import time, `voice_agent.py` also initializes a dedicated exclusion extraction chain:
+At module import time, `voice_agent.py` also initializes a dedicated exclusion extraction chain using Gemini:
 
 ```python
 llm = init_chat_model(
@@ -67,7 +81,7 @@ chain = llm | StrOutputParser()
 Each instantiated `VoiceSession` manages its own isolated state:
 - `memory: list[str]` — accumulated comma-separated keyword exclusion strings extracted from feedback.
 - `thread_id: str` — a fresh `uuid4` string generated per session, supplied in `{"configurable": {"thread_id": self.thread_id}}` so LangGraph scopes checkpointer state per call.
-- `last_query: str` — placeholder for session query tracking.
+- `last_query: str` — session query tracking placeholder.
 - `last_jobs: list[dict]` — normalized job results cached from the most recent graph search run, reused during feedback filtering and filter resets.
 
 ### Lifecycle Methods
@@ -86,7 +100,8 @@ In a voice session, a user typically explores one query per call while iterative
 
 `LangGraphProcessor` (in `voice/server/langgraph_processor.py`) bridges Pipecat pipeline frames with `VoiceSession`. It subclasses `FrameProcessor` and inspects incoming `LLMContextFrame` messages to route spoken user turns.
 
-```mermaid
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Heuristic: an unescaped angle bracket inside a label breaks rendering; rephrase the label. -->
+```text
 flowchart TD
     Msg["User message frame"] --> Check{"Prefix or first word?"}
     Check -->|"tell me more, details, what about"| Detail["_describe<br/>ordinal or company lookup"]
@@ -141,7 +156,7 @@ Voice interactions require concise audio combined with actionable links:
 
 | File | Purpose |
 |---|---|
-| `voice_agent.py` | Defines `VoiceSession`, compiles `graph` from `agent.py` with `MemorySaver`, initializes `gemini-3.5-flash-lite` extraction chain, and implements `run`/`reset`/`resume`. |
+| `voice_agent.py` | Defines `VoiceSession`, compiles `graph` from `agent.py` with `MemorySaver`, initializes `google_genai:gemini-3.5-flash-lite` extraction chain, and implements `run`/`reset`/`resume`. |
 | `voice/server/bot.py` | Sets up Pipecat pipeline components (Daily transport, Deepgram STT, ElevenLabs TTS, `LangGraphProcessor`), worker params, and event callbacks. |
 | `voice/server/langgraph_processor.py` | `LangGraphProcessor` frame processor, command parsing, ordinal lookup, `_speakable` text cleanup, and terminal formatting. |
 | `voice/server/pyproject.toml` | Server dependencies managed with `uv` (`pipecat-ai`, `langchain`, `langgraph`, `langchain-google-genai`). |
@@ -150,6 +165,8 @@ Voice interactions require concise audio combined with actionable links:
 `voice_agent.py` lives at the project root alongside `agent.py`. `voice/server/langgraph_processor.py` adds `../../` to `sys.path` to import `VoiceSession` directly, ensuring zero graph duplication across the project.
 
 ## Configuration and Operations
+
+See [Operations](operations.md) for full deployment and runtime procedures across all subsystems.
 
 ### Environment Configuration
 

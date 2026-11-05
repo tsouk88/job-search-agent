@@ -3,6 +3,17 @@ type: Runbook
 title: Operations & Runbook
 description: Deployment, configuration, background workers, storage operations, and operational runbook for running the system in production and locally.
 tags: [operations, runbook, deployment, configuration, celery, redis, render, vercel, langsmith]
+verified:
+  - by: openwiki/0.6.1
+    at: 2026-11-01T15:48:11.877Z
+sources:
+  - id: openwiki-source-833e692518af9eeaf8564cc6
+    resource: repo://main.py
+  - id: openwiki-source-51016da779816d3057e112d7
+    resource: repo://n8n_workflow.json
+  - id: openwiki-source-f70156010a8eb5325870bfc6
+    resource: repo://render.yaml
+generated: { by: "openwiki/0.9.0", at: "2026-11-05T16:18:10.477Z" }
 ---
 
 # Operations & Runbook
@@ -13,7 +24,8 @@ This runbook covers the operational lifecycle of the job search system across lo
 
 The production runtime consists of a FastAPI web backend, an asynchronous Celery task worker, an in-memory Redis instance, and a PostgreSQL database.
 
-```mermaid
+<!-- openwiki: mermaid parse failed and this diagram was converted to a text fence so it does not break rendering. Fix the diagram source and restore the mermaid fence. Parser error: Heuristic: an unescaped angle bracket inside a label breaks rendering; rephrase the label. -->
+```text
 flowchart TD
     Client["Client Request (/ask)"] --> CheckConditions{"Freshness check:\nEmpty state OR\nQuery changed OR\nCountry changed OR\nFetch age > 4h?"}
 
