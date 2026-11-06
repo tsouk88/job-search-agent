@@ -53,15 +53,15 @@ def filter_jobs(jobs: list, memory: list ,  title_only=SENIORITY) -> list:
 
 
 REGIONS = {
-    "greece": ["europe", "emea", "eu"],
-    "cyprus": ["europe", "emea", "eu"],
-    "germany": ["europe", "emea", "eu"],
-    "netherlands": ["europe", "emea", "eu"],
-    "spain": ["europe", "emea", "eu"],
-    "portugal": ["europe", "emea", "eu"],
-    "poland": ["europe", "emea", "eu"],
+    "greece": ["europe", "emea", "eu", "european union"],
+    "cyprus": ["europe", "emea", "eu", "european union"],
+    "germany": ["europe", "emea", "eu", "european union"],
+    "netherlands": ["europe", "emea", "eu", "european union"],
+    "spain": ["europe", "emea", "eu", "european union"],
+    "portugal": ["europe", "emea", "eu", "european union"],
+    "poland": ["europe", "emea", "eu", "european union"],
     "united-kingdom": ["europe", "emea", "eu", "uk"],
-    "ireland": ["europe", "emea", "eu"],
+    "ireland": ["europe", "emea", "eu", "european union"],
     "united-states": ["north america", "americas", "usa", "us"],
     "canada": ["north america", "americas"],
     "australia": ["apac", "oceania"],
