@@ -1,6 +1,8 @@
 from langsmith import Client
 from dotenv import load_dotenv
 from langchain.chat_models import init_chat_model
+from langchain_google_genai import GoogleGenAIClassifier
+from langchain_core.decisions import Noul
 from pydantic import BaseModel , Field, ValidationError
 from helper import NO_RESULTS, site_of
 import os
@@ -25,7 +27,7 @@ llm = init_chat_model(
     api_key=os.getenv("GEMINI_API_KEY"),
     max_retries=10
 )
-
+classifier = GoogleGenAIClassifier(model="gemini-decision-1" , api_key=os.getenv("GEMINI_API_KEY"))
 structured_llm = llm.with_structured_output(Output)
 eachjob_structured_llm = llm.with_structured_output(JobOutput)
 
@@ -159,6 +161,43 @@ def askjev(query , job , criteria):
     probability = responsecleared["answers"]["relevant"]["noul"]
     return probability
 
+
+
+def askgeminidecision(query , job , criteria):
+    instructions = f"""Does this job satisfies the reference criteria or no? When the criteria are silent about a listing, count it as relevant
+    {criteria}
+    """
+    response = classifier.invoke({"state": {"query": query, "job": job["position"], "description": job["description"], "Apply_url": job["apply_url"]},
+                                  "questions": {"relevant": Noul(instructions=instructions)}})
+    probability=response.nouls["relevant"].noul
+    return probability
+
+def decisiongeminicorrectness(run , example):
+    query = example.inputs["input"]
+    reference = example.outputs["referenceOutput"]  
+    results = run.outputs["jobs"]
+    if example.outputs.get("empty_ok") and not results:
+                return {
+                    "key": "geminidecisions_correctness",
+                    "score": 1.0,
+                    "comment": "Returned nothing, and the reference accepts nothing. Asserted, not judged.",
+                }
+    scores = []
+    skipped =[]
+    threshold = 0.5
+    relevant = 0
+    if len(results) == 0:
+        return {"key": "geminidecisions_correctness", "score": 0 }
+    for job in results:
+        score = askgeminidecision(query , job , reference)
+        if score >= threshold :
+            relevant += 1
+        else :
+            skipped.append((job["position"] , score))
+        scores.append((job["position"], score))
+    final_score = relevant / len(scores)
+    return {"key": "geminidecisions_correctness", "score": final_score , "comment": str(scores)}
+
 def jev_correctness(run , example):
     query = example.inputs["input"]
     reference = example.outputs["referenceOutput"]  
@@ -232,6 +271,6 @@ def laya_correctness(run, example):
 
 
 
-client.evaluate(run_agent, data="job-search-eval",evaluators=[jev_correctness,gemini_listing_correctness],experiment_prefix="gemini35lite-jev-perjob")
+client.evaluate(run_agent, data="job-search-eval",evaluators=[jev_correctness,gemini_listing_correctness,decisiongeminicorrectness],experiment_prefix="gemini35lite-jev-geminidecisions-perjob")
 
                   
